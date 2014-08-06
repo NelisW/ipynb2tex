@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 """Notebook to  LaTeX and PDF
 
-Usage: ipnb2tex.py <ipnbfilename> [<outfilename>] [<headerfilename>]
+Usage: ipnb2tex.py <ipnbfilename> [<outfilename>] [<headerfilename>] [<imagedir>]
 """
 from __future__ import print_function, division
 
@@ -637,11 +637,10 @@ fnTableOutput = {
 ################################################################################
 args = docopt.docopt(__doc__)
 
-imagedir = './pic/'
-
 infile = args['<ipnbfilename>']
 outfile = args['<outfilename>']
 headfile = args['<headerfilename>']
+imagedir =  args['<imagedir>']
 
 if not infile.endswith(".ipynb"):
   raise ValueError("Invalid notebook filename")
@@ -651,6 +650,9 @@ if outfile is None:
 
 if headfile is None:
   headfile = 'header.tex'
+
+if imagedir is None:
+  imagedir = './pic/'
 
 print('notebook={} latex={} header={}'.format(infile,  outfile, headfile))
   
