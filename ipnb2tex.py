@@ -27,7 +27,8 @@ bibxref = {}
 
 ################################################################################
 def latexEscapeForHtmlTableOutput(string):
-  string = string.replace('%', '\\%').replace('_', '\\_')
+  #this is already done elsewhere:
+  # string = string.replace('%', '\\%').replace('_', '\\_')
   for mathcar in ['<', '>', '|', '=']:
     string = string.replace(mathcar, '$'+mathcar+'$')
   matches = re.search(r'^([0-9,.,\-]+)e(\+|\-)([0-9]+)$', string.strip())
@@ -217,7 +218,7 @@ def processVerbatim(child):
   if len(child.text.splitlines()) > 1:
     strVerb =  r'\begin{verbatim}' + '\n' + child.text + r'\end{verbatim}' + childtail
   else:
-    strVerb =  r'\verb+' + child.text + r'+' + childtail
+    strVerb =  r'\verb+' + child.text.rstrip() + r'+' + childtail
   return strVerb
 
 
@@ -266,8 +267,10 @@ def processParagraph(pnode):
       bibtexentry = '@MISC{{{0},\n'.format(bibxref[citelabel]) + \
           '  url = {{{0}}}\n}}\n\n'.format(url)
       bibtexlist.append(bibtexentry)
-      # print('label={} url={}\nbibtex={}'.format(citelabel, url, bibtexentry))
-      tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
+      # print('\nchild.text={}\nlabel={}\ntail={}\n'.format(child.text, r'\cite{{{0}}}'.format(bibxref[citelabel]), childtail))
+      if child.text:
+        tmp +=  child.text
+      tmp +=  r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
 
 
     else:
@@ -335,7 +338,7 @@ def prepInput(cell, cell_index):
   if captionStr:
     rtnStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
   else:
-    rtnStr += '[style=incellstyle]\n{}\n'.format(lsting)
+    rtnStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
   rtnStr += '\\end{lstlisting}\n\n'
   return rtnStr
 
@@ -444,11 +447,13 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index):
 
       #build the complete bitmap size latex string    
       width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
-      if width:
+      scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 0.0)
+      if width: # first priority
         sizeStr = '[width={}\\textwidth]'.format(width)
-      else:
-        scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 1.0)
+      elif scale: # second priority
         sizeStr = '[scale={}]'.format(scale) if scale else ''
+      else: # none given, use assumed textwidth
+        sizeStr = '[width=0.9\\textwidth]'
 
       texStr = ''
       if captionStr:
@@ -539,7 +544,7 @@ def convertMarkdownCell(cell, cell_index):
       old_end = end
       cleaned =  mkd[start:end+1]
       for escapeable in '\\`*_{}[]()#+-.!':
-        cleaned = cleaned.replace(escapeable, "\\" + escapeable)
+        cleaned = cleaned.replace(escapeable, '\\' + escapeable)
       cleaned = cleaned.replace('\n', '')
       mkd_tmp += cleaned
     mkd = mkd_tmp + mkd[end+1:]
@@ -554,21 +559,26 @@ def convertMarkdownCell(cell, cell_index):
     # print('child.tail={}'.format(child.tail))
 
     if child.tag == 'h1' or (cell['cell_type']=="heading" and cell['level']==1):
-      tmp += r"\section{" + child.text_content() + "}\n"
+      tmp += r"\chapter{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h2' or (cell['cell_type']=="heading" and cell['level']==2):
-      tmp += r"\subsection{" + child.text_content() + "}\n"
+      tmp += r"\section{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h3' or (cell['cell_type']=="heading" and cell['level']==3):
-      tmp += r"\subsubsection{" + child.text_content() + "}\n"
+      tmp += r"\subsection{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h4' or (cell['cell_type']=="heading" and cell['level']==4):
+      tmp += r"\subsubsection{" + child.text_content() + "}\n"
+      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
+      tmp += r'\label{sec:' + seclabel + '}\n\n'
+
+    elif child.tag == 'h5' or (cell['cell_type']=="heading" and cell['level']==5):
       tmp += r"\paragraph{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
@@ -664,11 +674,12 @@ nb = ipnbcurrent.read(io.open(infile, encoding='utf-8'), 'json')
 if len(nb.worksheets) > 1:
   raise NotImplementedError("Only one worksheet allowed")
 
-output = r'\documentclass{article}'+'\n\n'
+output = '\n'
+#the header contains everything up to just prior to the first \section,
+#including the \begin{document}
 with open(headfile, 'rt') as fh:
   output += fh.read()
-
-output += r'\begin{document}'+'\n\n'
+#finished reading the header, now load the cell contents
 
 for cell_index, cell in enumerate(nb.worksheets[0].cells):
   if cell.cell_type not in fnTableCell:
