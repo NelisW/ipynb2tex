@@ -120,7 +120,7 @@ def convertHtmlTable(html, cell, table_index=0):
 
     terminator = '&'
     latexTabular = ""
-    latexTabular += "\\begin{{tabular}}{{{}}}\n".format(formatStr)
+    latexTabular += "\n\\begin{{tabular}}{{{}}}\n".format(formatStr)
     latexTabular += "\\hline\n"
     irow = 0
     for row_index, row in enumerate(table.findall('tr')):
@@ -165,13 +165,13 @@ def convertHtmlTable(html, cell, table_index=0):
 
     texStr = ''
     if captionStr:
-      texStr += '\\begin{table}[htb]\n'
+      texStr += '\n\\begin{table}[htb]\n'
       texStr += '\\centering\n'
       texStr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
     else:
        texStr += '\\begin{center}\n'
 
-    texStr += "\\begin{{{}}}\n".format(fontsizeStr)
+    texStr += "\n\\begin{{{}}}\n".format(fontsizeStr)
     texStr += latexTabular
     texStr += "\\end{{{}}}\n".format(fontsizeStr)
 
@@ -309,7 +309,7 @@ def prepOutput(cellOutput, cell, cell_index, output_index):
   if captionStr:
     captionStr = '{'+r'{} \label{{{}-out}}'.format(captionStr, labelStr)+'}'
 
-  rtnStr = '\\begin{lstlisting}'
+  rtnStr = '\n\\begin{lstlisting}'
   if captionStr:
     rtnStr += '[style=outcellstyle,caption={}]\n{}\n'.format(captionStr,cellOutput.text)
   else:
@@ -334,7 +334,7 @@ def prepInput(cell, cell_index):
   if captionStr:
     captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
 
-  rtnStr = '\\begin{lstlisting}'
+  rtnStr = '\n\\begin{lstlisting}'
   if captionStr:
     rtnStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
   else:
@@ -357,7 +357,7 @@ def prepPyOut(cellOutput, cell, cell_index, output_index):
 def prepPyErr(cellOutput, cell, cell_index, output_index):
   import os, re 
   r= re.compile(r'\033\[[0-9;]+m') 
-  rtnStr = '\\begin{verbatim}\n'
+  rtnStr = '\n\\begin{verbatim}\n'
   for output in cell["outputs"]:
     if output['output_type'] == 'pyerr':
       for trace in output['traceback']:
@@ -457,7 +457,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index):
 
       texStr = ''
       if captionStr:
-        texStr += '\\begin{figure}[tb]\n'
+        texStr += '\n\\begin{figure}[tb]\n'
         texStr += '\\centering\n'
       else:
          texStr += '\\begin{center}\n'
@@ -522,14 +522,14 @@ def convertMarkdownCell(cell, cell_index):
     starts = starts[:-1]
   math_envs += [(s,e) for (s,e) in zip(starts, ends)]
 
-  starts = list(findAllStr(mkd, '\\begin{equation}'))
+  starts = list(findAllStr(mkd, '\n\\begin{equation}'))
   ends = [e + 13 for e in findAllStr(mkd, '\\end{equation}')]
   if len(starts) > len(ends):
     starts = starts[:-1]
   math_envs += [(s,e) for (s,e) in zip(starts, ends)]
   math_envs = sorted(math_envs)
 
-  starts = list(findAllStr(mkd, '\\begin{equation*}'))
+  starts = list(findAllStr(mkd, '\n\\begin{equation*}'))
   ends = [e + 14 for e in findAllStr(mkd, '\\end{equation*}')]
   if len(starts) > len(ends):
     starts = starts[:-1]
@@ -590,7 +590,7 @@ def convertMarkdownCell(cell, cell_index):
       tmp += processList(child) + '\n'
 
     elif child.tag == 'blockquote':
-      tmp += "\\begin{quote}\n" + processParagraph(child).strip() + "\\end{quote}\n\n"
+      tmp += "\n\\begin{quote}\n" + processParagraph(child).strip() + "\\end{quote}\n\n"
 
     elif child.tag == 'table':
       tmp += convertHtmlTable(child, cell, table_index)
