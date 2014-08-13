@@ -50,10 +50,11 @@ def convertHtmlTable(html, cell, table_index=0):
   if not (isinstance(html, basestring)):
     html = lxml.html.tostring(html)
 
-  if not "<div>" in  html:   
+  if not "<div" in  html:   
     html = "<div>" + html + "</div>"
 
   html = html.replace("<thead>", "").replace("</thead>", "").replace("<tbody>", "").replace("</tbody>", "")
+  # html = html.replace('overflow:auto;','').replace(' style="max-height:1000px;max-width:1500px;','')
   tree = lxml.html.fromstring(html)
 
   # print('pptree-html')

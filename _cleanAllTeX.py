@@ -51,7 +51,7 @@ QueryDelete(1,'.', '*.bib')
 QueryDelete(1,'.', '*.log')
 QueryDelete(1,'.', '*.bbl;comment.cut')
 QueryDelete(1,'.', '*.bbl;*.sav;*.bak;*.synctex;*.log;*.svn')
-QueryDelete(1,'.', '*.blg;*.dfn;*.smb;*.bak;*.aux;*.out;*.lot;*.lof;*.toc;*.tex.bak;*.dvi;*.efc;Backup_of_*.*;*.abr')
+QueryDelete(1,'.', '*.blg;*.dfn;*.smb;*.bak;*.aux;*.out;*.lot;*.lof;*.toc;*.tex.bak;*.lol;*.dvi;*.efc;Backup_of_*.*;*.abr')
 
 
 
