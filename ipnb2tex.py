@@ -303,7 +303,7 @@ def cleanFilename(sourcestring,  removestring =" %:/,.\\[]"):
 
 
 ################################################################################
-def prepOutput(cellOutput, cell, cell_index, output_index):
+def prepOutput(cellOutput, cell, cell_index, output_index, imagedir):
 
   captionStr = getMetaDataString(cell, 0, 'listingCaption', 'outputCaption','')
   labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
@@ -344,18 +344,18 @@ def prepInput(cell, cell_index):
   return rtnStr
 
 ################################################################################
-def prepPyOut(cellOutput, cell, cell_index, output_index):
+def prepPyOut(cellOutput, cell, cell_index, output_index, imagedir):
 
   if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
     return convertHtmlTable(cellOutput['html'],cell)
 
   if u'png' in cellOutput.keys():
-      return processDisplayOutput(cellOutput, cell, cell_index, output_index)
+      return processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir)
 
-  return prepOutput(cellOutput, cell, cell_index, output_index)
+  return prepOutput(cellOutput, cell, cell_index, output_index, imagedir)
 
 ################################################################################
-def prepPyErr(cellOutput, cell, cell_index, output_index):
+def prepPyErr(cellOutput, cell, cell_index, output_index, imagedir):
   import os, re 
   r= re.compile(r'\033\[[0-9;]+m') 
   rtnStr = '\n\\begin{verbatim}\n'
@@ -368,7 +368,7 @@ def prepPyErr(cellOutput, cell, cell_index, output_index):
   return rtnStr
 
 ################################################################################
-def prepNotYet(cellOutput, cell, cell_index, output_index):
+def prepNotYet(cellOutput, cell, cell_index, output_index, imagedir):
   for output in cell["outputs"]:
     raise NotImplementedError("Unable to process cell type {}".\
                                format(output["output_type"]))
@@ -427,7 +427,7 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
   return outVal
      
 ################################################################################
-def processDisplayOutput(cellOutput, cell, cell_index, output_index):
+def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir):
 
   if 'html' in cellOutput.keys() and 'table' in cellOutput['html']:
       return convertHtmlTable(cellOutput['html',cell])
@@ -435,7 +435,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index):
   if 'png' in cellOutput.keys():
     imageName = args['<ipnbfilename>'].replace('.ipynb', '') + \
                 '_{}_{}.png'.format(cell_index, output_index)
-    with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
+    with open(imagedir + '/'+'{}'.format(imageName), 'wb') as fpng:
       fpng.write(base64.decodestring(cellOutput.png))
 
       #process the caption string, either a string or a list of strings
@@ -474,21 +474,21 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index):
     return texStr
 
   if 'text' in cellOutput.keys():
-    return prepOutput(cellOutput, cell, cell_index, output_index)
+    return prepOutput(cellOutput, cell, cell_index, output_index, imagedir)
 
   raise NotImplementedError("Only know how to deal with PNGs. Options are: {}".\
                            format(cellOutput.keys()))
 
 
 ################################################################################
-def convertRawCell(cell, cell_index):
+def convertRawCell(cell, cell_index, imagedir):
 
   extractBibtexXref(cell)
 
   return cell['source']
 
 ################################################################################
-def convertCodeCell(cell, cell_index):
+def convertCodeCell(cell, cell_index, imagedir):
 
   extractBibtexXref(cell)
 
@@ -497,12 +497,12 @@ def convertCodeCell(cell, cell_index):
     #output += "<li>{}</li>".format(cellOutput.output_type)
     if cellOutput.output_type not in fnTableOutput:
       raise NotImplementedError("Unknown output type {}.".format(cellOutput.output_type))
-    output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count)
+    output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir)
 
   return output
 
 ################################################################################
-def convertMarkdownCell(cell, cell_index):
+def convertMarkdownCell(cell, cell_index, imagedir):
 
   extractBibtexXref(cell)
 
@@ -644,6 +644,23 @@ fnTableOutput = {
   'text': prepNotYet,
    }
 
+
+################################################################################
+# get the header filename
+def getHeaderName():
+  pass
+
+################################################################################
+# create the picture directory
+def createImageDir(imagedir):
+  if imagedir is None:
+    imagedir = './pic/'
+
+  if not os.path.exists(imagedir):
+      os.makedirs(imagedir)
+
+  return imagedir
+
 ################################################################################
 ################################################################################
 args = docopt.docopt(__doc__)
@@ -660,10 +677,11 @@ if outfile is None:
   outfile = infile.replace('.ipynb', '.tex')
 
 if headfile is None:
-  headfile = 'header.tex'
+  #get the first header file
+  headfile = getHeaderName()
+  # headfile = 'header.tex'
 
-if imagedir is None:
-  imagedir = './pic/'
+imagedir = createImageDir(imagedir)
 
 print('notebook={} latex={} header={}'.format(infile,  outfile, headfile))
   
@@ -685,7 +703,7 @@ with open(headfile, 'rt') as fh:
 for cell_index, cell in enumerate(nb.worksheets[0].cells):
   if cell.cell_type not in fnTableCell:
     raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
-  rtnString = fnTableCell[cell.cell_type](cell, cell_index)
+  rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir)
   output += rtnString
 
 if len(bibtexlist):
