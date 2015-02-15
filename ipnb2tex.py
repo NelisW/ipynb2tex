@@ -3,6 +3,8 @@
 
 Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>] [<headerfilename>] [<imagedir>]
 """
+
+
 from __future__ import print_function, division
 
 import os
@@ -26,7 +28,32 @@ bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
 bibxref = {}
 
+""" The ipnb2tex.py reads the IPython notebook and converts it to a \LaTeX{} set of files 
+(a *.tex file and a number of images). The script is invoked as follows:
 
+python ipnb2tex.py file.ipynb file.tex header.tex imagedir
+
+where
+
+    file.ipynb [optional] is the name of the input IPython notebook file. 
+    If no input filename is supplied, all .ipynb files in current directory will be processed. 
+    In this event the output filenames will be the same as the .ipynb files, just with a tex filetype.
+
+    file.tex [optional] is the name of output \LaTeX{} file. If none is given the output 
+    filename will be the same as the input file, but with the .tex extension.
+
+    header.tex [optional] is the name of the file to be used as the \LaTeX{} code inserted 
+    before the actual contents of the notebook. This header is used to define the front 
+    matter and layout of the \LaTeX{} document. Write/change this file to change the front 
+    matter and appearance of the document. If no filename is given, the code will search for 
+    the most recent (file modification date) \LaTeX{} file with a \begin{document}` but 
+    without an `\end{document} string, i.e., an opening text, but with no closing command.
+
+    imagedir [optional] is the directory where images are written to. If not given, 
+    this image directory will be the ./pic directory.
+
+
+"""
 
 ################################################################################
 #lists the files in a directory and subdirectories (from Python Cookbook)
