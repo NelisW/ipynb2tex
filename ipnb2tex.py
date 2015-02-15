@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 """Notebook to  LaTeX and PDF
 
-Usage: ipnb2tex.py <ipnbfilename> [<outfilename>] [<headerfilename>] [<imagedir>]
+Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>] [<headerfilename>] [<imagedir>]
 """
 from __future__ import print_function, division
 
@@ -11,7 +11,8 @@ import base64
 import shutil
 import re
 import itertools
-
+import operator
+import os.path, fnmatch
 from IPython.nbformat import current as ipnbcurrent
 import docopt
 import lxml.html
@@ -24,6 +25,34 @@ import numpy as np
 bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
 bibxref = {}
+
+
+
+################################################################################
+#lists the files in a directory and subdirectories (from Python Cookbook)
+def listFiles(root, patterns='*', recurse=1, return_folders=0):
+    # Expand patterns from semicolon-separated string to list
+    pattern_list = patterns.split(';')
+    # Collect input and output arguments into one bunch
+    class Bunch:
+        def __init__(self, **kwds): self.__dict__.update(kwds)
+    arg = Bunch(recurse=recurse, pattern_list=pattern_list,
+        return_folders=return_folders, results=[])
+
+    def visit(arg, dirname, files):
+        # Append to arg.results all relevant files (and perhaps folders)
+        for name in files:
+            fullname = os.path.normpath(os.path.join(dirname, name))
+            if arg.return_folders or os.path.isfile(fullname):
+                for pattern in arg.pattern_list:
+                    if fnmatch.fnmatch(name, pattern):
+                        arg.results.append(fullname)
+                        break
+        # Block recursion if recursion was disallowed
+        if not arg.recurse: files[:]=[]
+    os.path.walk(root, visit, arg)
+    return arg.results
+
 
 ################################################################################
 def latexEscapeForHtmlTableOutput(string):
@@ -303,7 +332,7 @@ def cleanFilename(sourcestring,  removestring =" %:/,.\\[]"):
 
 
 ################################################################################
-def prepOutput(cellOutput, cell, cell_index, output_index, imagedir):
+def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
   captionStr = getMetaDataString(cell, 0, 'listingCaption', 'outputCaption','')
   labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
@@ -344,18 +373,18 @@ def prepInput(cell, cell_index):
   return rtnStr
 
 ################################################################################
-def prepPyOut(cellOutput, cell, cell_index, output_index, imagedir):
+def prepPyOut(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
   if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
     return convertHtmlTable(cellOutput['html'],cell)
 
   if u'png' in cellOutput.keys():
-      return processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir)
+      return processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
-  return prepOutput(cellOutput, cell, cell_index, output_index, imagedir)
+  return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
 ################################################################################
-def prepPyErr(cellOutput, cell, cell_index, output_index, imagedir):
+def prepPyErr(cellOutput, cell, cell_index, output_index, imagedir, infile):
   import os, re 
   r= re.compile(r'\033\[[0-9;]+m') 
   rtnStr = '\n\\begin{verbatim}\n'
@@ -368,7 +397,7 @@ def prepPyErr(cellOutput, cell, cell_index, output_index, imagedir):
   return rtnStr
 
 ################################################################################
-def prepNotYet(cellOutput, cell, cell_index, output_index, imagedir):
+def prepNotYet(cellOutput, cell, cell_index, output_index, imagedir, infile):
   for output in cell["outputs"]:
     raise NotImplementedError("Unable to process cell type {}".\
                                format(output["output_type"]))
@@ -427,15 +456,15 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
   return outVal
      
 ################################################################################
-def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir):
+def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
   if 'html' in cellOutput.keys() and 'table' in cellOutput['html']:
       return convertHtmlTable(cellOutput['html',cell])
 
   if 'png' in cellOutput.keys():
-    imageName = args['<ipnbfilename>'].replace('.ipynb', '') + \
+    imageName = infile.replace('.ipynb', '') + \
                 '_{}_{}.png'.format(cell_index, output_index)
-    with open(imagedir + '/'+'{}'.format(imageName), 'wb') as fpng:
+    with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
       fpng.write(base64.decodestring(cellOutput.png))
 
       #process the caption string, either a string or a list of strings
@@ -474,21 +503,21 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir):
     return texStr
 
   if 'text' in cellOutput.keys():
-    return prepOutput(cellOutput, cell, cell_index, output_index, imagedir)
+    return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
   raise NotImplementedError("Only know how to deal with PNGs. Options are: {}".\
                            format(cellOutput.keys()))
 
 
 ################################################################################
-def convertRawCell(cell, cell_index, imagedir):
+def convertRawCell(cell, cell_index, imagedir, infile):
 
   extractBibtexXref(cell)
 
   return cell['source']
 
 ################################################################################
-def convertCodeCell(cell, cell_index, imagedir):
+def convertCodeCell(cell, cell_index, imagedir, infile):
 
   extractBibtexXref(cell)
 
@@ -497,12 +526,12 @@ def convertCodeCell(cell, cell_index, imagedir):
     #output += "<li>{}</li>".format(cellOutput.output_type)
     if cellOutput.output_type not in fnTableOutput:
       raise NotImplementedError("Unknown output type {}.".format(cellOutput.output_type))
-    output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir)
+    output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir, infile)
 
   return output
 
 ################################################################################
-def convertMarkdownCell(cell, cell_index, imagedir):
+def convertMarkdownCell(cell, cell_index, imagedir, infile):
 
   extractBibtexXref(cell)
 
@@ -647,8 +676,35 @@ fnTableOutput = {
 
 ################################################################################
 # get the header filename
-def getHeaderName():
-  pass
+def getHeaderName(headfile):
+  """A header file is a file with begin{document} but no end{document}.
+  Also, we are looking for the most recently changed file to return its name
+  """
+  if headfile is None:
+    texfiles = listFiles('.', patterns='*.tex', recurse=0, return_folders=0)
+    headerfiles = []
+    for texfile in texfiles:
+      with open(texfile) as fin:
+        inp = fin.read()
+        if '\\end{document}' in inp:
+          pass
+        else:
+          if '\\begin{document}' in inp:
+            headerfiles.append(texfile)
+
+    #at this point we have a list of header files, now get modification time
+    dictFiles = {}
+    for texfile in headerfiles:
+      dictFiles[os.path.getmtime(texfile)] = texfile
+
+    #sort on modification date
+    slstFiles = sorted(dictFiles.items(), key=operator.itemgetter(0))
+
+    #filename is the second item, get the last pair for most recently changed
+    headfile = slstFiles[-1][1]
+
+  return headfile
+
 
 ################################################################################
 # create the picture directory
@@ -656,10 +712,85 @@ def createImageDir(imagedir):
   if imagedir is None:
     imagedir = './pic/'
 
+  print(imagedir, imagedir[-1])
+  
+  if imagedir[-1] is not '\\' or imagedir[-1] is not '/':
+    imagedir += '/'
+
   if not os.path.exists(imagedir):
       os.makedirs(imagedir)
 
   return imagedir
+
+################################################################################
+# here we do one at at time
+def processOneIPynbFile(infile, outfile, headfile, imagedir):
+
+  print('notebook={} latex={} header={} imageDir={}'.format(infile,  outfile, headfile, imagedir))
+    
+  pdffile = outfile.replace('.tex', '.pdf')
+  bibfile = outfile.replace('.tex', '.bib')
+
+
+  nb = ipnbcurrent.read(io.open(infile, encoding='utf-8'), 'json')
+  if len(nb.worksheets) > 1:
+    raise NotImplementedError("Only one worksheet allowed")
+
+  output = '\n'
+  #the header contains everything up to just prior to the first \section,
+  #including the \begin{document}
+  with open(headfile, 'rt') as fh:
+    output += fh.read()
+  #finished reading the header, now load the cell contents
+
+  for cell_index, cell in enumerate(nb.worksheets[0].cells):
+    if cell.cell_type not in fnTableCell:
+      raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
+    rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
+    output += rtnString
+
+  if len(bibtexlist):
+    output += '\n\n\\bibliographystyle{IEEEtran}\n'
+    output += '\\bibliography{{{0}}}\n\n'.format(bibfile.replace('.bib', ''))
+
+  output += r'\end{document}'+'\n\n'
+
+  with io.open(outfile, 'w', encoding='utf-8') as f:
+    f.write(unicode(output))
+
+  if len(bibtexlist):
+    with io.open(bibfile, 'w', encoding='utf-8') as f:
+      for bib in bibtexlist:
+        f.write(unicode(bib))
+
+
+################################################################################
+# here we get a list of all the input and outfiles
+def getInfileNames(infile, outfile):
+
+  infiles = []
+  outfiles = []
+
+  if infile is not None:
+    if not infile.endswith(".ipynb"):
+      raise ValueError("Invalid notebook filename {}.".format(infile))
+
+    if outfile is None:
+      outfile = infile.replace('.ipynb', '.tex')
+
+    infiles.append(infile)    
+    outfiles.append(outfile) 
+
+  else: 
+    # no input filename supplied, get all   
+    ipynbfiles = listFiles('.', patterns='*.ipynb', recurse=0, return_folders=0)
+    for ipynbfile in ipynbfiles:
+      infiles.append(ipynbfile)    
+      outfiles.append(ipynbfile.replace('.ipynb', '.tex')) 
+
+
+  return infiles, outfiles
+
 
 ################################################################################
 ################################################################################
@@ -670,58 +801,16 @@ outfile = args['<outfilename>']
 headfile = args['<headerfilename>']
 imagedir =  args['<imagedir>']
 
-if not infile.endswith(".ipynb"):
-  raise ValueError("Invalid notebook filename")
-  
-if outfile is None:
-  outfile = infile.replace('.ipynb', '.tex')
-
-if headfile is None:
-  #get the first header file
-  headfile = getHeaderName()
-  # headfile = 'header.tex'
-
+# find the image directory
 imagedir = createImageDir(imagedir)
 
-print('notebook={} latex={} header={}'.format(infile,  outfile, headfile))
-  
-pdffile = outfile.replace('.tex', '.pdf')
-bibfile = outfile.replace('.tex', '.bib')
+#find the header filename
+headfile = getHeaderName(headfile)
 
+# see if only one input file, or perhaps many
+infiles, outfiles = getInfileNames(infile, outfile)
 
-nb = ipnbcurrent.read(io.open(infile, encoding='utf-8'), 'json')
-if len(nb.worksheets) > 1:
-  raise NotImplementedError("Only one worksheet allowed")
+#process the list of files found in spec
+for infile, outfile in zip(infiles, outfiles):
+  processOneIPynbFile(infile, outfile, headfile, imagedir)
 
-output = '\n'
-#the header contains everything up to just prior to the first \section,
-#including the \begin{document}
-with open(headfile, 'rt') as fh:
-  output += fh.read()
-#finished reading the header, now load the cell contents
-
-for cell_index, cell in enumerate(nb.worksheets[0].cells):
-  if cell.cell_type not in fnTableCell:
-    raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
-  rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir)
-  output += rtnString
-
-if len(bibtexlist):
-  output += '\n\n\\bibliographystyle{IEEEtran}\n'
-  output += '\\bibliography{{{0}}}\n\n'.format(bibfile.replace('.bib', ''))
-
-output += r'\end{document}'+'\n\n'
-
-with io.open(outfile, 'w', encoding='utf-8') as f:
-  f.write(unicode(output))
-
-if len(bibtexlist):
-  with io.open(bibfile, 'w', encoding='utf-8') as f:
-    for bib in bibtexlist:
-      f.write(unicode(bib))
-
-# os.system('pdflatex -interaction=nonstopmode {}'.format(outfile)) 
-# if os.path.exists('missfont.log'):
-#   os.remove('missfont.log')
-# os.remove(outfile.split('.')[0] + '.aux')
-# os.remove(outfile.split('.')[0] + '.log')
