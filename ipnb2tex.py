@@ -741,7 +741,9 @@ def createImageDir(imagedir):
 
   print(imagedir, imagedir[-1])
   
-  if imagedir[-1] is not '\\' or imagedir[-1] is not '/':
+  if imagedir[-1] is '\\' or imagedir[-1] is  '/':
+    pass
+  else:
     imagedir += '/'
 
   if not os.path.exists(imagedir):
