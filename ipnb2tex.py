@@ -136,6 +136,7 @@ def convertHtmlTable(html, cell, table_index=0):
       raise ValueError('inconsistent number of column counts')
     col_counts = col_counts[0]
 
+    # print(row_counts, col_counts)
 
     if row_counts == 0 or col_counts == 0:
       continue
@@ -183,9 +184,10 @@ def convertHtmlTable(html, cell, table_index=0):
     for row_index, row in enumerate(table.findall('tr')):
       icol = 0
       for col_index, col in enumerate(row):
-        if rowspan[irow,icol]:
+        while rowspan[irow,icol]:
           latexTabular += '&'
           icol += 1
+
         txt = latexEscapeForHtmlTableOutput(unicode(col.text_content()).strip())
         if 'colspan' in col.attrib:
           icolspan = int(col.attrib['colspan'])
@@ -654,7 +656,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
       table_index += 1
 
     else:
-      raise ValueError("Unable to process tag of type", child.tag)
+      raise ValueError("Unable to process tag of type ", child.tag)
 
   # fix the lxml parser ignoring the \ for the latex envs
   #for env in ['equation']: # might want to extend this for other envs?
