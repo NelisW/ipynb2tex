@@ -4,7 +4,6 @@
 Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>] [<headerfilename>] [<imagedir>]
 """
 
-
 from __future__ import print_function, division
 
 import os
