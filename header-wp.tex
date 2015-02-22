@@ -10,6 +10,7 @@
 \usepackage[dvips]{graphicx}
 \fi
 
+\usepackage{ragged2e}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{graphicx}
@@ -19,7 +20,7 @@
 \usepackage[detect-weight]{siunitx} % nice! SI units and print numbers
 \usepackage{afterpage} % afterpage{\clearpage}
 \usepackage{gensymb} % get the degree symbol as in \celcius
-\usepackage{amsmath} 
+\usepackage{amsmath}
 \usepackage[printonlyused]{acronym}
 \usepackage{lastpage}
 
@@ -61,11 +62,11 @@ breakatwhitespace=false,    % sets if automatic breaks should only happen at whi
 prebreak=\raisebox{0ex}[0ex][0ex]{$\dlsh$} % add linebreak symbol
 }
 
+
 \lstdefinestyle{incellstyle}{
   backgroundcolor=\color{LightGrey},  % choose the background color,  add \usepackage{color}
   language=Python,
 }
-
 
 \lstdefinestyle{outcellstyle}{
   backgroundcolor=\color{LightRed},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
@@ -77,30 +78,28 @@ prebreak=\raisebox{0ex}[0ex][0ex]{$\dlsh$} % add linebreak symbol
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \WPdocmaxpage{\pageref{LastPage}}
 
-\WPproject{Project X}
-\WPdocnumber{xxxxx-xxxxx-xxx}
-\WPclassification{Unclassified}
-\WPequipment{Subsystem Y}
-\WPsubject{Example LaTeX Work Package}
+\WPproject{}
+\WPdocnumber{}
+\WPclassification{}
+\WPequipment{}
+\WPsubject{}
 \WPdistribution{
-\vspace{0.1mm}
-\begin{tabular}{lllll}
-Name 1 & Name 12 & Name 3 & Name 4 & Name 5\\
-Name 6 & Name 7 & \multicolumn{3}{l}{Master:  some repo}\\
-\end{tabular}
+%\vspace{0.1mm}
+%\begin{tabular}{lllll}
+%Name 1 & Name 12 & Name 3 & Name 4 & Name 5\\
+%Name 6 & Name 7 & \multicolumn{3}{l}{Master:  some repo}\\
+%\end{tabular}
 }
 
-\WPconclusions{
-This Work Package demonstrates the usage of the workpackage \LaTeX{} style file.
-}
+\WPconclusions{}
 
-\WPdocauthor{Author Name}
-\WPprevpackdate{Previous Package Date}
-\WPprevpacknumber{zzzzz-zzzzz-zzz}
-\WPsuperpackdate{Superceding Package Date}
-\WPsuperpacknumber{yyyyy-yyyyy-yyy}
+\WPdocauthor{CJ Willers}
+\WPprevpackdate{}
+\WPprevpacknumber{}
+\WPsuperpackdate{}
+\WPsuperpacknumber{}
 \WPcurrentpackdate{\today}
-\WPcurrentpacknumber{xxxxx-xxxxx-xxx}
+\WPcurrentpacknumber{}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,18 +108,18 @@ This Work Package demonstrates the usage of the workpackage \LaTeX{} style file.
 %
 \WPdocontractdetails{false}
 %
-\WPcontractname{Relevant contract name}  % name of the contract
-\WPorderno{xxxxxxxx}         %  order number
-\WPmilestonenumber{???}   % 
-\WPmilestonetitle{???}
-\WPcontractline{??}
-\WPdocECPnumber{bbbbbbb}
+\WPcontractname{}  % name of the contract
+\WPorderno{}         %  order number
+\WPmilestonenumber{}   %
+\WPmilestonetitle{}
+\WPcontractline{}
+\WPdocECPnumber{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 \WPlayout
-%\tableofcontents
+\tableofcontents
 %\listoffigures
 %\listoftables
 
