@@ -82,10 +82,16 @@ def listFiles(root, patterns='*', recurse=1, return_folders=0):
 
 ################################################################################
 def latexEscapeForHtmlTableOutput(string):
-  #this is already done elsewhere:
-  # string = string.replace('%', '\\%').replace('_', '\\_')
+
+  # string = string.replace('_', '\\_')
+
+  #first remove escaped \% if present, then do escape again on all % present
+  string = string.replace('\\%','%')
+  string = string.replace('%','\\%')
+
   for mathcar in ['<', '>', '|', '=']:
     string = string.replace(mathcar, '$'+mathcar+'$')
+  #replace computer-style float with scientific notation    
   matches = re.search(r'^([0-9,.,\-]+)e(\+|\-)([0-9]+)$', string.strip())
   if matches:
     lead, sign, pw = matches.groups()
@@ -533,7 +539,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
   if 'text' in cellOutput.keys():
     return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
-  raise NotImplementedError("Only know how to deal with PNGs. Options are: {}".\
+  raise NotImplementedError("Unknow cell type(s): {}".\
                            format(cellOutput.keys()))
 
 
@@ -662,7 +668,9 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
   #  tmp = tmp.replace('\nbegin{' + env + '}', '\n\\begin{' + env + '}')
   #  tmp = tmp.replace('\nend{' + env + '}', '\n\\end{' + env + '}')
 
-  tmp = tmp.replace('%', '\%')
+  #first remove escaped \% if present, then do escape again on all % present
+  tmp = tmp.replace('\\%','%')
+  tmp = tmp.replace('%','\\%')
 
   # now do latex escapes - things markdown is fine with but latex isnt
   # in particular, underscore outside math env
