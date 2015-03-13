@@ -1,10 +1,22 @@
-\documentclass{report}
+% the first cell of the notebook must be a RawNBConvert cell with the following contents:
+%
+%%%\documentclass that you want to use
+%%%whatever preamble lines you require
+%%%\begin{document}
+%%%whatever extra info before the notebook follows
+%
+% this file contains the preamble latex code required by the functionality of the converter.
+%
+% - The exporter extracts the document class line from the first cell of the notebook.
+% - Then follows the contents of this file (as preamble)
+% - Then follows the rest of the first cell of the notebook (rest of preamble, begin doc, etc)
+% - Finally the rest of the notebook is exported.
+%
 
 \usepackage{ragged2e}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{graphicx}
-\usepackage[a4paper, margin=0.75in]{geometry}
 \usepackage{textcomp} % additional fonts, required for upquote in listings and \textmu
 \usepackage{placeins} % FloatBarrier
 \usepackage{url} % for websites
@@ -12,6 +24,8 @@
 \usepackage{afterpage} % afterpage{\clearpage}
 \usepackage{gensymb} % get the degree symbol as in \celcius
 \usepackage{amsmath} 
+\usepackage[printonlyused]{acronym}
+\usepackage{lastpage}
 
 %the following is required for carriage return symbol
 %ftp://ftp.botik.ru/rented/znamensk/CTAN/fonts/mathabx/texinputs/mathabx.dcl
@@ -60,9 +74,9 @@ prebreak=\raisebox{0ex}[0ex][0ex]{$\dlsh$} % add linebreak symbol
   backgroundcolor=\color{LightRed},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
 }
 
-\setlength{\parindent}{0.0mm}
-\setlength{\parskip}{6pt}
+\usepackage[a4paper, margin=0.75in]{geometry}
+\newlength{\textwidthm}
+\setlength{\textwidthm}{\textwidth}
 
-\begin{document}
 
 

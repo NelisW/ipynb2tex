@@ -793,6 +793,9 @@ def processOneIPynbFile(infile, outfile, headfile, imagedir):
 
   output += r'\end{document}'+'\n\n'
 
+  #move the document class line to the start of the file
+  output = movedocumentclass(output)
+
   with io.open(outfile, 'w', encoding='utf-8') as f:
     f.write(unicode(output))
 
@@ -801,6 +804,25 @@ def processOneIPynbFile(infile, outfile, headfile, imagedir):
       for bib in bibtexlist:
         f.write(unicode(bib))
 
+
+
+################################################################################
+def movedocumentclass(output):
+  """The file currently has the header up front, then the document class line.
+  We must move the document class line to the front of the file, ahead of the header.
+  """
+  lines = output.split('\n')
+  outlines = []
+  docclass = r'\documentclass[english]{workpackage}[1996/06/02]' #default value
+  for line in lines:
+    if '\\documentclass' in line:
+      docclass = line
+    else:
+      outlines.append(line)
+  #now we have the file without docclass and the stored docclass line, merge
+  outlines.insert(0, docclass)
+
+  return '\n'.join(outlines)
 
 ################################################################################
 # here we get a list of all the input and outfiles
@@ -843,7 +865,7 @@ imagedir =  args['<imagedir>']
 imagedir = createImageDir(imagedir)
 
 #find the header filename
-headfile = getHeaderName(headfile)
+headfile = 'header.tex' #getHeaderName(headfile)
 
 # see if only one input file, or perhaps many
 infiles, outfiles = getInfileNames(infile, outfile)

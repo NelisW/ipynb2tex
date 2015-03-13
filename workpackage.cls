@@ -1,4 +1,3 @@
-%workpackage.cls
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}
@@ -28,22 +27,16 @@
 \pagenumbering{arabic}     
 \onecolumn                 
 \raggedbottom
-\newlength{\textwidthm}
 
-\setlength{\hoffset}{0mm}  %displacement from physical origin 
-\setlength{\voffset}{-25mm}
 \setlength{\topmargin}{5.0mm}
 \setlength{\headheight}{12mm}
 \setlength{\headsep}{10mm}
 \setlength{\topskip}{10mm}
-\setlength{\textheight}{250mm}
 \setlength{\footskip}{15mm}
-\setlength{\textwidth}{180mm}
-\setlength{\textwidthm}{177mm}
-\setlength{\oddsidemargin}{-10mm}
-\setlength{\evensidemargin}{\oddsidemargin}
+
 \setlength{\parindent}{0.0mm}
-\setlength{\parskip}{6pt}
+\setlength{\parskip}{6pt} 
+
 \setlength{\unitlength}{1mm}
 
 \setcounter{secnumdepth}{4}
@@ -161,6 +154,18 @@
 \@onlypreamble{\WPdocECPnumber}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages used in this style
+
+\ifpdf        %This text is produced when in pdfTeX mode.
+\usepackage[pdftex]{graphicx}
+\usepackage{epstopdf}
+\else  %  This text is produced when  in DVI mode,
+\usepackage[dvips]{graphics}
+\usepackage[dvips]{graphicx}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % do the chapter page layout
 \usepackage{titlesec}
 %\titleformat{\chapter}{\normalfont\LARGE\bfseries}{\thechapter.}{1em}{}
@@ -251,20 +256,22 @@
 
 \newcommand{\ps@WPheadings}{
 \renewcommand{\@oddhead}{
-\begin{minipage}{\textwidthm}
+\begin{minipage}[t]{\textwidthm}
 \begin{picture}(0,0)
 \ifpdf        %This text is produced when in pdfTeX mode.
-\put(-1,0){ \includegraphics{logo.png}}
+\put(-1,-8){ \includegraphics{logo.png}}
 \else  %  This text is produced when  in DVI mode,
-\put(-1,0){ \includegraphics[bb=0 0 2104 171,scale=0.22]{logo.png}}
+\put(-1,-8){ \includegraphics[bb=0 0 2104 171,scale=0.22]{logo.png}}
 \fi
 \end{picture}
+\ \newline
+\vspace{-4mm}
 \settowidth{\lengthbuf}{\scshape\WP@classification}%
 \hspace{0.5\textwidth}%
 \hspace{-0.5\lengthbuf}%
 \makebox{\scshape\small{\WP@classification}}
 \hfill
-\vspace{2mm}
+\vspace{8mm}
 \hrule
 \end{minipage}
 \fussy
@@ -309,3 +316,8 @@ July\or August\or September\or October\or November\or December\fi
     {\protect\cftdotfill{\cftsecdotsep}}}
 \renewcommand{\cftchapfont}{\mdseries}
 \renewcommand{\cftchappagefont}{\mdseries}    
+
+%----------------------------------------------------------------------------
+
+\WPdocmaxpage{\pageref{LastPage}}
+
