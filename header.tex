@@ -1,12 +1,15 @@
 % the first cell of the notebook must be a RawNBConvert cell with the following contents:
 %
 %%%\documentclass that you want to use
+%%%\input{header.tex}
 %%%whatever preamble lines you require
 %%%\begin{document}
 %%%whatever extra info before the notebook follows
+%%%\end{document} % is added by the converter.
 %
-% This header is used to define the front  matter and layout of the converted \LaTeX{} document. 
-% Write/change this file to change the front  matter and appearance of the document. 
+%The header.tex file provides the functionality required by the converter-created code. 
+%This content is input using the \LaTeX{} input command.
+%
 %
 % - The exporter extracts the document class line from the first cell of the notebook.
 % - Then follows the contents of this file (as preamble)
