@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 """Notebook to  LaTeX and PDF
 
-Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>] [<headerfilename>] [<imagedir>]
+Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>]
 """
 
 from __future__ import print_function, division
@@ -30,7 +30,7 @@ bibxref = {}
 """ The ipnb2tex.py reads the IPython notebook and converts it to a \LaTeX{} set of files 
 (a *.tex file and a number of images). The script is invoked as follows:
 
-python ipnb2tex.py file.ipynb file.tex header.tex imagedir
+python ipnb2tex.py file.ipynb file.tex imagedir
 
 where
 
@@ -40,13 +40,6 @@ where
 
     file.tex [optional] is the name of output \LaTeX{} file. If none is given the output 
     filename will be the same as the input file, but with the .tex extension.
-
-    header.tex [optional] is the name of the file to be used as the \LaTeX{} code inserted 
-    before the actual contents of the notebook. This header is used to define the front 
-    matter and layout of the \LaTeX{} document. Write/change this file to change the front 
-    matter and appearance of the document. If no filename is given, the code will search for 
-    the most recent (file modification date) \LaTeX{} file with a \begin{document}` but 
-    without an `\end{document} string, i.e., an opening text, but with no closing command.
 
     imagedir [optional] is the directory where images are written to. If not given, 
     this image directory will be the ./pic directory.
@@ -711,38 +704,6 @@ fnTableOutput = {
 
 
 ################################################################################
-# get the header filename
-def getHeaderName(headfile):
-  """A header file is a file with begin{document} but no end{document}.
-  Also, we are looking for the most recently changed file to return its name
-  """
-  if headfile is None:
-    texfiles = listFiles('.', patterns='*.tex', recurse=0, return_folders=0)
-    headerfiles = []
-    for texfile in texfiles:
-      with open(texfile) as fin:
-        inp = fin.read()
-        if '\\end{document}' in inp:
-          pass
-        else:
-          if '\\begin{document}' in inp:
-            headerfiles.append(texfile)
-
-    #at this point we have a list of header files, now get modification time
-    dictFiles = {}
-    for texfile in headerfiles:
-      dictFiles[os.path.getmtime(texfile)] = texfile
-
-    #sort on modification date
-    slstFiles = sorted(dictFiles.items(), key=operator.itemgetter(0))
-
-    #filename is the second item, get the last pair for most recently changed
-    headfile = slstFiles[-1][1]
-
-  return headfile
-
-
-################################################################################
 # create the picture directory
 def createImageDir(imagedir):
   if imagedir is None:
@@ -762,9 +723,9 @@ def createImageDir(imagedir):
 
 ################################################################################
 # here we do one at at time
-def processOneIPynbFile(infile, outfile, headfile, imagedir):
+def processOneIPynbFile(infile, outfile, imagedir):
 
-  print('notebook={} latex={} header={} imageDir={}'.format(infile,  outfile, headfile, imagedir))
+  print('notebook={} latex={} imageDir={}'.format(infile,  outfile,  imagedir))
     
   pdffile = outfile.replace('.tex', '.pdf')
   bibfile = outfile.replace('.tex', '.bib')
@@ -775,11 +736,6 @@ def processOneIPynbFile(infile, outfile, headfile, imagedir):
     raise NotImplementedError("Only one worksheet allowed")
 
   output = '\n'
-  #the header contains everything up to just prior to the first \section,
-  #including the \begin{document}
-  with open(headfile, 'rt') as fh:
-    output += fh.read()
-  #finished reading the header, now load the cell contents
 
   for cell_index, cell in enumerate(nb.worksheets[0].cells):
     if cell.cell_type not in fnTableCell:
@@ -793,8 +749,8 @@ def processOneIPynbFile(infile, outfile, headfile, imagedir):
 
   output += r'\end{document}'+'\n\n'
 
-  #move the document class line to the start of the file
-  output = movedocumentclass(output)
+  # #move the document class line to the start of the file
+  # output = movedocumentclass(output)
 
   with io.open(outfile, 'w', encoding='utf-8') as f:
     f.write(unicode(output))
@@ -806,23 +762,23 @@ def processOneIPynbFile(infile, outfile, headfile, imagedir):
 
 
 
-################################################################################
-def movedocumentclass(output):
-  """The file currently has the header up front, then the document class line.
-  We must move the document class line to the front of the file, ahead of the header.
-  """
-  lines = output.split('\n')
-  outlines = []
-  docclass = r'\documentclass[english]{workpackage}[1996/06/02]' #default value
-  for line in lines:
-    if '\\documentclass' in line:
-      docclass = line
-    else:
-      outlines.append(line)
-  #now we have the file without docclass and the stored docclass line, merge
-  outlines.insert(0, docclass)
+# ################################################################################
+# def movedocumentclass(output):
+#   """The file currently has the header up front, then the document class line.
+#   We must move the document class line to the front of the file, ahead of the header.
+#   """
+#   lines = output.split('\n')
+#   outlines = []
+#   docclass = r'\documentclass[english]{workpackage}[1996/06/02]' #default value
+#   for line in lines:
+#     if '\\documentclass' in line:
+#       docclass = line
+#     else:
+#       outlines.append(line)
+#   #now we have the file without docclass and the stored docclass line, merge
+#   outlines.insert(0, docclass)
 
-  return '\n'.join(outlines)
+#   return '\n'.join(outlines)
 
 ################################################################################
 # here we get a list of all the input and outfiles
@@ -858,19 +814,15 @@ args = docopt.docopt(__doc__)
 
 infile = args['<ipnbfilename>']
 outfile = args['<outfilename>']
-headfile = args['<headerfilename>']
 imagedir =  args['<imagedir>']
 
 # find the image directory
 imagedir = createImageDir(imagedir)
-
-#find the header filename
-headfile = 'header.tex' #getHeaderName(headfile)
 
 # see if only one input file, or perhaps many
 infiles, outfiles = getInfileNames(infile, outfile)
 
 #process the list of files found in spec
 for infile, outfile in zip(infiles, outfiles):
-  processOneIPynbFile(infile, outfile, headfile, imagedir)
+  processOneIPynbFile(infile, outfile, imagedir)
 
