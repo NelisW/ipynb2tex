@@ -671,6 +671,12 @@ def processHTMLTree(html,cell):
     elif child.tag == 'div':
       pass
 
+    elif child.tag == 'iframe':
+      pass
+
+    elif child.tag == 'img':
+      pass
+
     else:
       raise ValueError("Unable to process tag of type ", child.tag)
 
