@@ -114,6 +114,11 @@ def convertHtmlTable(html, cell, table_index=0):
   # print('pptree-html')
   # pptree(tree)
 
+
+  # for tags in tree.getiterator():
+  #   print(tags.tag, tags.text)
+
+
   rtnString = ''
   for table in tree.findall("table"):
 
@@ -402,8 +407,10 @@ def prepInput(cell, cell_index):
 ################################################################################
 def prepPyOut(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
-  if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
-    return convertHtmlTable(cellOutput['html'],cell)
+  # if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
+  #   return convertHtmlTable(cellOutput['html'],cell)
+  if 'html' in cellOutput.keys() :
+      return processHTMLTree(cellOutput['html'],cell)
 
   if u'png' in cellOutput.keys():
       return processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
@@ -485,8 +492,10 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
 ################################################################################
 def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
-  if 'html' in cellOutput.keys() and 'table' in cellOutput['html']:
-      return convertHtmlTable(cellOutput['html',cell])
+  # if 'html' in cellOutput.keys() and 'table' in cellOutput['html']:
+  #     return convertHtmlTable(cellOutput['html',cell])
+  if 'html' in cellOutput.keys() :
+      return processHTMLTree(cellOutput['html'],cell)
 
   if 'png' in cellOutput.keys():
     imageName = infile.replace('.ipynb', '') + \
@@ -571,7 +580,6 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
   # particularly if $ and begin{eq..} are mixed within each other, but
   # hopefully you'll notice your input is broken in the notebook already?
   math_envs = []
-  table_index = 0
   dollars = list(findAllStr(mkd, '$'))
   ends = dollars[1::2]
   starts = dollars[::2]
@@ -607,7 +615,14 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
     mkd = mkd_tmp + mkd[end+1:]
 
   html = markdown.markdown(mkd, extensions=['extra'])
+  tmp = processHTMLTree(html,cell)
 
+  return unicode(tmp)
+
+################################################################################
+#process an html tree
+def processHTMLTree(html,cell):
+  table_index = 0
   tree = lxml.html.fromstring("<div>"+html+"</div>")
   tmp = ""
   for child in tree:
@@ -653,6 +668,9 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
       tmp += convertHtmlTable(child, cell, table_index)
       table_index += 1
 
+    elif child.tag == 'div':
+      pass
+
     else:
       raise ValueError("Unable to process tag of type ", child.tag)
 
@@ -665,7 +683,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
   tmp = tmp.replace('\\%','%')
   tmp = tmp.replace('%','\\%')
 
-  # now do latex escapes - things markdown is fine with but latex isnt
+  # now do latex escapes - things markdown are fine with but latex isnt
   # in particular, underscore outside math env
   offset_count = 0
   for loc in findAllStr(tmp, '_'):
@@ -678,7 +696,10 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
       tmp = tmp[:loc] + '\\' + tmp[loc:]
       offset_count += 1
 
-  return unicode(tmp)
+  return tmp
+
+
+
 
 ################################################################################
 #dict to call processing functions according to cell type
@@ -709,7 +730,7 @@ def createImageDir(imagedir):
   if imagedir is None:
     imagedir = './pic/'
 
-  print(imagedir, imagedir[-1])
+  # print(imagedir, imagedir[-1])
   
   if imagedir[-1] is '\\' or imagedir[-1] is  '/':
     pass

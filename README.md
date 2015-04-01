@@ -1,5 +1,7 @@
 ipynb2tex
 =========
+This script reads IPython 3.x files (nbformat 4).
+There is still a warning on a deprecated function call which will be attended to in due time.
 
 Yet another IPython notebook to LaTeX converter - this one exports clean code easily absorbed in other reports.
 
