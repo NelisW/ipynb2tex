@@ -1,6 +1,9 @@
 #!/usr/bin/python2
 """Notebook to  LaTeX and PDF
 
+http://ipython.org/ipython-doc/3/notebook/nbformat.html#nbformat
+http://ipython.org/ipython-doc/3/whatsnew/version3.html
+
 Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>]
 """
 
@@ -13,15 +16,23 @@ import shutil
 import re
 import itertools
 import operator
+import unicodedata
 import os.path, fnmatch
-from IPython.nbformat import current as ipnbcurrent
+# from IPython.nbformat import current as ipnbcurrent
+import IPython.nbformat as nbformat
 import docopt
 import lxml.html
 import markdown
 from lxml import etree as ET
 import numpy as np
 
+# need the following four lines to print unicode to sysout
+import sys
+import codecs
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
+nbformat
 #list of bibtex entries to be built up in this file
 bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
@@ -47,6 +58,41 @@ where
 
 """
 
+standardHeader =\
+r"""
+\documentclass[english]{workpackage}[1996/06/02]
+
+% input the common preamble content (required by the ipnb2latex converter)
+\input{header.tex}
+
+% then follows the rest of the preamble to be placed before the begin document
+% this preamble content is special to the documentclass you defined above.
+\WPproject{}           % project name
+\WPequipment{}         % equipment name
+\WPsubject{}           % main heading 
+\WPconclusions{} 
+\WPclassification{} 
+\WPdocauthor{}
+\WPcurrentpackdate{\today}
+\WPcurrentpacknumber{} % work package number
+\WPdocnumber{}         % this doc number hosts all the work packages
+\WPprevpackdate{}      % work package which this one supersedes
+\WPprevpacknumber{}    % work package which this one supersedes
+\WPsuperpackdate{}     % work package which comes after this one
+\WPsuperpacknumber{}   % work package which comes after this one
+\WPdocontractdetails{false}
+\WPcontractname{}      % contract name 
+\WPorderno{}           % contract order number
+\WPmilestonenumber{}   % contract milestone number
+\WPmilestonetitle{}    % contract milestone title
+\WPcontractline{}      % contract milestone line number 
+\WPdocECPnumber{}      % ecp/ecr number
+\WPdistribution{}
+
+%and finally the document begin.
+\begin{document}
+\WPlayout
+"""
 ################################################################################
 #lists the files in a directory and subdirectories (from Python Cookbook)
 def listFiles(root, patterns='*', recurse=1, return_folders=0):
@@ -248,18 +294,6 @@ def convertHtmlTable(html, cell, table_index=0):
   return rtnString
 
 
-
-
-################################################################################
-def processList(lnode):
-  envtype = 'itemize' if lnode.tag == 'ul' else 'enumerate'
-  tmp = r"\begin{" + envtype + "}\n"
-  for li in lnode:
-    tmp += r"\item " + processParagraph(li).strip() + '\n'
-  tmp += r"\end{" + envtype + "}\n"
-  return tmp.strip() + '\n'
-
-
 ################################################################################
 def findAllStr(string, substr):
   ind = string.find(substr)
@@ -284,6 +318,8 @@ def processVerbatim(child):
   return strVerb
 
 
+
+
 ################################################################################
 def processParagraph(pnode):
   tmp = ""
@@ -295,11 +331,26 @@ def processParagraph(pnode):
     # print('child.tail={}'.format(child.tail))
 
     childtail = '' if child.tail==None else child.tail
+
+    # if child.tag == 'ul':
+    #   if len(child.getchildren()) > 0:
+    #     raise ValueError('need to learn to deal with nested children in <p>',
+    #         pnode, child, child.getchildren())
+
+
+
     if child.tag == 'em':
-      if len(child.getchildren()) > 0:
-        raise ValueError('need to learn to deal with nested children in <p>',
-            pnode, child, child.getchildren())
       tmp += r"\textit{" + child.text + "}" + childtail
+
+    elif child.tag == 'i':
+      tmp += r"\textit{" + child.text + "}" + childtail
+
+    elif child.tag == 'b':
+      tmp += r"\textbf{" + child.text + "}" + childtail
+
+    #this call may be recursive for nested lists
+    elif child.tag == 'ul' or child.tag == 'ol':
+      tmp += processList(child) + '\n'
 
     elif child.tag == 'p':
       tmp += processParagraph(child).strip() + '\n\n' + childtail
@@ -319,20 +370,27 @@ def processParagraph(pnode):
       
     elif child.tag == 'a':
       url = child.get('href')
-      citelabel = cleanFilename(url,  removestring =" %:/,.\\[]=?~!@#$^&*()-_{};")
-      if citelabel in bibxref.keys():
-        pass
-        # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
-      else:
-        bibxref[citelabel] = citelabel
-        # raise ValueError('This key is not in the bibxref dict metadata:', citelabel)
-      bibtexentry = '@MISC{{{0},\n'.format(bibxref[citelabel]) + \
-          '  url = {{{0}}}\n}}\n\n'.format(url)
-      bibtexlist.append(bibtexentry)
-      # print('\nchild.text={}\nlabel={}\ntail={}\n'.format(child.text, r'\cite{{{0}}}'.format(bibxref[citelabel]), childtail))
-      if child.text:
-        tmp +=  child.text
-      tmp +=  r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
+      if url is not None:
+        citelabel = cleanFilename(url,  removestring =" %:/,.\\[]=?~!@#$^&*()-_{};")
+        if citelabel in bibxref.keys():
+          pass
+          # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
+        else:
+          bibxref[citelabel] = citelabel
+          # raise ValueError('This key is not in the bibxref dict metadata:', citelabel)
+
+        url = r'\url{'+url+'}'
+        # print('****',url)
+        bibtexentry = '@MISC{{{0},\n'.format(bibxref[citelabel]) + \
+            '  url = {{{0}}}\n}}\n\n'.format(url)
+        bibtexlist.append(bibtexentry)
+        # print('\nchild.text={}\nlabel={}\ntail={}\n'.format(child.text, r'\cite{{{0}}}'.format(bibxref[citelabel]), childtail))
+        if child.text:
+          childtext = child.text
+          if 'http' in childtext:
+            childtext = r'\url{'+childtext+'}'
+          tmp +=  childtext
+        tmp +=  r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
 
 
     else:
@@ -371,45 +429,69 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
   if captionStr:
     captionStr = '{'+r'{} \label{{{}-out}}'.format(captionStr, labelStr)+'}'
 
-  rtnStr = '\n\\begin{lstlisting}'
-  if captionStr:
-    rtnStr += '[style=outcellstyle,caption={}]\n{}\n'.format(captionStr,cellOutput.text)
+  outstr = ''
+  if 'text' in cellOutput.keys():
+    outstr += encapsulateListing(cellOutput['text'], captionStr)
+  elif 'data' in  cellOutput.keys():
+    if 'text/html' in  cellOutput.data.keys():
+      outs = cellOutput.data['text/html']
+      outstr +=  processHTMLTree(outs,cell)
+    if 'text/plain' in  cellOutput.data.keys():
+      outstr += encapsulateListing(cellOutput.data['text/plain'], captionStr)    
   else:
-    rtnStr += '[style=outcellstyle]\n{}\n'.format(cellOutput.text)
+    raise NotImplementedError("Unable to process cell {}, \nlooking for keys: {}".\
+      format(cellOutput, cellOutput.keys()))
+
+  return outstr
+
+################################################################################
+def encapsulateListing(outstr, captionStr):
+  outstr = unicodedata.normalize('NFKD',outstr).encode('ascii','ignore')
+  rtnStr = u'\n\\begin{lstlisting}'
+  if captionStr:
+    rtnStr += '[style=outcellstyle,caption={}]\n{}\n'.format(captionStr,outstr)
+  else:
+    rtnStr += '[style=outcellstyle]\n{}\n'.format(outstr)
   rtnStr += '\\end{lstlisting}\n\n'
+
   return rtnStr
 
 ################################################################################
 def prepInput(cell, cell_index):
-  lines = cell.input.split('\n')
-  if lines[0].startswith("#-- suppress"):
-    if len(lines) > 1:
-        if lines[1].startswith("#"):
-            lsting = lines[1]
-        else:
-            return "\n\n"
-  else:
-    lsting = cell.input
+  rtnStr =''
+  # v3 if 'input' in cell.keys():
+  if 'source' in cell.keys():
+    lines = cell.source.split('\n')
+    if lines[0].startswith("#-- suppress"):
+      if len(lines) > 1:
+          if lines[1].startswith("#"):
+              lsting = lines[1]
+          else:
+              return "\n\n"
+    else:
+      lsting = cell.source
 
-  captionStr = getMetaDataString(cell, 0, 'listingCaption', 'caption','')
-  labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
-  if captionStr:
-    captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
+    captionStr = getMetaDataString(cell, 0, 'listingCaption', 'caption','')
+    labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
+    if captionStr:
+      captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
 
-  rtnStr = '\n\\begin{lstlisting}'
-  if captionStr:
-    rtnStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
-  else:
-    rtnStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
-  rtnStr += '\\end{lstlisting}\n\n'
+    rtnStr = '\n\\begin{lstlisting}'
+    if captionStr:
+      rtnStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
+    else:
+      rtnStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
+    rtnStr += '\\end{lstlisting}\n\n'
+
   return rtnStr
 
 ################################################################################
-def prepPyOut(cellOutput, cell, cell_index, output_index, imagedir, infile):
+def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
   # if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
   #   return convertHtmlTable(cellOutput['html'],cell)
-  if 'html' in cellOutput.keys() :
+
+  if 'html' in cellOutput.keys():
       return processHTMLTree(cellOutput['html'],cell)
 
   if u'png' in cellOutput.keys():
@@ -417,13 +499,31 @@ def prepPyOut(cellOutput, cell, cell_index, output_index, imagedir, infile):
 
   return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
+
+
+  # if 'text' in cellOutput.keys():
+  #   outstr = cellOutput['text']
+  # elif 'data' in  cellOutput.keys():
+  #   if 'text/html' in  cellOutput.data.keys():
+  #     doListing = False
+  #     outstr = cellOutput.data['text/html']
+  #     outstr = processHTMLTree(outstr,cell)
+  #   if 'text/plain' in  cellOutput.data.keys():
+  #     outstr = cellOutput.data['text/plain']
+  # else:
+  #   raise NotImplementedError("Unable to process cell {}, \nlooking for keys: {}".\
+  #     format(cellOutput, cellOutput.keys()))
+
+
+
 ################################################################################
-def prepPyErr(cellOutput, cell, cell_index, output_index, imagedir, infile):
+def prepError(cellOutput, cell, cell_index, output_index, imagedir, infile):
   import os, re 
   r= re.compile(r'\033\[[0-9;]+m') 
   rtnStr = '\n\\begin{verbatim}\n'
   for output in cell["outputs"]:
-    if output['output_type'] == 'pyerr':
+    # v3 if output['output_type'] == 'error':
+    if output['output_type'] == 'error':
       for trace in output['traceback']:
         #convert to ascii and remove control chars
         rtnStr += re.sub(r'\033\[[0-9;]+m',"", trace.decode('ascii','ignore'))
@@ -491,17 +591,31 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
      
 ################################################################################
 def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
+  # print('********',cellOutput.keys())
 
-  # if 'html' in cellOutput.keys() and 'table' in cellOutput['html']:
-  #     return convertHtmlTable(cellOutput['html',cell])
-  if 'html' in cellOutput.keys() :
-      return processHTMLTree(cellOutput['html'],cell)
+  texStr = ''
 
+  if 'name' in cellOutput.keys() :
+    if cellOutput.name == 'stdout':
+      if 'text' in cellOutput.keys() :
+        return cellOutput.text
+
+  if 'text/html' in cellOutput.keys() :
+    return processHTMLTree(cellOutput['text/html'],cell)
+
+  #handle png images
+  pngCell = None
+  #nbformat 4
+  if 'data' in cellOutput.keys() and 'image/png' in cellOutput.data.keys():
+    pngCell = cellOutput.data['image/png']
+  #nbformat 3
   if 'png' in cellOutput.keys():
+    pngCell = cellOutput.png
+  if pngCell:
     imageName = infile.replace('.ipynb', '') + \
                 '_{}_{}.png'.format(cell_index, output_index)
     with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
-      fpng.write(base64.decodestring(cellOutput.png))
+      fpng.write(base64.decodestring(pngCell))
 
       #process the caption string, either a string or a list of strings
       captionStr = getMetaDataString(cell, output_index, 'figureCaption', 'caption','')
@@ -521,7 +635,6 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
       else: # none given, use assumed textwidth
         sizeStr = '[width=0.9\\textwidth]'
 
-      texStr = ''
       if captionStr:
         texStr += '\n\\begin{figure}[tb]\n'
         texStr += '\\centering\n'
@@ -538,12 +651,14 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
     return texStr
 
-  if 'text' in cellOutput.keys():
+  if 'text/plain' in cellOutput.keys():
     return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
-  raise NotImplementedError("Unknow cell type(s): {}".\
-                           format(cellOutput.keys()))
+  if 'data' in cellOutput.keys():
+    if 'text/plain' in cellOutput.data.keys():
+      return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
 
+  raise NotImplementedError("Unknow cell type(s): {}".format(cellOutput.keys()))
 
 ################################################################################
 def convertRawCell(cell, cell_index, imagedir, infile):
@@ -561,6 +676,7 @@ def convertCodeCell(cell, cell_index, imagedir, infile):
   for  count, cellOutput in enumerate(cell.outputs):
     #output += "<li>{}</li>".format(cellOutput.output_type)
     if cellOutput.output_type not in fnTableOutput:
+      print(cellOutput.output_type)
       raise NotImplementedError("Unknown output type {}.".format(cellOutput.output_type))
     output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir, infile)
 
@@ -579,7 +695,29 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
   # this will probably break kind of badly for poorly formatted input,
   # particularly if $ and begin{eq..} are mixed within each other, but
   # hopefully you'll notice your input is broken in the notebook already?
+
   math_envs = []
+
+  #the following block replaces $$ with begin/end {equation} sequences
+  repstring = [r'\begin{equation}',r'\end{equation}']
+  i = 0
+  nlines = []
+  ddollars = list(findAllStr(mkd, '$$'))
+  if len(ddollars) > 0:
+    lines = mkd.split('\n')
+    for line in lines: 
+      #ignore verbatim text
+      if line[0:4] == '    ':
+        nlines.append(line)
+      else:
+        #replace in sequence over one or more lines, one at a time
+        while '$$' in line:
+          line = line.replace('$$',repstring[i%2],1)
+          i += 1
+        nlines.append(line)
+    #rebuild the markdown
+    mkd = '\n'.join(nlines)
+
   dollars = list(findAllStr(mkd, '$'))
   ends = dollars[1::2]
   starts = dollars[::2]
@@ -617,6 +755,11 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
   html = markdown.markdown(mkd, extensions=['extra'])
   tmp = processHTMLTree(html,cell)
 
+  # lines = tmp.split('\n')
+  # for line in lines:
+  #   if 'http' in line and r'\cite' in line:
+  #     print(line)
+
   return unicode(tmp)
 
 ################################################################################
@@ -631,33 +774,39 @@ def processHTMLTree(html,cell):
     # print('child.tail={}'.format(child.tail))
 
     if child.tag == 'h1' or (cell['cell_type']=="heading" and cell['level']==1):
-      tmp += r"\chapter{" + child.text_content() + "}\n"
+      tmp += "\n\n\\chapter{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h2' or (cell['cell_type']=="heading" and cell['level']==2):
-      tmp += r"\section{" + child.text_content() + "}\n"
+      tmp += "\n\n\\section{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h3' or (cell['cell_type']=="heading" and cell['level']==3):
-      tmp += r"\subsection{" + child.text_content() + "}\n"
+      tmp += "\n\n\\subsection{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h4' or (cell['cell_type']=="heading" and cell['level']==4):
-      tmp += r"\subsubsection{" + child.text_content() + "}\n"
+      tmp += "\n\n\\subsubsection{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'h5' or (cell['cell_type']=="heading" and cell['level']==5):
-      tmp += r"\paragraph{" + child.text_content() + "}\n"
+      tmp += "\n\n\\paragraph{" + child.text_content() + "}\n"
+      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
+      tmp += r'\label{sec:' + seclabel + '}\n\n'
+
+    elif child.tag == 'h6' or (cell['cell_type']=="heading" and cell['level']==6):
+      tmp += "\n\n\\subparagraph{" + child.text_content() + "}\n"
       seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
       tmp += r'\label{sec:' + seclabel + '}\n\n'
 
     elif child.tag == 'p' or child.tag == 'pre':
       tmp += processParagraph(child) + '\n'
 
+    #this call may be recursive for nested lists
     elif child.tag == 'ul' or child.tag == 'ol':
       tmp += processList(child) + '\n'
 
@@ -705,6 +854,14 @@ def processHTMLTree(html,cell):
   return tmp
 
 
+################################################################################
+def processList(lnode):
+  envtype = 'itemize' if lnode.tag == 'ul' else 'enumerate'
+  tmp = r"\begin{" + envtype + "}\n"
+  for li in lnode:
+    tmp += r"\item " + processParagraph(li).strip() + '\n'
+  tmp += r"\end{" + envtype + "}\n"
+  return tmp.strip() + '\n'
 
 
 ################################################################################
@@ -720,9 +877,11 @@ fnTableCell = {
 #dict to call processing functions according to cell output type
 fnTableOutput = {
   'stream': prepOutput,
-  'pyout': prepPyOut,
+  'pyout': prepExecuteResult, # nbformat 3
+  'execute_result': prepExecuteResult, # nbformat 4
   'display_data': processDisplayOutput,
-  'pyerr': prepPyErr,
+  'pyerr': prepError, # nbformat 3
+  'error': prepError, # nbformat 4
   'svg': prepNotYet,
   'png': prepNotYet,
   'application/pdf': prepNotYet,
@@ -758,17 +917,35 @@ def processOneIPynbFile(infile, outfile, imagedir):
   bibfile = outfile.replace('.tex', '.bib')
 
 
-  nb = ipnbcurrent.read(io.open(infile, encoding='utf-8'), 'json')
-  if len(nb.worksheets) > 1:
-    raise NotImplementedError("Only one worksheet allowed")
+  # nb = ipnbcurrent.read(io.open(infile, encoding='utf-8'), 'json')
+  # if len(nb.worksheets) > 1:
+    # raise NotImplementedError("Only one worksheet allowed")
 
+  nb = nbformat.read(io.open(infile, encoding='utf-8'), nbformat.NO_CONVERT)
   output = '\n'
 
-  for cell_index, cell in enumerate(nb.worksheets[0].cells):
-    if cell.cell_type not in fnTableCell:
-      raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
-    rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
-    output += rtnString
+  # for cell_index, cell in enumerate(nb.worksheets[0].cells):
+  if 'cells' not in nb:
+    print("This notebook is probably not in Notebook 3 format.")
+    if len(nb.worksheets) > 1:
+      raise NotImplementedError("Only one worksheet allowed in Notebook 2 format.")
+    nbcells = nb.worksheets[0].cells
+  else:
+    nbcells = nb.cells
+
+  for cell_index, cell in enumerate(nbcells):
+    # add a default header, if not otherwise supplied
+    if cell_index==0:
+      if cell.cell_type is not 'raw':
+        output += standardHeader
+      else:
+        rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
+    else:
+      # print('\n********','cell.cell_type ={} cell={}'.format(cell.cell_type,cell))
+      if cell.cell_type not in fnTableCell:
+        raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
+      rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
+      output += rtnString
 
   if len(bibtexlist):
     output += '\n\n\\bibliographystyle{IEEEtran}\n'
@@ -853,3 +1030,4 @@ infiles, outfiles = getInfileNames(infile, outfile)
 for infile, outfile in zip(infiles, outfiles):
   processOneIPynbFile(infile, outfile, imagedir)
 
+print('\nfini!')
