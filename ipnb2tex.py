@@ -60,38 +60,79 @@ where
 
 standardHeader =\
 r"""
-\documentclass[english]{workpackage}[1996/06/02]
+\documentclass[english]{report}
 
-% input the common preamble content (required by the ipnb2latex converter)
-\input{header.tex}
+\usepackage{ragged2e}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{textcomp} % additional fonts, required for upquote in listings and \textmu
+\usepackage{placeins} % FloatBarrier
+\usepackage{url} % for websites
+\usepackage[detect-weight]{siunitx} % nice! SI units and print numbers
+\usepackage{afterpage} % afterpage{\clearpage}
+\usepackage{gensymb} % get the degree symbol as in \celcius
+\usepackage{amsmath} 
+\usepackage[printonlyused]{acronym}
+\usepackage{lastpage}
 
-% then follows the rest of the preamble to be placed before the begin document
-% this preamble content is special to the documentclass you defined above.
-\WPproject{}           % project name
-\WPequipment{}         % equipment name
-\WPsubject{}           % main heading 
-\WPconclusions{} 
-\WPclassification{} 
-\WPdocauthor{}
-\WPcurrentpackdate{\today}
-\WPcurrentpacknumber{} % work package number
-\WPdocnumber{}         % this doc number hosts all the work packages
-\WPprevpackdate{}      % work package which this one supersedes
-\WPprevpacknumber{}    % work package which this one supersedes
-\WPsuperpackdate{}     % work package which comes after this one
-\WPsuperpacknumber{}   % work package which comes after this one
-\WPdocontractdetails{false}
-\WPcontractname{}      % contract name 
-\WPorderno{}           % contract order number
-\WPmilestonenumber{}   % contract milestone number
-\WPmilestonetitle{}    % contract milestone title
-\WPcontractline{}      % contract milestone line number 
-\WPdocECPnumber{}      % ecp/ecr number
-\WPdistribution{}
+%the following is required for carriage return symbol
+%ftp://ftp.botik.ru/rented/znamensk/CTAN/fonts/mathabx/texinputs/mathabx.dcl
+%https://secure.kitserve.org.uk/content/mathabx-font-symbol-redefinition-clash-latex
+\DeclareFontFamily{U}{mathb}{\hyphenchar\font45}
+\DeclareFontShape{U}{mathb}{m}{n}{
+      <5> <6> <7> <8> <9> <10> gen * mathb
+      <10.95> mathb10 <12> <14.4> <17.28> <20.74> <24.88> mathb12
+      }{}
+\DeclareSymbolFont{mathb}{U}{mathb}{m}{n}
+\DeclareMathSymbol{\dlsh}{3}{mathb}{"EA}
+
+\usepackage[T1]{fontenc}
+
+\definecolor{LightGrey}{rgb}{0.95,0.95,0.95}
+\definecolor{LightRed}{rgb}{1.0,0.9,0.9}
+
+\lstset{ %
+upquote=true, % gives the upquote instead of the curly quote
+basicstyle=\ttfamily\footnotesize,       % the size of the fonts that are used for the code
+numbers=none,                   % where to put the line-numbers
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=false,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+frame=lines,                   % adds a frame around the code
+tabsize=4,              % sets default tabsize to 2 spaces
+captionpos=b,                   % sets the caption-position to bottom
+framesep=1pt,
+xleftmargin=0pt,
+xrightmargin=0pt,
+ captionpos=t,                    % sets the caption-position to top
+%deletekeywords={...},            % if you want to delete keywords from the given language
+%escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+%escapeinside={\%}{)},          % if you want to add a comment within your code
+breaklines=true,        % sets automatic line breaking
+breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+prebreak=\raisebox{0ex}[0ex][0ex]{$\dlsh$} % add linebreak symbol
+}
+
+\lstdefinestyle{incellstyle}{
+  backgroundcolor=\color{LightGrey},  % choose the background color,  add \usepackage{color}
+  language=Python,
+}
+
+\lstdefinestyle{outcellstyle}{
+  backgroundcolor=\color{LightRed},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+}
+
+\usepackage[a4paper, margin=0.75in]{geometry}
+\newlength{\textwidthm}
+\setlength{\textwidthm}{\textwidth}
 
 %and finally the document begin.
 \begin{document}
-\WPlayout
+\author{Author}
+\title{Title}
+\date{\today}
+\maketitle
 """
 ################################################################################
 #lists the files in a directory and subdirectories (from Python Cookbook)
@@ -320,84 +361,6 @@ def processVerbatim(child):
 
 
 
-################################################################################
-def processParagraph(pnode):
-  tmp = ""
-  if pnode.text:
-    tmp += pnode.text
-  for child in pnode:
-    # print('child.tag={}'.format(child.tag))
-    # print('child.text={}'.format(child.text))
-    # print('child.tail={}'.format(child.tail))
-
-    childtail = '' if child.tail==None else child.tail
-
-    # if child.tag == 'ul':
-    #   if len(child.getchildren()) > 0:
-    #     raise ValueError('need to learn to deal with nested children in <p>',
-    #         pnode, child, child.getchildren())
-
-
-
-    if child.tag == 'em':
-      tmp += r"\textit{" + child.text + "}" + childtail
-
-    elif child.tag == 'i':
-      tmp += r"\textit{" + child.text + "}" + childtail
-
-    elif child.tag == 'b':
-      tmp += r"\textbf{" + child.text + "}" + childtail
-
-    #this call may be recursive for nested lists
-    elif child.tag == 'ul' or child.tag == 'ol':
-      tmp += processList(child) + '\n'
-
-    elif child.tag == 'p':
-      tmp += processParagraph(child).strip() + '\n\n' + childtail
-
-    elif child.tag == 'br':
-      tmp += "\n\n" + childtail
-
-    elif child.tag == 'code':
-      tmp += processVerbatim(child)
-
-    elif child.tag == 'strong':
-      tmp +=  r"\textbf{" + child.text + "}" + childtail
-      
-    elif child.tag == 'font':
-      #currently ignore font attributes
-      tmp +=  child.text + childtail
-      
-    elif child.tag == 'a':
-      url = child.get('href')
-      if url is not None:
-        citelabel = cleanFilename(url,  removestring =" %:/,.\\[]=?~!@#$^&*()-_{};")
-        if citelabel in bibxref.keys():
-          pass
-          # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
-        else:
-          bibxref[citelabel] = citelabel
-          # raise ValueError('This key is not in the bibxref dict metadata:', citelabel)
-
-        url = r'\url{'+url+'}'
-        # print('****',url)
-        bibtexentry = '@MISC{{{0},\n'.format(bibxref[citelabel]) + \
-            '  url = {{{0}}}\n}}\n\n'.format(url)
-        bibtexlist.append(bibtexentry)
-        # print('\nchild.text={}\nlabel={}\ntail={}\n'.format(child.text, r'\cite{{{0}}}'.format(bibxref[citelabel]), childtail))
-        if child.text:
-          childtext = child.text
-          if 'http' in childtext:
-            childtext = r'\url{'+childtext+'}'
-          tmp +=  childtext
-        tmp +=  r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
-
-
-    else:
-      raise ValueError('need to learn to process this:', child.tag)
-  if pnode.tail:
-    tmp += pnode.tail
-  return tmp.strip() + '\n\n'
 
 ################################################################
 def cleanFilename(sourcestring,  removestring =" %:/,.\\[]"):
@@ -603,19 +566,33 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
   if 'text/html' in cellOutput.keys() :
     return processHTMLTree(cellOutput['text/html'],cell)
 
-  #handle png images
-  pngCell = None
+  #handle png/jpeg images
+  picCell = None
   #nbformat 4
   if 'data' in cellOutput.keys() and 'image/png' in cellOutput.data.keys():
-    pngCell = cellOutput.data['image/png']
-  #nbformat 3
-  if 'png' in cellOutput.keys():
-    pngCell = cellOutput.png
-  if pngCell:
+    picCell = cellOutput.data['image/png']
     imageName = infile.replace('.ipynb', '') + \
                 '_{}_{}.png'.format(cell_index, output_index)
+  #nbformat 3
+  if 'png' in cellOutput.keys():
+    picCell = cellOutput.png
+    imageName = infile.replace('.ipynb', '') + \
+                '_{}_{}.png'.format(cell_index, output_index)
+
+  #nbformat 4
+  if 'data' in cellOutput.keys() and 'image/jpeg' in cellOutput.data.keys():
+    picCell = cellOutput.data['image/jpeg']
+    imageName = infile.replace('.ipynb', '') + \
+                '_{}_{}.jpeg'.format(cell_index, output_index)
+  #nbformat 3
+  if 'jpeg' in cellOutput.keys():
+    picCell = cellOutput.jpeg
+    imageName = infile.replace('.ipynb', '') + \
+                '_{}_{}.jpeg'.format(cell_index, output_index)
+
+  if picCell:
     with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
-      fpng.write(base64.decodestring(pngCell))
+      fpng.write(base64.decodestring(picCell))
 
       #process the caption string, either a string or a list of strings
       captionStr = getMetaDataString(cell, output_index, 'figureCaption', 'caption','')
@@ -762,6 +739,16 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
 
   return unicode(tmp)
 
+
+
+################################################################################
+def processHeading(hstring, tmp, cstring):
+  tmp += "\n\n{}{{".format(hstring) + cstring + "}\n"
+  seclabel = cleanFilename(cstring,  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
+  tmp += r'\label{sec:' + seclabel + '}\n\n'
+  return tmp
+
+
 ################################################################################
 #process an html tree
 def processHTMLTree(html,cell):
@@ -774,44 +761,33 @@ def processHTMLTree(html,cell):
     # print('child.tail={}'.format(child.tail))
 
     if child.tag == 'h1' or (cell['cell_type']=="heading" and cell['level']==1):
-      tmp += "\n\n\\chapter{" + child.text_content() + "}\n"
-      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-      tmp += r'\label{sec:' + seclabel + '}\n\n'
+      tmp += processHeading(r'\chapter', tmp, child.text_content())
 
     elif child.tag == 'h2' or (cell['cell_type']=="heading" and cell['level']==2):
-      tmp += "\n\n\\section{" + child.text_content() + "}\n"
-      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-      tmp += r'\label{sec:' + seclabel + '}\n\n'
+      tmp += processHeading(r'\section', tmp, child.text_content())
 
     elif child.tag == 'h3' or (cell['cell_type']=="heading" and cell['level']==3):
-      tmp += "\n\n\\subsection{" + child.text_content() + "}\n"
-      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-      tmp += r'\label{sec:' + seclabel + '}\n\n'
+      tmp += processHeading(r'\subsection', tmp, child.text_content())
 
     elif child.tag == 'h4' or (cell['cell_type']=="heading" and cell['level']==4):
-      tmp += "\n\n\\subsubsection{" + child.text_content() + "}\n"
-      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-      tmp += r'\label{sec:' + seclabel + '}\n\n'
+      tmp += processHeading(r'\subsubsection', tmp, child.text_content())
 
     elif child.tag == 'h5' or (cell['cell_type']=="heading" and cell['level']==5):
-      tmp += "\n\n\\paragraph{" + child.text_content() + "}\n"
-      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-      tmp += r'\label{sec:' + seclabel + '}\n\n'
+      tmp += processHeading(r'\paragraph', tmp, child.text_content())
 
     elif child.tag == 'h6' or (cell['cell_type']=="heading" and cell['level']==6):
-      tmp += "\n\n\\subparagraph{" + child.text_content() + "}\n"
-      seclabel = cleanFilename(child.text_content(),  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-      tmp += r'\label{sec:' + seclabel + '}\n\n'
+      tmp += processHeading(r'\subparagraph', tmp, child.text_content())
 
     elif child.tag == 'p' or child.tag == 'pre':
-      tmp += processParagraph(child) + '\n'
+      tmp += processParagraph(child,'') + '\n'
 
     #this call may be recursive for nested lists
+    #lists are not allowed inside paragraphs, handle them here
     elif child.tag == 'ul' or child.tag == 'ol':
       tmp += processList(child) + '\n'
 
     elif child.tag == 'blockquote':
-      tmp += "\n\\begin{quote}\n" + processParagraph(child).strip() + "\\end{quote}\n\n"
+      tmp += "\n\\begin{quote}\n" + processParagraph(child,'').strip() + "\\end{quote}\n\n"
 
     elif child.tag == 'table':
       tmp += convertHtmlTable(child, cell, table_index)
@@ -855,13 +831,113 @@ def processHTMLTree(html,cell):
 
 
 ################################################################################
+#this call may be recursive for nested lists
 def processList(lnode):
-  envtype = 'itemize' if lnode.tag == 'ul' else 'enumerate'
-  tmp = r"\begin{" + envtype + "}\n"
+  tmp = ''
+  if lnode.tag == 'ul' or lnode.tag == 'ol':
+    envtype = 'itemize' if lnode.tag == 'ul' else 'enumerate'
+    tmp += "\n\\begin{" + envtype + "}\n"
+
   for li in lnode:
-    tmp += r"\item " + processParagraph(li).strip() + '\n'
-  tmp += r"\end{" + envtype + "}\n"
+
+    if li.tag == 'li':
+        tmp += r"\item " + processParagraph(li,'').strip() + '\n'
+
+    elif li.tag == 'ul' or li.tag == 'ol':
+      tmp += processList(li).strip() + '\n'
+    else:
+      pass
+
+  if lnode.tag == 'ul' or lnode.tag == 'ol':
+    tmp += "\\end{" + envtype + "}\n"
+
   return tmp.strip() + '\n'
+
+################################################################################
+def processParagraph(pnode, tmp):
+  # tmp = ""
+  if pnode.text:
+    # print('pnode.text={}'.format(pnode.text))
+    tmp += pnode.text
+
+
+  for child in pnode:
+    # print('child.tag={}'.format(child.tag))
+    # print('child.text={}'.format(child.text))
+    # print('child.tail={}'.format(child.tail))
+
+    childtail = '' if child.tail==None else child.tail
+
+    # if child.tag == 'ul':
+    #   if len(child.getchildren()) > 0:
+    #     raise ValueError('need to learn to deal with nested children in <p>',
+    #         pnode, child, child.getchildren())
+
+    if child.tag == 'em':
+      tmp += r"\textit{" + child.text + "}" + childtail
+
+    elif child.tag == 'i':
+      tmp += r"\textit{" + child.text + "}" + childtail
+
+    elif child.tag == 'b':
+      tmp += r"\textbf{" + child.text + "}" + childtail
+
+    elif child.tag == 'p':
+      tmp += processParagraph(child, tmp).strip() + '\n\n' + childtail
+
+    elif child.tag == 'br':
+      tmp += "\n\n" + childtail
+
+    elif child.tag == 'code':
+      tmp += processVerbatim(child)
+
+    elif child.tag == 'strong':
+      tmp +=  r"\textbf{" + child.text + "}" + childtail
+      
+    elif child.tag == 'font':
+      #currently ignore font attributes
+      tmp +=  child.text + childtail
+      
+    elif child.tag == 'a':
+      url = child.get('href')
+      if url is not None:
+        citelabel = cleanFilename(url,  removestring =" %:/,.\\[]=?~!@#$^&*()-_{};")
+        if citelabel in bibxref.keys():
+          pass
+          # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
+        else:
+          bibxref[citelabel] = citelabel
+          # raise ValueError('This key is not in the bibxref dict metadata:', citelabel)
+
+        url = r'\url{'+url+'}'
+        # print('****',url)
+        bibtexentry = '@MISC{{{0},\n'.format(bibxref[citelabel]) + \
+            '  url = {{{0}}}\n}}\n\n'.format(url)
+        bibtexlist.append(bibtexentry)
+        # print('\nchild.text={}\nlabel={}\ntail={}\n'.format(child.text, r'\cite{{{0}}}'.format(bibxref[citelabel]), childtail))
+        if child.text:
+          childtext = child.text
+          if 'http' in childtext:
+            childtext = r'\url{'+childtext+'}'
+          tmp +=  childtext
+        tmp +=  r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
+
+    # handle  embedded lists
+    elif child.tag == 'ul' or child.tag == 'ol':
+      tmp += processList(child) + childtail
+
+    elif child.tag == 'pre':
+      tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'').strip() + "\\end{verbatim}\n\n"
+
+
+    elif child.tag == 'img':
+      pass
+
+    else:
+      raise ValueError('so far={}, need to learn to process this:'.format(tmp), child.tag)
+  if pnode.tail:
+    tmp += pnode.tail
+  return tmp.strip() + '\n\n'
 
 
 ################################################################################
@@ -936,16 +1012,13 @@ def processOneIPynbFile(infile, outfile, imagedir):
   for cell_index, cell in enumerate(nbcells):
     # add a default header, if not otherwise supplied
     if cell_index==0:
-      if cell.cell_type is not 'raw':
+      if not 'raw' in cell.cell_type:
         output += standardHeader
-      else:
-        rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
-    else:
-      # print('\n********','cell.cell_type ={} cell={}'.format(cell.cell_type,cell))
-      if cell.cell_type not in fnTableCell:
-        raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
-      rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
-      output += rtnString
+    # print('\n********','cell.cell_type ={} cell={}'.format(cell.cell_type,cell))
+    if cell.cell_type not in fnTableCell:
+      raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
+    rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
+    output += rtnString
 
   if len(bibtexlist):
     output += '\n\n\\bibliographystyle{IEEEtran}\n'
@@ -964,25 +1037,6 @@ def processOneIPynbFile(infile, outfile, imagedir):
       for bib in bibtexlist:
         f.write(unicode(bib))
 
-
-
-# ################################################################################
-# def movedocumentclass(output):
-#   """The file currently has the header up front, then the document class line.
-#   We must move the document class line to the front of the file, ahead of the header.
-#   """
-#   lines = output.split('\n')
-#   outlines = []
-#   docclass = r'\documentclass[english]{workpackage}[1996/06/02]' #default value
-#   for line in lines:
-#     if '\\documentclass' in line:
-#       docclass = line
-#     else:
-#       outlines.append(line)
-#   #now we have the file without docclass and the stored docclass line, merge
-#   outlines.insert(0, docclass)
-
-#   return '\n'.join(outlines)
 
 ################################################################################
 # here we get a list of all the input and outfiles
