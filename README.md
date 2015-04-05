@@ -23,6 +23,8 @@ The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python
 1. Unicode not yet handled.  
 1. The following HTML elements are not currently processed, these elements are simply ignored: `div`, `iframe`, `img`.  
 2. Many reserved LaTeX symbols such as hash, caret, underscore and dollar are 'legal' in normal markdown.  When rendering to LaTeX these symbols cause errors unless escaped with backslash.  In many cases these symbols are escaped, but not always because of context.  If the symbols are escaped, they render incorrectly in normal Markdown. Therefore, choose your target renderer and enter the symbols accordingly, accepting problems in the alternative renderer.
+3. IPython notebook names must not have spaces in the filename.
+
 
 
 ##Instructions
