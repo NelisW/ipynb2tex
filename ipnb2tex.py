@@ -742,18 +742,11 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
 
 
 ################################################################################
-def processHeading(hstring, tmp, cstring):
-  tmp += "\n\n{}{{".format(hstring) + cstring + "}\n"
-  seclabel = cleanFilename(cstring,  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
-  tmp += r'\label{sec:' + seclabel + '}\n\n'
-  return tmp
-
-
-################################################################################
 #process an html tree
 def processHTMLTree(html,cell):
   table_index = 0
   tree = lxml.html.fromstring("<div>"+html+"</div>")
+  # pptree(tree)
   tmp = ""
   for child in tree:
     # print('child.tag={}'.format(child.tag))
@@ -761,22 +754,22 @@ def processHTMLTree(html,cell):
     # print('child.tail={}'.format(child.tail))
 
     if child.tag == 'h1' or (cell['cell_type']=="heading" and cell['level']==1):
-      tmp += processHeading(r'\chapter', tmp, child.text_content())
+      tmp += processHeading(r'\chapter',  child.text_content())
 
     elif child.tag == 'h2' or (cell['cell_type']=="heading" and cell['level']==2):
-      tmp += processHeading(r'\section', tmp, child.text_content())
+      tmp += processHeading(r'\section',  child.text_content())
 
     elif child.tag == 'h3' or (cell['cell_type']=="heading" and cell['level']==3):
-      tmp += processHeading(r'\subsection', tmp, child.text_content())
+      tmp += processHeading(r'\subsection',  child.text_content())
 
     elif child.tag == 'h4' or (cell['cell_type']=="heading" and cell['level']==4):
-      tmp += processHeading(r'\subsubsection', tmp, child.text_content())
+      tmp += processHeading(r'\subsubsection',  child.text_content())
 
     elif child.tag == 'h5' or (cell['cell_type']=="heading" and cell['level']==5):
-      tmp += processHeading(r'\paragraph', tmp, child.text_content())
+      tmp += processHeading(r'\paragraph',  child.text_content())
 
     elif child.tag == 'h6' or (cell['cell_type']=="heading" and cell['level']==6):
-      tmp += processHeading(r'\subparagraph', tmp, child.text_content())
+      tmp += processHeading(r'\subparagraph',  child.text_content())
 
     elif child.tag == 'p' or child.tag == 'pre':
       tmp += processParagraph(child,'') + '\n'
@@ -828,6 +821,14 @@ def processHTMLTree(html,cell):
       offset_count += 1
 
   return tmp
+
+################################################################################
+def processHeading(hstring, cstring):
+  strtmp = "\n{}{{".format(hstring) + cstring + "}\n"
+  seclabel = cleanFilename(cstring,  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
+  strtmp += r'\label{sec:' + seclabel + '}\n\n'
+  return strtmp
+
 
 
 ################################################################################
@@ -893,7 +894,7 @@ def processParagraph(pnode, tmp):
 
     elif child.tag == 'strong':
       tmp +=  r"\textbf{" + child.text + "}" + childtail
-      
+    
     elif child.tag == 'font':
       #currently ignore font attributes
       tmp +=  child.text + childtail
