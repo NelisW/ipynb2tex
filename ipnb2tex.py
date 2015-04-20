@@ -792,8 +792,14 @@ def processHTMLTree(html,cell):
     elif child.tag == 'iframe':
       pass
 
+    elif child.tag == 'br':
+      tmp += "\\newline"
+
     elif child.tag == 'img':
-      pass
+      filename = child.attrib['src']
+      tmp += '\\begin{center}\n'
+      tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+      tmp += '\\end{center}'
 
     else:
       raise ValueError("Unable to process tag of type ", child.tag)
@@ -930,9 +936,15 @@ def processParagraph(pnode, tmp):
     elif child.tag == 'pre':
       tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'').strip() + "\\end{verbatim}\n\n"
 
+    elif child.tag == 'br':
+      tmp += "\\newline"
 
     elif child.tag == 'img':
-      pass
+      filename = child.attrib['src']
+      tmp += '\\begin{center}\n'
+      tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+      tmp += '\\end{center}'
+
 
     else:
       raise ValueError('so far={}, need to learn to process this:'.format(tmp), child.tag)
