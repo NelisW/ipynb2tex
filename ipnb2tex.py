@@ -605,12 +605,16 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
       #build the complete bitmap size latex string    
       width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
       scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 0.0)
-      if width: # first priority
-        sizeStr = '[width={}\\textwidth]'.format(width)
-      elif scale: # second priority
-        sizeStr = '[scale={}]'.format(scale) if scale else ''
-      else: # none given, use assumed textwidth
-        sizeStr = '[width=0.9\\textwidth]'
+
+      # if the adjustbox package is used in latex preamble, this code is redundant
+      #\usepackage[Export]{adjustbox}
+      #\adjustboxset{max size={\textwidth}{0.7\textheight}}
+      # if width: # first priority
+      #   sizeStr = '[width={}\\textwidth]'.format(width)
+      # elif scale: # second priority
+      #   sizeStr = '[scale={}]'.format(scale) if scale else ''
+      # else: # none given, use assumed textwidth
+      #   sizeStr = '[width=0.9\\textwidth]'
 
       if captionStr:
         texStr += '\n\\begin{figure}[tb]\n'
@@ -618,7 +622,9 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
       else:
          texStr += '\\begin{center}\n'
 
-      texStr += '\\includegraphics{}{{{}{}}}\n'.format(sizeStr,imagedir,imageName)
+      # if the adjustbox package is used, this code is redundant
+      # texStr += '\\includegraphics{}{{{}{}}}\n'.format(sizeStr,imagedir,imageName)
+      texStr += '\\includegraphics{{{}{}}}\n'.format(imagedir,imageName)
 
       if captionStr:
         texStr += '\\caption{'+'{}{}'.format(captionStr, labelStr) + '}\n'
