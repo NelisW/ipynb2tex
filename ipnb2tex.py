@@ -38,24 +38,30 @@ bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
 bibxref = {}
 
-""" The ipnb2tex.py reads the IPython notebook and converts it to a \LaTeX{} set of files 
-(a *.tex file and a number of images). The script is invoked as follows:
+docoptstring = """ The ipnb2tex.py reads the IPython notebook and converts 
+it to a \LaTeX{} set of files (a *.tex file and a number of images). 
+The script is invoked as follows:
 
-python ipnb2tex.py file.ipynb file.tex imagedir
+Usage: 
+  ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-l]
 
 where
 
-    file.ipynb [optional] is the name of the input IPython notebook file. 
-    If no input filename is supplied, all .ipynb files in current directory will be processed. 
-    In this event the output filenames will be the same as the .ipynb files, just with a tex filetype.
+    ipnbfilename [optional] is the name of the input IPython notebook file. 
+    If no input filename is supplied, all .ipynb files in current directory 
+    will be processed. In this event the output filenames will be the same 
+    as the .ipynb files, just with a tex filetype.
 
-    file.tex [optional] is the name of output \LaTeX{} file. If none is given the output 
-    filename will be the same as the input file, but with the .tex extension.
+    outfilename [optional] is the name of output \LaTeX{} file. If none is 
+    given the output filename will be the same as the input file, but with 
+    the .tex extension.
 
-    imagedir [optional] is the directory where images are written to. If not given, 
-    this image directory will be the ./pic directory.
+    imagedir [optional] is the directory where images are written to. 
+    If not given, this image directory will be the ./pic directory.
 
-
+    l [optional] (the lower case letter el) if this option is given the 
+    code listings are floated to the end of the document. Otherwise the 
+    code listings are placed in the document where they occur in the notebook.
 """
 
 standardHeader =\
@@ -420,9 +426,11 @@ def encapsulateListing(outstr, captionStr):
   return rtnStr
 
 ################################################################################
-def prepInput(cell, cell_index):
+def prepInput(cell, cell_index, floatlistings):
   rtnStr =''
+  rtnSource = ''
   # v3 if 'input' in cell.keys():
+
   if 'source' in cell.keys():
     lines = cell.source.split('\n')
     if lines[0].startswith("#-- suppress"):
@@ -436,17 +444,30 @@ def prepInput(cell, cell_index):
 
     captionStr = getMetaDataString(cell, 0, 'listingCaption', 'caption','')
     labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
+
+    if floatlistings and not len(labelStr):
+      labelStr = 'lst:listing{}'.format(cell_index)
+
+    if floatlistings and not len(captionStr):
+      captionStr = 'Code Listing in cell {} '.format(cell_index)
+
     if captionStr:
       captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
 
-    rtnStr = '\n\\begin{lstlisting}'
+    tmpStr = '\n\\begin{lstlisting}'
     if captionStr:
-      rtnStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
+      tmpStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
     else:
-      rtnStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
-    rtnStr += '\\end{lstlisting}\n\n'
+      tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
+    tmpStr += '\\end{lstlisting}\n\n'
 
-  return rtnStr
+  if floatlistings:
+    rtnSource = tmpStr
+    rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code.\n\n'.format(labelStr)
+  else:
+    rtnStr = tmpStr
+
+  return rtnStr,rtnSource
 
 ################################################################################
 def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infile):
@@ -644,18 +665,18 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
   raise NotImplementedError("Unknow cell type(s): {}".format(cellOutput.keys()))
 
 ################################################################################
-def convertRawCell(cell, cell_index, imagedir, infile):
+def convertRawCell(cell, cell_index, imagedir, infile, floatlistings):
 
   extractBibtexXref(cell)
 
-  return cell['source']
+  return cell['source'] , ''
 
 ################################################################################
-def convertCodeCell(cell, cell_index, imagedir, infile):
+def convertCodeCell(cell, cell_index, imagedir, infile, floatlistings):
 
   extractBibtexXref(cell)
 
-  output = prepInput(cell, cell_index)
+  output,lstoutput = prepInput(cell, cell_index, floatlistings)
   for  count, cellOutput in enumerate(cell.outputs):
     #output += "<li>{}</li>".format(cellOutput.output_type)
     if cellOutput.output_type not in fnTableOutput:
@@ -663,10 +684,10 @@ def convertCodeCell(cell, cell_index, imagedir, infile):
       raise NotImplementedError("Unknown output type {}.".format(cellOutput.output_type))
     output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir, infile)
 
-  return output
+  return output, lstoutput
 
 ################################################################################
-def convertMarkdownCell(cell, cell_index, imagedir, infile):
+def convertMarkdownCell(cell, cell_index, imagedir, infile, floatlistings):
 
   extractBibtexXref(cell)
 
@@ -743,7 +764,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile):
   #   if 'http' in line and r'\cite' in line:
   #     print(line)
 
-  return unicode(tmp)
+  return unicode(tmp),''
 
 
 
@@ -1004,9 +1025,12 @@ def createImageDir(imagedir):
 
 ################################################################################
 # here we do one at at time
-def processOneIPynbFile(infile, outfile, imagedir):
+def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
 
-  print('notebook={} latex={} imageDir={}'.format(infile,  outfile,  imagedir))
+  #if required by option create a chapter for floated listings
+  listingsstring = '\n\n\chapter{Listings}\n\n' if floatlistings else ''
+
+  print('notebook={} latex={} imageDir={} float-listings={}'.format(infile,  outfile,  imagedir, floatlistings))
     
   pdffile = outfile.replace('.tex', '.pdf')
   bibfile = outfile.replace('.tex', '.bib')
@@ -1036,17 +1060,18 @@ def processOneIPynbFile(infile, outfile, imagedir):
     # print('\n********','cell.cell_type ={} cell={}'.format(cell.cell_type,cell))
     if cell.cell_type not in fnTableCell:
       raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
-    rtnString = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile)
+    rtnString, rtnListing = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile, floatlistings)
     output += rtnString
+    listingsstring += rtnListing
+
+  if len(listingsstring):
+    output += listingsstring
 
   if len(bibtexlist):
     output += '\n\n\\bibliographystyle{IEEEtran}\n'
     output += '\\bibliography{{{0}}}\n\n'.format(bibfile.replace('.bib', ''))
 
   output += r'\end{document}'+'\n\n'
-
-  # #move the document class line to the start of the file
-  # output = movedocumentclass(output)
 
   with io.open(outfile, 'w', encoding='utf-8') as f:
     f.write(unicode(output))
@@ -1087,11 +1112,15 @@ def getInfileNames(infile, outfile):
 
 ################################################################################
 ################################################################################
-args = docopt.docopt(__doc__)
+# args = docopt.docopt(__doc__)
+args = docopt.docopt(docoptstring)
+
+# print(args)
 
 infile = args['<ipnbfilename>']
 outfile = args['<outfilename>']
 imagedir =  args['<imagedir>']
+floatlistings = args['-l']
 
 # find the image directory
 imagedir = createImageDir(imagedir)
@@ -1101,6 +1130,6 @@ infiles, outfiles = getInfileNames(infile, outfile)
 
 #process the list of files found in spec
 for infile, outfile in zip(infiles, outfiles):
-  processOneIPynbFile(infile, outfile, imagedir)
+  processOneIPynbFile(infile, outfile, imagedir, floatlistings)
 
 print('\nfini!')
