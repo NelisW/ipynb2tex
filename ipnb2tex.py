@@ -429,6 +429,7 @@ def encapsulateListing(outstr, captionStr):
 def prepInput(cell, cell_index, floatlistings):
   rtnStr =''
   rtnSource = ''
+  captiopurp = ''
   # v3 if 'input' in cell.keys():
 
   if 'source' in cell.keys():
@@ -442,14 +443,19 @@ def prepInput(cell, cell_index, floatlistings):
     else:
       lsting = cell.source
 
+
     captionStr = getMetaDataString(cell, 0, 'listingCaption', 'caption','')
     labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
 
     if floatlistings and not len(labelStr):
-      labelStr = 'lst:listing{}'.format(cell_index)
+      labelStr = 'lst:autolistingcell{}'.format(cell_index)
 
     if floatlistings and not len(captionStr):
-      captionStr = 'Code Listing in cell {} '.format(cell_index)
+      if len(lsting):
+        lstistrp = lsting.split('\n')
+        if lstistrp[0][0]=='#':
+          captiopurp = ' ' + lstistrp[0][1:] 
+      captionStr = 'Code Listing in cell {}'.format(cell_index)
 
     if captionStr:
       captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
@@ -463,7 +469,7 @@ def prepInput(cell, cell_index, floatlistings):
 
   if floatlistings:
     rtnSource = tmpStr
-    rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code.\n\n'.format(labelStr)
+    rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code{}.\n\n'.format(labelStr,captiopurp)
   else:
     rtnStr = tmpStr
 
