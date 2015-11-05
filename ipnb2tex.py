@@ -453,8 +453,9 @@ def prepInput(cell, cell_index, floatlistings):
     if floatlistings and not len(captionStr):
       if len(lsting):
         lstistrp = lsting.split('\n')
-        if lstistrp[0][0]=='#':
-          captiopurp = ' ' + lstistrp[0][1:] 
+        if len(lstistrp[0]) > 0: # take care of blank first lines
+            if lstistrp[0][0]=='#':
+              captiopurp = ' ' + lstistrp[0][1:] 
       captionStr = 'Code Listing in cell {}'.format(cell_index)
 
     if captionStr:
