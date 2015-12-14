@@ -19,7 +19,7 @@ import operator
 import unicodedata
 import os.path, fnmatch
 # from IPython.nbformat import current as ipnbcurrent
-import IPython.nbformat as nbformat
+import nbformat
 import docopt
 import lxml.html
 import markdown
@@ -594,8 +594,20 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
   if 'text/html' in cellOutput.keys() :
     return processHTMLTree(cellOutput['text/html'],cell)
 
-  #handle png/jpeg images
+  #handle pdf image
   picCell = None
+  #nbformat 4
+  if 'data' in cellOutput.keys() and 'application/pdf' in cellOutput.data.keys():
+    picCell = cellOutput.data['application/pdf']
+    imageName = infile.replace('.ipynb', '') + \
+                '_{}_{}.pdf'.format(cell_index, output_index)
+  #nbformat 3
+  if 'pdf' in cellOutput.keys():
+    picCell = cellOutput.pdf
+    imageName = infile.replace('.ipynb', '') + \
+                '_{}_{}.pdf'.format(cell_index, output_index)
+
+  #handle png images
   #nbformat 4
   if 'data' in cellOutput.keys() and 'image/png' in cellOutput.data.keys():
     picCell = cellOutput.data['image/png']
@@ -607,6 +619,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
     imageName = infile.replace('.ipynb', '') + \
                 '_{}_{}.png'.format(cell_index, output_index)
 
+  #handle jpeg images
   #nbformat 4
   if 'data' in cellOutput.keys() and 'image/jpeg' in cellOutput.data.keys():
     picCell = cellOutput.data['image/jpeg']
@@ -1007,7 +1020,7 @@ fnTableOutput = {
   'error': prepError, # nbformat 4
   'svg': prepNotYet,
   'png': prepNotYet,
-  'application/pdf': prepNotYet,
+  # 'application/pdf': prepNotYet,
   'text': prepNotYet,
    }
 
