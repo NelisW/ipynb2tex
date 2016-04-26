@@ -1,0 +1,1221 @@
+
+%This notebook demonstrates the use of the workpackage template, replace with your own.
+
+\documentclass[english]{workpackage}[1996/06/02]
+
+% input the common preamble content (required by the ipnb2latex converter)
+\input{header.tex}
+
+% then follows the rest of the preamble to be placed before the begin document
+% this preamble content is special to the documentclass you defined above.
+\WPproject{ipnb2LaTeX}           % project name
+\WPequipment{Work package demonstrator}         % equipment name
+\WPsubject{How to use the converter to create a work package}           % main heading 
+\WPconclusions{\begin{enumerate}
+\item This work package demonstrates the use of the converter.
+\item It was tested with and should work on Python 2.7.11 and 3.5 and up.
+\end{enumerate}} 
+\WPclassification{Unclassified} 
+\WPdocauthor{CJ Willers}
+\WPcurrentpackdate{\today}
+\WPcurrentpacknumber{0001} % work package number
+\WPdocnumber{}         % this doc number hosts all the work packages
+\WPprevpackdate{}      % work package which this one supersedes
+\WPprevpacknumber{}    % work package which this one supersedes
+\WPsuperpackdate{}     % work package which comes after this one
+\WPsuperpacknumber{}   % work package which comes after this one
+\WPdocontractdetails{false}
+\WPcontractname{}      % contract name 
+\WPorderno{}           % contract order number
+\WPmilestonenumber{}   % contract milestone number
+\WPmilestonetitle{}    % contract milestone title
+\WPcontractline{}      % contract milestone line number 
+\WPdocECPnumber{1234567}      % ecp/ecr number
+\WPdistribution{
+%\vspace{0.1mm}
+%\begin{tabular}{lllll}
+%Name 1 & Name 12 & Name 3 & Name 4 & Name 5\\
+%Name 6 & Name 7 & \multicolumn{3}{l}{Master:  some repo}\\
+%\end{tabular}
+}
+
+%and finally the document begin.
+\begin{document}
+\WPlayout
+% some Latex code to be used verbatim
+\ 
+\vspace{50mm}
+\begin{center}
+\includegraphics[width=0.6\textwidth]{./images/keep-calm-and-code-python_BW.png}
+\end{center}
+\vspace{5mm}
+\begin{center}
+{\LARGE  ipnb2tex}
+\end{center}
+
+\newpage
+
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+
+\chapter{The ipnb2tex.py Script}
+\label{sec:Theipnb2texpyScript}
+
+The \verb+ipnb2tex.py+ reads the IPython notebook and converts it to a \LaTeX{} set of files (a \verb+*.tex+ file and a number of images).  The script is invoked as follows:
+
+
+\verb+python ipnb2tex.py file.ipynb file.tex imagedir -l+
+
+
+where
+
+
+\begin{itemize}
+\item \verb+file.ipynb+  [optional]  is the name of the input IPython notebook file.   If no input filename is  supplied, all  \verb+.ipynb+ files in current directory will be processed.   In this event the output filenames will be the same as the \verb+.ipynb+ files, just with a \verb+tex+ filetype.
+\item \verb+file.tex+ [optional] is the name of output \LaTeX{} file. If none is given the output filename will be the same as the input file, but with the \verb+.tex+ extension.
+\item \verb+imagedir+   [optional]  is the directory where images are written to.  If not given, this image directory will be the \verb+./pic+ directory.
+\item \verb+-l+ [optional] (the lower case letter el) if this option is given the code listings are floated to the end of the document. Otherwise the code listings are placed in the document where they occur in the notebook.
+\end{itemize}
+
+
+\chapter{Heading 1 nb2pdf}
+\label{sec:Heading1nb2pdf}
+
+Heading 1 is a \LaTeX{} chapter.
+
+
+Headings down to level 5 (\LaTeX{} paragraph) are supported. 
+Headings at level 6 are treated as normal body text.
+If you don't need a chapter (i.e., for an article), just don't use a heading at level 1.
+
+
+When any level of section heading is formed, a label is automatically created from the text in the heading, removing all non-alpha characters.  If the section heading is very long the the label will also be long, so keep it short. Also, don't use the same text twice as a heading.
+
+
+
+\section{Heading 2 Second-level heading}
+\label{sec:Heading2Secondlevelheading}
+
+
+\subsection{Heading 3}
+\label{sec:Heading3}
+
+
+\subsubsection{Heading 4}
+\label{sec:Heading4}
+
+
+\paragraph{Heading 5}
+\label{sec:Heading5}
+
+
+\subparagraph{Heading 6}
+\label{sec:Heading6}
+
+some more markdown.
+
+
+
+\chapter{Heading 1}
+\label{sec:Heading1}
+
+
+\section{Heading 2}
+\label{sec:Heading2}
+
+
+\subsection{Heading 3}
+\label{sec:Heading3}
+
+
+\subsubsection{Heading 4}
+\label{sec:Heading4}
+
+
+\paragraph{Heading 5}
+\label{sec:Heading5}
+
+
+\subparagraph{Heading 6}
+\label{sec:Heading6}
+
+
+\section{LaTeX Template Format and the Header File}
+\label{sec:LaTeXTemplateFormatandtheHeaderFile}
+
+
+\subsection{Default Style (Report)}
+\label{sec:DefaultStyleReport}
+
+The notebook can be converted to the LaTeX \verb+Report+ format with no additional files or document class.  A 'standard' notebook, where the first cell is not \verb+Raw NBConvert+ will be prepended with a short section of LaTeX code for a standard LaTeX Report.  A number of pacakges are also \verb+\usepackage{}+ed, as required by the converted LaTeX code.
+
+
+
+\subsection{User-Defined Style}
+\label{sec:UserDefinedStyle}
+
+The notebook can optionally be converted to a user-defined format with minimal effort.  The example files included the GitHub distribution provides a 'work package' format class file (\verb+workpackage.cls+) and a header file (\verb+header.tex+).
+
+
+The first cell of the notebook must be a \verb+RawNBConvert+ cell with at least the following contents (see the first cell of this notebook for an example):
+
+
+\begin{verbatim}
+\documentclass that you want to use
+\input{header.tex}
+whatever preamble lines you require
+\begin{document}
+\end{verbatim}
+
+
+Then follows whatever content you need to use your document style. Write/change this file to change the front  matter and appearance of the document.  The script adds the \verb+\end{document}+ line after the notebook cells' contents.
+
+
+The \verb+header.tex+ file provides the functionality required by the converter-created code. This content is input using the \LaTeX{} input command.  A number of pacakges are \verb+\usepackage{}+ed, as required by the converted LaTeX code.
+
+
+
+\section{Company Logo}
+\label{sec:CompanyLogo}
+
+The work package template has a \verb+logo.png+ file which is used to define a logo on top of the page.  The present image is empty, so no logo will show.  You can add your own logo to this file.
+
+
+
+\section{The images directory}
+\label{sec:Theimagesdirectory}
+
+The script saves the png files in the \verb+./pic+ directory, and the \LaTeX{} code also expects to find the png files there.  Hence, there must be an existing \verb+./pic+ directory in the directory where you run the script.  If an alternative name is given on the command line, the alternative name will be used.
+
+
+
+\section{Raw NBConvert cells}
+\label{sec:RawNBConvertcells}
+
+The \verb+Raw NBConvert+ cell type can be used to propagate text without any modification to the output stream.  The IPython notebook will not touch this text; it is passed on as-is to the converter code. This this case we can add \LaTeX{} code that will progress straight through to the \LaTeX{} compiler.
+
+
+This raw capability is very useful if the notebook is intended to be exported to \LaTeX{} as primary output.  I find myself writing most of such documentation in raw latex in a 'Raw NBConvert' cell.  In this mode most of the notebook cells are never rendered to HTML, since you are reading and editing the \LaTeX{} and it stays in \LaTeX{} for display purposes as well. So you get the full benefit of all \LaTeX{} functionality (except that it is not rendered inside the notebook) and all the other benefits of the notebook.
+
+
+Raw NBConvert cell.  This could be raw \LaTeX{} as in 
+
+\begin{equation}
+f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^\infty_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
+\end{equation}
+
+The degree symbol in \LaTeX{} should not be done with \verb+\circ+ as shown here: 45$^\circ$. 
+Rather load \verb+\usepackage{gensymb}+ package and use \verb+45\textdegree{}+ 45\textdegree{}, or \verb+17~\celsius+ 17~\celsius.
+
+\section{Captions}
+\label{sec:Captions}
+
+There are three objects that can have captions: listings, figures and tables.
+
+
+Figures and tables without captions are non-floating and appear in the text at the position it is found in the input file.  Figures and tables with captions are floating.
+
+
+Listings are always non-floating.
+
+
+A single cell can contain any combination of captions, and these are indicated in the metadata field of the cell. Select the \verb+Edit Metadata+ drop-down option in the \verb+Cell Toolbar+ drop-down box (towards the right of the toolbar). This should expose metadata buttons on all the cells. Click on the button and type in the  metadata.
+
+
+The metadata has the following structure:
+
+
+\begin{verbatim}
+{
+  "listingCaption": {
+    "caption": "Comparison of effective drag parameters",
+    "label": "lst:comparedrag",
+    "outputCaption": ""
+  },
+  "figureCaption": {
+    "caption": "Caption text for first figure",
+    "label": "fig:lab1",
+    "scale": "0.2",
+    "width": "0.2"
+  },
+  "tableCaption": {
+    "caption": "Caption text for first table",
+    "label": "tab:lab1",
+    "format": "{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}",
+    "fontsize": "normalsize"
+  }
+}
+\end{verbatim}
+
+
+Note the placement of commas. No newlines are allowed in a single string in the metadata.
+
+
+
+\section{Python code}
+\label{sec:Pythoncode}
+
+Python code blocks are printed using the \LaTeX{} \verb+listings+ package.  The format details can be defined in the header template file.  These code listings can be supplied with a caption and a label (but these code blocks are not floating entities).
+
+
+\begin{verbatim}
+  {
+  "listingCaption": {
+    "caption": "Caption text for first listing",
+    "label": "lst:listing1",
+    "outputCaption": "Caption for first listing output"
+  }
+}
+\end{verbatim}
+
+
+where the different fields have the following meanings:
+
+
+\begin{enumerate}
+\item \verb+caption+ specifies the text to be used in the listings caption.  If this metadata field is not supplied, the listing will not be given a caption.
+\item \verb+label+ specifies the label to be used for the listing, which can be used in \LaTeX{} to reference the listing.  The code block uses the label exactly as given in the metadata field.  If the output listing is given an \verb+outputCaption+, the output caption is labelled by the a label starting with the \verb+label+ string given, but appended with the string \verb+-out+ (i.e., \verb+lst:listing1-out+ in this case).
+\item \verb+outputCaption+ specifies the label that is used for the output listing of the cell. If this metadata field is not supplied, the output listing will not be given a caption.
+\end{enumerate}
+
+We can refer to Listings~\ref{lst:listing1}, \ref{lst:listing1-out}, \ref{lst:listing2}, and \ref{lst:listing3}.  These listings may not be defined in the IPython output but they are defined in the \LaTeX{} output.
+
+
+You can also refer to Figures~\ref{fig:lab1-0} and \ref{fig:lab4-2}.
+
+
+
+\section{Floated code listings}
+\label{sec:Floatedcodelistings}
+
+In order to improve readability in the document, the code listings can be floated to the end of the document by using the \verb+-l+ switch on the command line.  If this switch is used, the listing is saved to a string that is only appended to the \LaTeX{} document and the end of the conversion.  At the location in the document where the code listing would have been, a reference sentence to the code is included.  The  sentence is constructed as follows:
+
+
+\verb+See Listing~\ref{lst:autolistingcellX} for the code {purpose}.+
+
+
+where the symbolic link is constructed using the cell number and the text used in the \verb+{purpose}+ part is taken from the first line of the code, if the first line is a comment.  Hence if the code in cell 3 starts with the lines
+
+
+\begin{verbatim}
+# to prepare the environment
+import numpy as np
+\end{verbatim}
+
+
+a text line of the following form will be created:
+
+
+\verb+See Listing~\ref{lst:autolistingcell3} for the code to prepare the environment.+
+
+
+Just maintain the discipline to write good comments in the first line, keeping in mind that  the comment will end up in the body of the document with the reference.
+
+
+If a code cell does not start with a comment, no text will be inserted and the form will be
+
+
+\verb+See Listing~\ref{lst:autolistingcell24} for the code.+
+
+
+
+
+See Listing~\ref{lst:listing1} for the code.
+
+
+\begin{lstlisting}[style=outcellstyle,caption={Caption for first listing output \label{lst:listing1-out}}]
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+
+\end{lstlisting}
+
+The following code block has the metadata
+
+
+\begin{verbatim}
+{
+  "listingCaption": {
+    "caption": "Caption text for second listing",
+    "label": "lst:listing2"
+  }
+}
+\end{verbatim}
+
+
+which will give the code block a caption and a label, but the output is not captioned.
+
+
+The code block also demonstrates how long lines are handled in this lstlistings configuration, with a linefeed symbol to mark the line.
+
+
+
+
+See Listing~\ref{lst:listing2} for the code.
+
+
+\begin{lstlisting}[style=outcellstyle]
+ 
+Radius = 6
+Frontal area = 7 m2
+This is a very long line of python code, that is supposed to flow over to the next line, in order to test the listing display
+
+\end{lstlisting}
+
+
+
+See Listing~\ref{lst:listing3} for the code.
+
+
+\begin{lstlisting}[style=outcellstyle]
+0
+1
+
+\end{lstlisting}
+
+The following code block has no metadata, and hence no captions on either the code or the output listings.
+
+
+
+
+See Listing~\ref{lst:autolistingcell36} for the code.
+
+
+\begin{lstlisting}[style=outcellstyle]
+code with no listing caption
+
+\end{lstlisting}
+
+Output emanating from different cells \textit{may} result in different output listings in \LaTeX{} even if they appear in a single output box in the notebook.  The cells below attempt to recreate a similar scenario in a different application, but it does not seem to repeat the problem here.
+
+
+
+
+See Listing~\ref{lst:autolistingcell38} for the code.
+
+
+
+See Listing~\ref{lst:autolistingcell39} for the code.
+
+
+\begin{lstlisting}[style=outcellstyle]
+function output 1
+function output 2
+function output 3
+9
+3
+
+\end{lstlisting}
+
+
+\section{Bitmaps}
+\label{sec:Bitmaps}
+
+PNG images, read in from externally or created by Matplotlib, are imported into the \LaTeX{} code with lines of the following form:
+
+
+\verb+\includegraphics[scale=0.2]{./pngs/test2LaTeX\_21\_0.png}+
+
+
+where the scale determines the size of the image (obtained from metadata, see below), and the image file name is constructed from the notebook file name and cell information.  The name is the concatenation of the notebook file name, the cell index (index number of the cell in the notebook file) and the sub-index image in the cell's output (there can be more than one image). All indices are zero based.
+
+
+The scale or width is read from the metadata, which must be structured as follows:
+
+
+\begin{verbatim}
+{
+  "figureCaption": {
+    "caption": "Caption text for first figure",
+    "label": "fig:lab1",
+    "scale": "0.2",
+    "width": "0.2"
+  },
+  "listingCaption": {
+    "caption": "Listing caption in cell with a figure",
+    "label": "lst:figurelisting",
+    "outputCaption": "Output for a cell with a figure"
+  }
+}
+\end{verbatim}
+
+
+Width is the fraction of \LaTeX{} textwidth, i.e., if width=1, the graphic will be the full width of the text on the page. Width have precedance over scale and if width is given, scale is ignored.
+
+
+The metadata also contains a caption string, and a label for the figure.  The type must be \verb+figure+.
+
+
+If the \verb+caption+ field is given (or has non-zero length), the image will be written to a \LaTeX{} float with a caption (and label).  If the \verb+caption+ fields is not given, the image will not be encapsulated in the floating figure.
+
+
+
+
+See Listing~\ref{lst:figurelisting} for the code.
+
+
+\begin{figure}[tb]
+\centering
+\includegraphics{./pic/test2LaTeX_42_0.png}
+\caption{Caption text for first figure\label{fig:lab1-0}}
+\end{figure}
+
+
+\begin{lstlisting}[style=outcellstyle,caption={Output for a cell with a figure \label{lst:figurelisting-out}}]
+also force print output
+
+\end{lstlisting}
+
+The following figure is not floating, but is scaled down to be smaller.
+
+
+\begin{verbatim}
+{
+  "figureCaption": {
+    "scale": "0.3"
+  }
+}
+\end{verbatim}
+
+
+
+
+See Listing~\ref{lst:autolistingcell44} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
+
+\begin{center}
+\includegraphics{./pic/test2LaTeX_44_0.png}
+\end{center}
+
+The following Matplotlib plot is scaled and floating.
+
+
+\begin{verbatim}
+{
+  "figureCaption": {
+    "caption": "Caption text for third figure",
+    "label": "fig:lab3",
+    "scale": "0.4"
+  }
+}
+\end{verbatim}
+
+
+
+
+See Listing~\ref{lst:autolistingcell46} for the code.
+
+
+\begin{figure}[tb]
+\centering
+\includegraphics{./pic/test2LaTeX_46_0.png}
+\caption{Caption text for third figure\label{fig:lab3-0}}
+\end{figure}
+
+It is possible to have more than one plot in a single cell output.  In this case each output can be made floating separately or be non-floated (you can even mix floating and non-floating).  The captions are given in the metadata in the following format:
+
+
+\begin{verbatim}
+{
+  "figureCaption": {
+    "caption": "['Caption text for (first) fourth figure','','Caption text for (third) fourth figure']",
+    "label": "fig:lab4",
+    "scale": "[0.5, 0.5, 0.5]"
+  }
+}
+\end{verbatim}
+
+
+In this case the caption strings and scaling values are allocated to the sequence of images in the order given.  If a caption string is zero length, that specific image will be non-floating.  The float labels are determined from the root value given in the metadata, but with the output sub-index appended, as in \verb+fig:lab4-0+, \verb+fig:lab4-1+, \verb+fig:lab4-2+.
+
+
+
+
+See Listing~\ref{lst:autolistingcell48} for the code.
+
+
+\begin{figure}[tb]
+\centering
+\includegraphics{./pic/test2LaTeX_48_0.png}
+\caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
+\end{figure}
+
+\begin{center}
+\includegraphics{./pic/test2LaTeX_48_1.png}
+\end{center}
+
+
+\begin{figure}[tb]
+\centering
+\includegraphics{./pic/test2LaTeX_48_2.png}
+\caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
+\end{figure}
+
+\FloatBarrier % message to latex, no floats past this barrier
+You can write HTML to the cell's output and have it displayed in the browser and also in the LaTeX file.  This graphic is not currently output as a floating figure in LaTeX, it will be done in a future version.
+
+
+
+
+See Listing~\ref{lst:autolistingcell51} for the code.
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{images/random-squares-2.png}
+\end{center}
+
+
+
+\begin{lstlisting}[style=outcellstyle]
+<IPython.core.display.HTML object>
+\end{lstlisting}
+
+
+\section{Graphs as PDF documents}
+\label{sec:GraphsasPDFdocuments}
+
+Reports with many png images tends to create large PDF files.    If the graphs are exported as PDF files by the backend, the files are vector graphics and not large bitmaps, resulting in a much smaller final PDF report file.
+
+
+The PDF export functionality worked well in brief testing, but it still needs more testing.
+
+
+\begin{enumerate}
+\item Set up the notebook to use the PDF backend:
+        \%config InlineBackend.figure\_format = 'pdf'
+\item With the PDF backend the graphs are saved as PDF documents in the notebook.  This converter script will export these as PDF files to the pictures directory.
+\item Compile the document with PDFLaTeX as usual.  It will look for the graphics files as PDF files, not PNG files.
+\end{enumerate}
+
+
+\section{Cells with Python errors}
+\label{sec:CellswithPythonerrors}
+
+The following line must be uncommented to have effect.
+
+
+
+
+See Listing~\ref{lst:autolistingcell56} for the code  type(eval("this is a test string")) is not list.
+
+
+\section{Embedded code (verbatim text)}
+\label{sec:Embeddedcodeverbatimtext}
+
+Some firewalls are set up to grant \verb+localhost+ execution rights.  In this case the server can be started with the command
+
+
+\verb+ipython notebook --ip=localhost+
+
+
+Once started, the pages are served from 
+
+
+\verb+http://localhost:8888/+
+
+
+and not from \verb+http://127.0.0.1:8888/+.
+
+
+Embedded code meant for illustration instead of execution in Python:
+
+
+\begin{verbatim}
+def hello\_ipython():
+    print "Hello IPython!"
+\end{verbatim}
+
+
+
+\section{Hyperlinks, references and citations}
+\label{sec:Hyperlinksreferencesandcitations}
+
+
+\subsection{Embedded hyperlinks}
+\label{sec:Embeddedhyperlinks}
+
+The IPython website\cite{httpipythonorg} is the central repository of all things IPython.
+There are some really nice videos\cite{httpswwwyoutubecomwatchvaIXED26Wppg} on YouTube.
+
+
+For \textit{URI references}, the \verb+[IPython website](http://ipython.org/)+ markup structure is read and the URI is used to create a citation label (\verb+httpipythonorg+) and the URI (\verb+http://ipython.org/+) is written to a new \LaTeX{} bibtex file for the references in this notebook.
+
+
+For \textit{other types of references} a workaround is required.  IPython is currently weak in the area of other types of references, because of limitations in the markup language.  The \verb+ipnb2tex.py+ script makes provision for including bibtex entries, by embedding the complete bibtex entry in a metadata field.
+
+
+Using the above approach creates a new bibtex file using the data in the notebook. Perhaps you might want to reference an existing bibtex file, mapping to the citation labels used in the notebook.
+The issue here is that the IPython notebook does not have access to your \LaTeX{} bibtex file, so it does not know the citation references you want to use (the ones in your existing bibtex file).
+
+
+The approach taken here is to provide a look-up translation table in this or any prior cell of the notebook, to translate citation references from the local name to your existing bibtex name.  This is done in a cross reference dictionary that maps the names created internally to the names in your external bibtex file.
+
+
+The metadata has two different fields, one to do the citation label mapping and the other to embed complete bibtex entries in the metadata.  The metadata field must have the following format:
+
+
+\begin{verbatim}
+{
+  "bibxref": {
+    "httpipythonorg": "httpipythonorg",
+    "httpswwwyoutubecomwatchvaIXED26Wppg": "httpswwwyoutubecomwatchvaIXED26Wppg",
+    "httpsenwikipediaorgwikiWrappednormaldistribution": 
+            "httpsenwikipediaorgwikiWrappednormaldistribution"
+  },
+  "bibtexentry": {
+    "wing2006computational": "@article{wing2006computational,  title={Computational thinking},  
+           author={Wing, Jeannette M},  journal={Communications of the ACM},  volume={49},  
+           number={3},  pages={33--35},  year={2006}}",
+    "gracec": "@MISC{gracec,  author = {Grace Cathedral},  title = {The Cathedral Labyrinths},  
+           url = {http://www.gracecathedral.org/labyrinth/}}"
+  }
+}
+\end{verbatim}
+
+
+where (1) the bibxref keys are the local names and the values are the names in your existing bibtex file and (2) the bibtexentry keys are the citation labels used in the notebook.  In the above example the bibxref maps to the same names, because I am using the locally generated bibtex file. Normally you would use your bibtex database entries.
+
+
+Note that the IPython notebook is somewhat finicky on the json format; each single entry in the above metadata must be on a single line (line-feeds inside the strings are not allowed --- lines tend to be very long).  Also, note the location of commas, there should be commas after all entries, except the last entry in a given scope.
+
+
+The \verb+ipnb2tex.py+ script:
+
+
+\begin{enumerate}
+\item Loads/appends the bibxref translation table from any/all cells (if present).
+\item Reads the \verb+[]()+ markup structure and then builds a citation reference from the URI (by removing some characters).
+\item Create a bibtex entry for the reference (subsequently written to file).
+\item Using bibxref, translates the local citation label to your existing citation label.
+\end{enumerate}
+
+If you included bibtex items in the metadata, you can refer to them using the normal \LaTeX{} notation. Test \cite{wing2006computational} and \cite{gracec}.
+
+
+
+\section{General markdown formatting}
+\label{sec:Generalmarkdownformatting}
+
+Markdown basics: lists, markup and code
+
+
+\begin{itemize}
+\item list item1   in markdown format.
+\item list item2   \begin{itemize}
+\item nested list item3 - font attributes not yet supported.
+\end{itemize}
+\item \textit{italics}
+\item \textbf{bold}
+\item \verb+fixed font+
+\end{itemize}
+
+
+
+
+
+
+
+\begin{enumerate}
+\item Enumerated list item 1 in markdown format.\begin{enumerate}
+\item sub lit element 1
+\item sub lit element 2
+\end{enumerate}
+\item Enumerated list item 2.
+\end{enumerate}
+
+The markup language (or the converter) breaks if an itemized list and an enumerated list are immediately adjacent --- we need to separate the lists by text with with a \verb+<p/>+.
+
+
+Lists in HTML format
+
+
+\begin{itemize}
+\item list item
+\item list item
+\begin{itemize}
+\item nested list item
+\end{itemize}
+\item \textit{italics}
+\item \textbf{bold}
+\item \verb+fixed font+
+\end{itemize}
+
+\begin{enumerate}
+\item Enumerated list item 1.
+\begin{enumerate}
+\item sub lit element 1
+\item sub lit element 2
+\end{enumerate}
+\item Enumerated list item 2.
+\end{enumerate}
+
+
+\section{Tables}
+\label{sec:Tables}
+
+The table in this cell is rendered in \LaTeX{} with the following metadata:
+
+
+\begin{verbatim}
+{
+  "tableCaption": {
+    "caption": "Caption text for first table",
+    "label": "tab:lab1",
+    "format": "{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}",
+    "fontsize": "normalsize"
+  }
+}
+\end{verbatim}
+
+
+A complex HTML table with row spans and column spans:
+
+
+
+\begin{table}[htb]
+\centering
+\caption{Caption text for first table\label{tab:lab1-0}}
+
+\begin{normalsize}
+
+\begin{tabular}{{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}}
+\hline
+a&\multicolumn{2}{|c|}{b}&\multicolumn{3}{|c|}{c}&1\\\hline
+e&f&\multicolumn{2}{|c|}{g}&h&i&2\\\cline{2-2}\cline{3-3}\cline{4-4}\cline{5-5}\cline{6-6}\cline{7-7}
+&\multicolumn{2}{|c|}{j}&k&l&m&3\\\cline{1-1}\cline{2-2}\cline{3-3}\cline{4-4}\cline{6-6}\cline{7-7}
+n&o&p&q&&r&4\\\hline
+s&t&u&v&w&x&5\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{table}
+
+The tables in this cell are rendered in \LaTeX{} with the following metadata:
+
+
+\begin{verbatim}
+{
+  "tableCaption": {
+    "caption": "['Caption text for (first) second table','','Caption text for (third) second table']",
+    "label": "tab:lab2",
+    "format": "['{|p{20mm}|r|}','','{|c|l|}']",
+    "fontsize": "['normalsize', 'tiny', 'Large']"
+  }
+}
+\end{verbatim}
+
+
+Github flavoured markdown tables are supported in the IPython notebook (floating in \LaTeX{} as Table~\ref{tab:lab2-0}):
+
+
+
+\begin{table}[htb]
+\centering
+\caption{Caption text for (first) second table\label{tab:lab2-0}}
+
+\begin{normalsize}
+
+\begin{tabular}{{|p{20mm}|r|}}
+\hline
+This&is\\\hline
+a&table\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{table}
+
+second table  (non-floating in \LaTeX{}):
+
+
+\begin{center}
+
+\begin{tiny}
+
+\begin{tabular}{|c|c|}
+\hline
+This&is\\\hline
+a&small table\\\hline
+
+\end{tabular}
+\end{tiny}
+\end{center}
+
+PHP Markdown Extra is also supported  (floating in \LaTeX{} as Table~\ref{tab:lab2-2}):
+
+
+
+\begin{table}[htb]
+\centering
+\caption{Caption text for (third) second table\label{tab:lab2-2}}
+
+\begin{Large}
+
+\begin{tabular}{{|c|l|}}
+\hline
+First Header&Second Header\\\hline
+Content Cell&Content Cell\\\hline
+Content Cell&Content Cell\\\hline
+
+\end{tabular}
+\end{Large}
+\end{table}
+
+Both of these markup extensions require Python Markdown 2.4.1 to render HTML.
+
+
+Table~\ref{tab:hiertab12-0} has an hierarchical structure on both columns and rows.  The percentage and underine characters are also preserved.
+
+\begin{table}[htb]
+\centering
+\caption{Caption text for hierarchical table\label{tab:hiertab12-0}}
+
+\begin{normalsize}
+
+\begin{tabular}{|l|l|l|*{2}{>{\RaggedLeft}p{8mm}|}}
+\hline
+&&CHead 1&\multicolumn{2}{|c|}{CLevel 1:1}\\\hline
+&&CHead 2&CLevel 2:1&CLevel 2:2\\\hline
+RHead 1&RHead 2&RHead 3&&\\\hline
+RLevel 1:1\%\_&RLevel 2:1&A&6000\%&6156\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&B&2417&2471\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&C&1274&1347\\\cline{2-2}\cline{3-3}\cline{4-4}\cline{5-5}
+&RLevel 2:2&A&10909&11041\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&B&4400&4408\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&C&2309&2319\\\cline{2-2}\cline{3-3}\cline{4-4}\cline{5-5}
+&RLevel 2:3&A&11573&11178\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&B&4461&4976\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&C&2432&2410\\\hline
+RLevel 1:2\%\_&RLevel 2:1&A&6728&6595\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&B&2322&2679\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&C&1300&1474\\\cline{2-2}\cline{3-3}\cline{4-4}\cline{5-5}
+&RLevel 2:2&A&1210&12344\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&B&4845&4367\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&C&2618&2525\\\cline{2-2}\cline{3-3}\cline{4-4}\cline{5-5}
+&RLevel 2:3&A&12553&12117\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&B&4895&4835\\\cline{3-3}\cline{4-4}\cline{5-5}
+&&C&2566&2991\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{table}
+
+A table can be formatted with the metadata, even if the table is not floating with a caption. For example, the following table only uses the following metadata:
+
+
+\begin{verbatim}
+{
+  "tableCaption": {
+    "format": "{|p{10mm}|p{50mm}|p{100mm}|}",
+    "fontsize": "footnotesize"
+  }
+}
+\end{verbatim}
+
+
+\begin{center}
+
+\begin{footnotesize}
+
+\begin{tabular}{{|p{10mm}|p{50mm}|p{100mm}|}}
+\hline
+Column Number&Column Description&Example Values\\\hline
+1&Unique row identifier&MOD15A2.A2000057.h12v03.004.2002357024124.FparExtra\_QC
+        MOD15A2.A2000057.h12v03.004.2002357024124.Lai\_1km\\\hline
+2&MODIS Land Product 
+        Code&MOD15A2\\\hline
+3&MODIS Acquisition 
+        Date [ A (YYYYDDD) ]&A2000057\\\hline
+4&User selected center 
+        point coordinates and specified width (Samp) and height (Line) of 
+        bounding rectangle in pixels. Width x height denotes number of 
+        Product values starting in Column 7. (e.g.,  7 x 7 $=$ 49)&Lat55.879620Lon-98.480810Samp7Line7\\\hline
+5&MODIS Processing Date 
+        (YYYYDDDHHMMSS)&2002357024124\\\hline
+6&Product Scientific 
+        Data Set (Band): Indicates type of values to follow. Specific values 
+        vary by Product. Data quality information are interleaved.&MOD15A2: FparExtra\_QC,  
+        FparLai\_QC,  Fpar\_1kmMOD17A2: Gpp\_1km,  PsnNet\_1km,  Psn\_QC\_1km\\\hline
+7 to N&Data values of type 
+        as specified. Number of data columns as given in Column 4.
+        Definition of QC component values vary by Scientific Data Set.&QC: 
+        00100001, 01100001, 01100001,  ...Measurement: 
+        2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, ...to N\\\hline
+
+\end{tabular}
+\end{footnotesize}
+\end{center}
+
+Pandas dataframe tables are also rendered.
+
+
+
+
+See Listing~\ref{lst:autolistingcell70} for the code.
+
+\begin{center}
+
+\begin{normalsize}
+
+\begin{tabular}{|c|c|c|}
+\hline
+&one&two\\\hline
+a&1.0&1.0\\\hline
+b&2.0&2.0\\\hline
+c&3.0&3.0\\\hline
+d&NaN&4.0\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{center}
+
+
+\begin{lstlisting}[style=outcellstyle]
+<IPython.core.display.HTML object>
+\end{lstlisting}
+
+
+\chapter{Math}
+\label{sec:Math}
+
+Inline math delineated with single dollar symbols are rendered inline with paragraph text, as in $\alpha+\beta=\gamma$.
+
+
+Using math mode (anything between two dollar symbols) is interpreted as \LaTeX{} math:
+\begin{equation}D_{KL}(P||Q) = \sum\limits_{i}ln (\frac{P(i)}{Q(i)}) P(i).\end{equation}
+
+
+The probability density function for yaw angle is the wrapped normal distribution\cite{httpsenwikipediaorgwikiWrappednormaldistribution}.  The first form uses two dollar symbols  to show the equation in LaTeX display math:
+\begin{equation}f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]\end{equation}
+
+
+The second example uses  \verb+\begin{equation}+ and \verb+\end{equation}+:
+`:
+
+
+\begin{equation}
+f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
+\end{equation}
+
+
+
+\section{Known deficiencies}
+\label{sec:Knowndeficiencies}
+
+\begin{enumerate}
+\item Some complex cell-merged HTML tables may not render correctly in LaTeX (let me know if you have such a table).
+\item Unicode not yet handled.
+\item The following HTML elements are not currently processed, these elements are simply ignored: \verb+div+, \verb+iframe+, \verb+img+.
+\item Many reserved LaTeX symbols such as hash, caret, underscore and dollar are 'legal' in normal markdown.  When rendering to LaTeX these symbols cause errors unless escaped with backslash.  In many cases these symbols are escaped, but not always because of context.  If the symbols are escaped, they render incorrectly in normal Markdown. Therefore, choose your target renderer and enter the symbols accordingly, accepting problems in the alternative renderer.
+\item IPython notebook names must not have spaces in the filename.
+\end{enumerate}
+
+
+\section{Python and module versions, and dates}
+\label{sec:Pythonandmoduleversionsanddates}
+
+From: Introduction to scientific computing with Python\cite{httpnbvieweripythonorggithubjrjohanssonscientificpythonlecturesblobmasterLecture0ScientificComputingwithPythonipynb} we learn:
+"To encourage the practice of recording Python and module versions in notebooks, I've created a simple IPython extension that produces a table with versions numbers of selected software components. I believe that it is a good practice to include this kind of table in every notebook you create. To install this IPython extension, run:"
+
+
+\begin{verbatim}
+# you only need to do this once
+\%install\_ext http://raw.github.com/jrjohansson/version\_information/master/version\_information.py
+\end{verbatim}
+
+
+Now, to load the extension and produce the version table
+
+
+
+
+See Listing~\ref{lst:autolistingcell78} for the code.
+
+\begin{center}
+
+\begin{normalsize}
+
+\begin{tabular}{|c|c|}
+\hline
+Software&Version\\\hline
+Python&2.7.11 64bit [MSC v.1500 64 bit (AMD64)]\\\hline
+IPython&4.1.2\\\hline
+OS&Windows 7 6.1.7601 SP1\\\hline
+numpy&1.10.4\\\hline
+scipy&0.17.0\\\hline
+matplotlib&1.5.1\\\hline
+pandas&0.18.0\\\hline
+\multicolumn{2}{|c|}{Tue Apr 26 12:12:56 2016 South Africa Standard Time}\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{center}
+
+
+\begin{lstlisting}[style=outcellstyle]
+Software versions
+Python 2.7.11 64bit [MSC v.1500 64 bit (AMD64)]
+IPython 4.1.2
+OS Windows 7 6.1.7601 SP1
+numpy 1.10.4
+scipy 0.17.0
+matplotlib 1.5.1
+pandas 0.18.0
+Tue Apr 26 12:12:56 2016 South Africa Standard Time
+\end{lstlisting}
+
+
+
+\chapter{Listings}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Caption text for first listing \label{lst:listing1}}]
+# to prepare the environment
+from IPython.display import display
+from IPython.display import Image
+from IPython.display import HTML
+
+import os.path
+import numpy as np
+%matplotlib inline
+
+import this
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Caption text for second listing \label{lst:listing2}}]
+#
+print(' ')
+print('Radius = {}'.format(6))
+print('Frontal area = {} m2'.format(7))
+print('This is a very long line of python code, that is supposed to flow over to the next line, in order to test the listing display')
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Caption text for third listing \label{lst:listing3}}]
+# to print the value
+a = [0, 1]
+for v in a:
+    print(v)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 36 \label{lst:autolistingcell36}}]
+print('code with no listing caption')
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 38 \label{lst:autolistingcell38}}]
+def doprint(i):
+    print('function output {}'.format(i))
+    return int(i)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 39 \label{lst:autolistingcell39}}]
+for i in [1,2,3]:
+    si = str(i)
+    v = doprint(si)
+
+val = v * 3   
+print(val)
+print(v)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Listing caption in cell with a figure \label{lst:figurelisting}}]
+#this figure is given meta data caption parameters, it will be floated in the latex export
+display(Image(filename='images/keep-calm-and-code-python_BW.png', width=250, height=250))
+print('also force print output')
+
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 44 \label{lst:autolistingcell44}}]
+#this figure is not given meta data caption parameters, it will be inlined in the latex export
+display(Image(filename='images/random-squares-2.png', width=200, height=200))
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 46 \label{lst:autolistingcell46}}]
+%matplotlib inline
+
+import pylab as pl
+import numpy as np
+
+t = np.arange(0.0, 2.0, 0.01)
+s = np.sin(2*np.pi*t)
+pl.plot(t, s)
+pl.xlabel('time (s)')
+pl.ylabel('voltage (mV)')
+pl.title('About as simple as it gets, folks')
+pl.grid(True)
+
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 48 \label{lst:autolistingcell48}}]
+import pyradi.ryplot as ryplot
+
+x = np.linspace(0,10,10)
+a = ryplot.Plotter(1,figsize=(3,2))
+b = ryplot.Plotter(2,figsize=(3,2))
+c = ryplot.Plotter(3,figsize=(3,2))
+for i in [1,2]:
+    a.plot(1,x,x ** i,'Plotter instance a',label=[str(i)])
+    b.plot(1,x,(-x) ** i,'Plotter instance b',label=[str(i)])
+    c.plot(1,x,(5-x) ** i,'Plotter instance c',label=[str(i)])
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 51 \label{lst:autolistingcell51}}]
+htmlstr = '<p><img src="images/random-squares-2.png" width=100 />'
+HTML(htmlstr)                 
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 56 \label{lst:autolistingcell56}}]
+# type(eval("this is a test string")) is not list
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 70 \label{lst:autolistingcell70}}]
+import pandas as pd
+d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
+     'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
+
+df = pd.DataFrame(d)
+
+HTML(df.to_html())
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 78 \label{lst:autolistingcell78}}]
+%load_ext version_information
+%version_information numpy, scipy, matplotlib,pandas
+\end{lstlisting}
+
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{test2LaTeX}
+
+\end{document}
+

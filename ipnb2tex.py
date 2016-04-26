@@ -9,6 +9,8 @@ Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>]
 
 from __future__ import print_function, division
 
+
+import re
 import os
 import io
 import base64
@@ -26,13 +28,22 @@ import markdown
 from lxml import etree as ET
 import numpy as np
 
+
+
 # need the following four lines to print unicode to sysout
 import sys
-import codecs
-sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-sys.stderr = codecs.getwriter('utf8')(sys.stderr)
+
+if int(sys.version[0]) < 3:
+  import codecs
+  sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+  sys.stderr = codecs.getwriter('utf8')(sys.stderr)
+else:
+  from builtins import bytes,chr
+  from builtins import str
+  print('\nPorted from Python 2: limited support for unicode characters\n')
 
 nbformat
+
 #list of bibtex entries to be built up in this file
 bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
@@ -140,30 +151,58 @@ prebreak=\raisebox{0ex}[0ex][0ex]{$\dlsh$} % add linebreak symbol
 \date{\today}
 \maketitle
 """
+
+
 ################################################################################
 #lists the files in a directory and subdirectories (from Python Cookbook)
 def listFiles(root, patterns='*', recurse=1, return_folders=0):
+    """lists the files in a directory and subdirectories (from Python Cookbook)
+
+    Extensively reworked for Python 3.
+    """
     # Expand patterns from semicolon-separated string to list
     pattern_list = patterns.split(';')
-    # Collect input and output arguments into one bunch
-    class Bunch:
-        def __init__(self, **kwds): self.__dict__.update(kwds)
-    arg = Bunch(recurse=recurse, pattern_list=pattern_list,
-        return_folders=return_folders, results=[])
+    filenames = []
+    filertn = []
 
-    def visit(arg, dirname, files):
-        # Append to arg.results all relevant files (and perhaps folders)
-        for name in files:
-            fullname = os.path.normpath(os.path.join(dirname, name))
-            if arg.return_folders or os.path.isfile(fullname):
-                for pattern in arg.pattern_list:
+    if int(sys.version[0]) < 3:
+
+        # Collect input and output arguments into one bunch
+        class Bunch(object):
+            def __init__(self, **kwds): self.__dict__.update(kwds)
+        arg = Bunch(recurse=recurse, pattern_list=pattern_list,
+            return_folders=return_folders, results=[])
+
+        def visit(arg, dirname, files):
+            # Append to arg.results all relevant files (and perhaps folders)
+            for name in files:
+                fullname = os.path.normpath(os.path.join(dirname, name))
+                if arg.return_folders or os.path.isfile(fullname):
+                    for pattern in arg.pattern_list:
+                        if fnmatch.fnmatch(name, pattern):
+                            arg.results.append(fullname)
+                            break
+            # Block recursion if recursion was disallowed
+            if not arg.recurse: files[:]=[]
+        os.path.walk(root, visit, arg)
+        return arg.results
+
+    else:
+        for dirpath,dirnames,files in os.walk(root):
+            if dirpath==root or recurse:
+                for filen in files:
+                    filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,filen)))
+                if return_folders:
+                    for dirn in dirnames:
+                        filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,dirn)))
+        for name in filenames:
+            if return_folders or os.path.isfile(name):
+                for pattern in pattern_list:
                     if fnmatch.fnmatch(name, pattern):
-                        arg.results.append(fullname)
+                        filertn.append(name)
                         break
-        # Block recursion if recursion was disallowed
-        if not arg.recurse: files[:]=[]
-    os.path.walk(root, visit, arg)
-    return arg.results
+
+    return filertn
 
 
 ################################################################################
@@ -189,18 +228,19 @@ def latexEscapeForHtmlTableOutput(string):
 ################################################################################
 def pptree(e):
     print(ET.tostring(e, pretty_print=True))
-    print
+    print()
 
 ################################################################################
 def convertHtmlTable(html, cell, table_index=0):
 
-  if not (isinstance(html, basestring)):
+  # print()
+  if not (isinstance(html, str)):
     html = lxml.html.tostring(html)
 
-  if not "<div" in  html:   
-    html = "<div>" + html + "</div>"
+  if not b"<div" in  html:   
+    html = b"<div>" + html + b"</div>"
 
-  html = html.replace("<thead>", "").replace("</thead>", "").replace("<tbody>", "").replace("</tbody>", "")
+  html = html.replace(b"<thead>", b"").replace(b"</thead>", b"").replace(b"<tbody>", b"").replace(b"</tbody>", b"")
   # html = html.replace('overflow:auto;','').replace(' style="max-height:1000px;max-width:1500px;','')
   tree = lxml.html.fromstring(html)
 
@@ -284,7 +324,10 @@ def convertHtmlTable(html, cell, table_index=0):
           latexTabular += '&'
           icol += 1
 
-        txt = latexEscapeForHtmlTableOutput(unicode(col.text_content()).strip())
+        if int(sys.version[0]) < 3:
+          txt = latexEscapeForHtmlTableOutput(unicode(col.text_content()).strip())
+        else:
+          txt = latexEscapeForHtmlTableOutput(col.text_content().strip())
         if 'colspan' in col.attrib:
           icolspan = int(col.attrib['colspan'])
           txt = '\multicolumn{{{}}}{{|c|}}{{{}}}'.format(icolspan,txt)
@@ -369,7 +412,7 @@ def processVerbatim(child):
 
 
 ################################################################
-def cleanFilename(sourcestring,  removestring =" %:/,.\\[]"):
+def cleanFilename(sourcestring,  removestring=r" %:/,.\[]"):
     """Clean a string by removing selected characters.
 
     Creates a legal and 'clean' source string from a string by removing some 
@@ -387,8 +430,7 @@ def cleanFilename(sourcestring,  removestring =" %:/,.\\[]"):
         | No exception is raised.
     """
     #remove the undesireable characters
-    return filter(lambda c: c not in removestring, sourcestring)
-
+    return ''.join([i for i in sourcestring if i not in removestring])
 
 ################################################################################
 def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
@@ -417,8 +459,13 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
 def encapsulateListing(outstr, captionStr):
   outstr = unicodedata.normalize('NFKD',outstr).encode('ascii','ignore')
   rtnStr = u'\n\\begin{lstlisting}'
+  if int(sys.version[0]) < 3:
+    pass
+  else:
+    outstr = outstr.decode("utf-8")
+    
   if captionStr:
-    rtnStr += '[style=outcellstyle,caption={}]\n{}\n'.format(captionStr,outstr)
+    rtnStr += '[style=outcellstyle,caption={:s}]\n{}\n'.format(captionStr,outstr)
   else:
     rtnStr += '[style=outcellstyle]\n{}\n'.format(outstr)
   rtnStr += '\\end{lstlisting}\n\n'
@@ -475,6 +522,20 @@ def prepInput(cell, cell_index, floatlistings):
     rtnStr = tmpStr
 
   return rtnStr,rtnSource
+
+################################################################################
+# def convertBytes2Str(instring):
+#   """Convert a byte string to regular string (if in Python 3)
+#   """
+#   if int(sys.version[0]) < 3:
+#     pass
+#   else:
+#     # print('1',type(instring))
+#     if isinstance(instring, bytes):
+#       instring = instring.decode("utf-8")
+
+#   return instring
+
 
 ################################################################################
 def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infile):
@@ -549,7 +610,11 @@ def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
   outStr = defaultValue 
   if captionID in cell['metadata'].keys():
     if metaID in cell['metadata'][captionID].keys():
-      strIn = cell['metadata'][captionID][metaID].encode('ascii','ignore') #remove unicode
+
+      if int(sys.version[0]) < 3:
+        strIn = cell['metadata'][captionID][metaID].encode('ascii','ignore') #remove unicode
+      else:
+        strIn = cell['metadata'][captionID][metaID]
       if len(strIn):
         if strIn[0] is not '[':
           outStr = strIn
@@ -632,8 +697,13 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
                 '_{}_{}.jpeg'.format(cell_index, output_index)
 
   if picCell:
+
     with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
-      fpng.write(base64.decodestring(picCell))
+
+      if int(sys.version[0]) < 3:
+        fpng.write(base64.decodestring(picCell))
+      else:
+        fpng.write(base64.decodestring(bytes(picCell, 'utf-8')))
 
       #process the caption string, either a string or a list of strings
       captionStr = getMetaDataString(cell, output_index, 'figureCaption', 'caption','')
@@ -784,7 +854,11 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, floatlistings):
   #   if 'http' in line and r'\cite' in line:
   #     print(line)
 
-  return unicode(tmp),''
+  if int(sys.version[0]) < 3:
+    return unicode(tmp),''
+  else:
+    return tmp,''
+
 
 
 
@@ -872,16 +946,15 @@ def processHTMLTree(html,cell):
     if (not inline_count % 2) and (not env_count % 2):
       tmp = tmp[:loc] + '\\' + tmp[loc:]
       offset_count += 1
-
   return tmp
+
 
 ################################################################################
 def processHeading(hstring, cstring):
   strtmp = "\n{}{{".format(hstring) + cstring + "}\n"
-  seclabel = cleanFilename(cstring,  removestring=" %:/,.\\[]=?~!@#$^&*()-_{};")
+  seclabel = cleanFilename(cstring,  removestring=r" %:/,.\[]=?~!@#$^&*()-_{};")
   strtmp += r'\label{sec:' + seclabel + '}\n\n'
   return strtmp
-
 
 
 ################################################################################
@@ -906,6 +979,7 @@ def processList(lnode):
     tmp += "\\end{" + envtype + "}\n"
 
   return tmp.strip() + '\n'
+
 
 ################################################################################
 def processParagraph(pnode, tmp):
@@ -955,7 +1029,7 @@ def processParagraph(pnode, tmp):
     elif child.tag == 'a':
       url = child.get('href')
       if url is not None:
-        citelabel = cleanFilename(url,  removestring =" %:/,.\\[]=?~!@#$^&*()-_{};")
+        citelabel = cleanFilename(url,  removestring =r" %:/,.\[]=?~!@#$^&*()-_{};")
         if citelabel in bibxref.keys():
           pass
           # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
@@ -1050,7 +1124,7 @@ def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
   #if required by option create a chapter for floated listings
   listingsstring = '\n\n\chapter{Listings}\n\n' if floatlistings else ''
 
-  print('notebook={} latex={} imageDir={} float-listings={}'.format(infile,  outfile,  imagedir, floatlistings))
+  print('notebook={}\nlatex={}\nimageDir={}\nfloat-listings={}'.format(infile,  outfile,  imagedir, floatlistings))
     
   pdffile = outfile.replace('.tex', '.pdf')
   bibfile = outfile.replace('.tex', '.bib')
@@ -1080,7 +1154,9 @@ def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
     # print('\n********','cell.cell_type ={} cell={}'.format(cell.cell_type,cell))
     if cell.cell_type not in fnTableCell:
       raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
+
     rtnString, rtnListing = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile, floatlistings)
+
     output += rtnString
     listingsstring += rtnListing
 
@@ -1094,12 +1170,18 @@ def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
   output += r'\end{document}'+'\n\n'
 
   with io.open(outfile, 'w', encoding='utf-8') as f:
-    f.write(unicode(output))
+    if int(sys.version[0]) < 3:
+      f.write(unicode(output))
+    else:
+      f.write(output)
 
   if len(bibtexlist):
     with io.open(bibfile, 'w', encoding='utf-8') as f:
       for bib in bibtexlist:
-        f.write(unicode(bib))
+        if int(sys.version[0]) < 3:
+          f.write(unicode(bib))
+        else:
+          f.write(bib)
 
 
 ################################################################################
@@ -1123,6 +1205,7 @@ def getInfileNames(infile, outfile):
     # no input filename supplied, get all   
     ipynbfiles = listFiles('.', patterns='*.ipynb', recurse=0, return_folders=0)
     for ipynbfile in ipynbfiles:
+      ipynbfile = os.path.basename(ipynbfile)
       infiles.append(ipynbfile)    
       outfiles.append(ipynbfile.replace('.ipynb', '.tex')) 
 
