@@ -1131,7 +1131,7 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
   print('\nnotebook={}'.format(infile))
   print('latex={}'.format(outfile))
   print('imageDir={}'.format(imagedir))
-  print('float listings={}'.format(inlinelistings))
+  print('inline listings={}'.format(inlinelistings))
   print('add url to bibtex url={}'.format(addurlcommand))
   print('biblography style={}'.format(bibstyle))
 
