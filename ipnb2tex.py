@@ -59,7 +59,7 @@ Arguments:
     will be processed. In this event the output filenames will be the same
     as the .ipynb files, just with a tex filetype
 
-    outfilename [optional] is the name of output \LaTeX{} file. If none is
+    outfilename [optional] is the name of output LaTeX file. If none is
     given the output filename will be the same as the input file, but with
     the .tex extension.
 
@@ -69,7 +69,7 @@ Arguments:
 Options:
 
   -h, --help  [optional] help information.
-  -u  [optional] add \url{} to the bibtex entries.
+  -u  [optional] add \\url{} to the bibtex entries.
   -i  [optional], the lower case letter i, if this option is given the code
       listings are printed inline with the body text where they occur,
       otherwise listings are floated to the end of the document.
