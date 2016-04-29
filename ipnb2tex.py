@@ -3,8 +3,6 @@
 
 http://ipython.org/ipython-doc/3/notebook/nbformat.html#nbformat
 http://ipython.org/ipython-doc/3/whatsnew/version3.html
-
-Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>]
 """
 
 from __future__ import print_function, division
@@ -49,30 +47,35 @@ bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
 bibxref = {}
 
-docoptstring = """ The ipnb2tex.py reads the IPython notebook and converts 
-it to a \LaTeX{} set of files (a *.tex file and a number of images). 
-The script is invoked as follows:
+docoptstring = """Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-i] [-u] [--bibstyle=<style>]
+       ipnb2tex.py  (-h | --help)
 
-Usage: 
-  ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-l]
+The ipnb2tex.py reads the IPython notebook and converts
+it to a \LaTeX{} set of files: a *.tex file and a number of images.
 
-where
+Arguments:
+    ipnbfilename [optional] is the name of the input Jupyter notebook file.
+    If no input filename is supplied, all .ipynb files in current directory
+    will be processed. In this event the output filenames will be the same
+    as the .ipynb files, just with a tex filetype
 
-    ipnbfilename [optional] is the name of the input IPython notebook file. 
-    If no input filename is supplied, all .ipynb files in current directory 
-    will be processed. In this event the output filenames will be the same 
-    as the .ipynb files, just with a tex filetype.
-
-    outfilename [optional] is the name of output \LaTeX{} file. If none is 
-    given the output filename will be the same as the input file, but with 
+    outfilename [optional] is the name of output \LaTeX{} file. If none is
+    given the output filename will be the same as the input file, but with
     the .tex extension.
 
-    imagedir [optional] is the directory where images are written to. 
+    imagedir [optional] is the directory where images are written to.
     If not given, this image directory will be the ./pic directory.
 
-    l [optional] (the lower case letter el) if this option is given the 
-    code listings are floated to the end of the document. Otherwise the 
-    code listings are placed in the document where they occur in the notebook.
+Options:
+
+  -h, --help  [optional] help information.
+  -u  [optional] add \url{} to the bibtex entries.
+  -i  [optional], the lower case letter i, if this option is given the code
+      listings are printed inline with the body text where they occur,
+      otherwise listings are floated to the end of the document.
+  --bibstyle=<style>  [optional] selects bibliography style to be used.
+     Use the form --bibstyle=natbib or --bibstyle="natbib" [default: IEEEtran].
+
 """
 
 standardHeader =\
@@ -89,7 +92,7 @@ r"""
 \usepackage[detect-weight]{siunitx} % nice! SI units and print numbers
 \usepackage{afterpage} % afterpage{\clearpage}
 \usepackage{gensymb} % get the degree symbol as in \celcius
-\usepackage{amsmath} 
+\usepackage{amsmath}
 \usepackage[printonlyused]{acronym}
 \usepackage{lastpage}
 
@@ -216,7 +219,7 @@ def latexEscapeForHtmlTableOutput(string):
 
   for mathcar in ['<', '>', '|', '=']:
     string = string.replace(mathcar, '$'+mathcar+'$')
-  #replace computer-style float with scientific notation    
+  #replace computer-style float with scientific notation
   matches = re.search(r'^([0-9,.,\-]+)e(\+|\-)([0-9]+)$', string.strip())
   if matches:
     lead, sign, pw = matches.groups()
@@ -237,7 +240,7 @@ def convertHtmlTable(html, cell, table_index=0):
   if not (isinstance(html, str)):
     html = lxml.html.tostring(html)
 
-  if not b"<div" in  html:   
+  if not b"<div" in  html:
     html = b"<div>" + html + b"</div>"
 
   html = html.replace(b"<thead>", b"").replace(b"</thead>", b"").replace(b"<tbody>", b"").replace(b"</tbody>", b"")
@@ -268,7 +271,7 @@ def convertHtmlTable(html, cell, table_index=0):
             col_counts[ind+j] += 1
         else:
           col_counts[ind] += 1
-    if len(set(col_counts)) != 1: 
+    if len(set(col_counts)) != 1:
       raise ValueError('inconsistent number of column counts')
     col_counts = col_counts[0]
 
@@ -297,7 +300,7 @@ def convertHtmlTable(html, cell, table_index=0):
 
           for i in range(1,icolspan):
             colspan[irow,icol] = 1
-            icol += 1 
+            icol += 1
         if 'rowspan' in col.attrib:
           rowspan[irow,icol-1] = 0
           for i in range(1, int(col.attrib['rowspan'])):
@@ -415,7 +418,7 @@ def processVerbatim(child):
 def cleanFilename(sourcestring,  removestring=r" %:/,.\[]"):
     """Clean a string by removing selected characters.
 
-    Creates a legal and 'clean' source string from a string by removing some 
+    Creates a legal and 'clean' source string from a string by removing some
     clutter and  characters not allowed in filenames.
     A default set is given but the user can override the default string.
 
@@ -433,7 +436,7 @@ def cleanFilename(sourcestring,  removestring=r" %:/,.\[]"):
     return ''.join([i for i in sourcestring if i not in removestring])
 
 ################################################################################
-def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
+def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
 
   captionStr = getMetaDataString(cell, 0, 'listingCaption', 'outputCaption','')
   labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
@@ -446,9 +449,9 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
   elif 'data' in  cellOutput.keys():
     if 'text/html' in  cellOutput.data.keys():
       outs = cellOutput.data['text/html']
-      outstr +=  processHTMLTree(outs,cell)
+      outstr +=  processHTMLTree(outs,cell,addurlcommand)
     if 'text/plain' in  cellOutput.data.keys():
-      outstr += encapsulateListing(cellOutput.data['text/plain'], captionStr)    
+      outstr += encapsulateListing(cellOutput.data['text/plain'], captionStr)
   else:
     raise NotImplementedError("Unable to process cell {}, \nlooking for keys: {}".\
       format(cellOutput, cellOutput.keys()))
@@ -463,7 +466,7 @@ def encapsulateListing(outstr, captionStr):
     pass
   else:
     outstr = outstr.decode("utf-8")
-    
+
   if captionStr:
     rtnStr += '[style=outcellstyle,caption={:s}]\n{}\n'.format(captionStr,outstr)
   else:
@@ -473,7 +476,7 @@ def encapsulateListing(outstr, captionStr):
   return rtnStr
 
 ################################################################################
-def prepInput(cell, cell_index, floatlistings):
+def prepInput(cell, cell_index, inlinelistings):
   rtnStr =''
   rtnSource = ''
   captiopurp = ''
@@ -494,15 +497,15 @@ def prepInput(cell, cell_index, floatlistings):
     captionStr = getMetaDataString(cell, 0, 'listingCaption', 'caption','')
     labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
 
-    if floatlistings and not len(labelStr):
+    if not inlinelistings and not len(labelStr):
       labelStr = 'lst:autolistingcell{}'.format(cell_index)
 
-    if floatlistings and not len(captionStr):
+    if not inlinelistings and not len(captionStr):
       if len(lsting):
         lstistrp = lsting.split('\n')
         if len(lstistrp[0]) > 0: # take care of blank first lines
             if lstistrp[0][0]=='#':
-              captiopurp = ' ' + lstistrp[0][1:] 
+              captiopurp = ' ' + lstistrp[0][1:]
       captionStr = 'Code Listing in cell {}'.format(cell_index)
 
     if captionStr:
@@ -515,7 +518,7 @@ def prepInput(cell, cell_index, floatlistings):
       tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
     tmpStr += '\\end{lstlisting}\n\n'
 
-  if floatlistings:
+  if not inlinelistings:
     rtnSource = tmpStr
     rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code{}.\n\n'.format(labelStr,captiopurp)
   else:
@@ -538,18 +541,18 @@ def prepInput(cell, cell_index, floatlistings):
 
 
 ################################################################################
-def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infile):
+def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
 
   # if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
   #   return convertHtmlTable(cellOutput['html'],cell)
 
   if 'html' in cellOutput.keys():
-      return processHTMLTree(cellOutput['html'],cell)
+      return processHTMLTree(cellOutput['html'],cell,addurlcommand)
 
   if u'png' in cellOutput.keys():
-      return processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
+      return processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
-  return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
+  return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
 
 
@@ -559,7 +562,7 @@ def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infi
   #   if 'text/html' in  cellOutput.data.keys():
   #     doListing = False
   #     outstr = cellOutput.data['text/html']
-  #     outstr = processHTMLTree(outstr,cell)
+  #     outstr = processHTMLTree(outstr,cell,addurlcommand)
   #   if 'text/plain' in  cellOutput.data.keys():
   #     outstr = cellOutput.data['text/plain']
   # else:
@@ -569,9 +572,9 @@ def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infi
 
 
 ################################################################################
-def prepError(cellOutput, cell, cell_index, output_index, imagedir, infile):
-  import os, re 
-  r= re.compile(r'\033\[[0-9;]+m') 
+def prepError(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
+  import os, re
+  r= re.compile(r'\033\[[0-9;]+m')
   rtnStr = '\n\\begin{verbatim}\n'
   for output in cell["outputs"]:
     # v3 if output['output_type'] == 'error':
@@ -583,7 +586,7 @@ def prepError(cellOutput, cell, cell_index, output_index, imagedir, infile):
   return rtnStr
 
 ################################################################################
-def prepNotYet(cellOutput, cell, cell_index, output_index, imagedir, infile):
+def prepNotYet(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
   for output in cell["outputs"]:
     raise NotImplementedError("Unable to process cell type {}".\
                                format(output["output_type"]))
@@ -603,11 +606,11 @@ def extractBibtexXref(cell):
 
 
 ################################################################################
-def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''): 
+def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
   """process the metadata string, either a single string or a list of strings,
   and extract the string associated with output_index, if in a list
   """
-  outStr = defaultValue 
+  outStr = defaultValue
   if captionID in cell['metadata'].keys():
     if metaID in cell['metadata'][captionID].keys():
 
@@ -627,14 +630,14 @@ def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
   return outStr
 
 ################################################################################
-def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0): 
+def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
   """process the metadata string, either an int/float or a list of ints/floats,
   and extract the value associated with output_index, if in a list
   """
   outVal = defaultValue
   if captionID in cell['metadata'].keys():
     if metaID in cell['metadata'][captionID].keys():
-      strIn = cell['metadata'][captionID][metaID]   
+      strIn = cell['metadata'][captionID][metaID]
       if type(eval(strIn)) is not list:
         outVal = eval(strIn)
       else:
@@ -644,9 +647,9 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
         else:
           outVal = defaultValue
   return outVal
-     
+
 ################################################################################
-def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile):
+def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
   # print('********',cellOutput.keys())
 
   texStr = ''
@@ -657,7 +660,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
         return cellOutput.text
 
   if 'text/html' in cellOutput.keys() :
-    return processHTMLTree(cellOutput['text/html'],cell)
+    return processHTMLTree(cellOutput['text/html'],cell,addurlcommand)
 
   #handle pdf image
   picCell = None
@@ -713,7 +716,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
       #process the scale values, either a value or a list of value
 
-      #build the complete bitmap size latex string    
+      #build the complete bitmap size latex string
       width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
       scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 0.0)
 
@@ -746,38 +749,38 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
     return texStr
 
   if 'text/plain' in cellOutput.keys():
-    return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
+    return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
   if 'data' in cellOutput.keys():
     if 'text/plain' in cellOutput.data.keys():
-      return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile)
+      return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
   raise NotImplementedError("Unknow cell type(s): {}".format(cellOutput.keys()))
 
 ################################################################################
-def convertRawCell(cell, cell_index, imagedir, infile, floatlistings):
+def convertRawCell(cell, cell_index, imagedir, infile, inlinelistings,addurlcommand):
 
   extractBibtexXref(cell)
 
   return cell['source'] , ''
 
 ################################################################################
-def convertCodeCell(cell, cell_index, imagedir, infile, floatlistings):
+def convertCodeCell(cell, cell_index, imagedir, infile, inlinelistings,addurlcommand):
 
   extractBibtexXref(cell)
 
-  output,lstoutput = prepInput(cell, cell_index, floatlistings)
+  output,lstoutput = prepInput(cell, cell_index, inlinelistings)
   for  count, cellOutput in enumerate(cell.outputs):
     #output += "<li>{}</li>".format(cellOutput.output_type)
     if cellOutput.output_type not in fnTableOutput:
       print(cellOutput.output_type)
       raise NotImplementedError("Unknown output type {}.".format(cellOutput.output_type))
-    output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir, infile)
+    output += fnTableOutput[cellOutput.output_type](cellOutput, cell, cell_index, count, imagedir, infile,addurlcommand)
 
   return output, lstoutput
 
 ################################################################################
-def convertMarkdownCell(cell, cell_index, imagedir, infile, floatlistings):
+def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addurlcommand):
 
   extractBibtexXref(cell)
 
@@ -799,7 +802,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, floatlistings):
   ddollars = list(findAllStr(mkd, '$$'))
   if len(ddollars) > 0:
     lines = mkd.split('\n')
-    for line in lines: 
+    for line in lines:
       #ignore verbatim text
       if line[0:4] == '    ':
         nlines.append(line)
@@ -847,7 +850,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, floatlistings):
     mkd = mkd_tmp + mkd[end+1:]
 
   html = markdown.markdown(mkd, extensions=['extra'])
-  tmp = processHTMLTree(html,cell)
+  tmp = processHTMLTree(html,cell,addurlcommand)
 
   # lines = tmp.split('\n')
   # for line in lines:
@@ -864,7 +867,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, floatlistings):
 
 ################################################################################
 #process an html tree
-def processHTMLTree(html,cell):
+def processHTMLTree(html,cell,addurlcommand):
   table_index = 0
   tree = lxml.html.fromstring("<div>"+html+"</div>")
   # pptree(tree)
@@ -893,15 +896,15 @@ def processHTMLTree(html,cell):
       tmp += processHeading(r'\subparagraph',  child.text_content())
 
     elif child.tag == 'p' or child.tag == 'pre':
-      tmp += processParagraph(child,'') + '\n'
+      tmp += processParagraph(child,'',addurlcommand) + '\n'
 
     #this call may be recursive for nested lists
     #lists are not allowed inside paragraphs, handle them here
     elif child.tag == 'ul' or child.tag == 'ol':
-      tmp += processList(child) + '\n'
+      tmp += processList(child,addurlcommand) + '\n'
 
     elif child.tag == 'blockquote':
-      tmp += "\n\\begin{quote}\n" + processParagraph(child,'').strip() + "\\end{quote}\n\n"
+      tmp += "\n\\begin{quote}\n" + processParagraph(child,'',addurlcommand).strip() + "\\end{quote}\n\n"
 
     elif child.tag == 'table':
       tmp += convertHtmlTable(child, cell, table_index)
@@ -959,7 +962,7 @@ def processHeading(hstring, cstring):
 
 ################################################################################
 #this call may be recursive for nested lists
-def processList(lnode):
+def processList(lnode,addurlcommand):
   tmp = ''
   if lnode.tag == 'ul' or lnode.tag == 'ol':
     envtype = 'itemize' if lnode.tag == 'ul' else 'enumerate'
@@ -968,10 +971,10 @@ def processList(lnode):
   for li in lnode:
 
     if li.tag == 'li':
-        tmp += r"\item " + processParagraph(li,'').strip() + '\n'
+        tmp += r"\item " + processParagraph(li,'',addurlcommand).strip() + '\n'
 
     elif li.tag == 'ul' or li.tag == 'ol':
-      tmp += processList(li).strip() + '\n'
+      tmp += processList(li,addurlcommand).strip() + '\n'
     else:
       pass
 
@@ -982,7 +985,7 @@ def processList(lnode):
 
 
 ################################################################################
-def processParagraph(pnode, tmp):
+def processParagraph(pnode, tmp, addurlcommand):
   # tmp = ""
   if pnode.text:
     # print('pnode.text={}'.format(pnode.text))
@@ -1011,7 +1014,7 @@ def processParagraph(pnode, tmp):
       tmp += r"\textbf{" + child.text + "}" + childtail
 
     elif child.tag == 'p':
-      tmp += processParagraph(child, tmp).strip() + '\n\n' + childtail
+      tmp += processParagraph(child, tmp, addurlcommand).strip() + '\n\n' + childtail
 
     elif child.tag == 'br':
       tmp += "\n\n" + childtail
@@ -1021,11 +1024,11 @@ def processParagraph(pnode, tmp):
 
     elif child.tag == 'strong':
       tmp +=  r"\textbf{" + child.text + "}" + childtail
-    
+
     elif child.tag == 'font':
       #currently ignore font attributes
       tmp +=  child.text + childtail
-      
+
     elif child.tag == 'a':
       url = child.get('href')
       if url is not None:
@@ -1037,8 +1040,9 @@ def processParagraph(pnode, tmp):
           bibxref[citelabel] = citelabel
           # raise ValueError('This key is not in the bibxref dict metadata:', citelabel)
 
-        url = r'\url{'+url+'}'
-        # print('****',url)
+        if addurlcommand:
+          url = r'\url{'+url+'}'
+
         bibtexentry = '@MISC{{{0},\n'.format(bibxref[citelabel]) + \
             '  url = {{{0}}}\n}}\n\n'.format(url)
         bibtexlist.append(bibtexentry)
@@ -1052,10 +1056,10 @@ def processParagraph(pnode, tmp):
 
     # handle  embedded lists
     elif child.tag == 'ul' or child.tag == 'ol':
-      tmp += processList(child) + childtail
+      tmp += processList(child,addurlcommand) + childtail
 
     elif child.tag == 'pre':
-      tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'').strip() + "\\end{verbatim}\n\n"
+      tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'',addurlcommand).strip() + "\\end{verbatim}\n\n"
 
     elif child.tag == 'br':
       tmp += "\\newline"
@@ -1106,7 +1110,7 @@ def createImageDir(imagedir):
     imagedir = './pic/'
 
   # print(imagedir, imagedir[-1])
-  
+
   if imagedir[-1] is '\\' or imagedir[-1] is  '/':
     pass
   else:
@@ -1119,13 +1123,18 @@ def createImageDir(imagedir):
 
 ################################################################################
 # here we do one at at time
-def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
+def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand, bibstyle):
 
   #if required by option create a chapter for floated listings
-  listingsstring = '\n\n\chapter{Listings}\n\n' if floatlistings else ''
+  listingsstring = '\n\n\chapter{Listings}\n\n' if not inlinelistings else ''
 
-  print('notebook={}\nlatex={}\nimageDir={}\nfloat-listings={}'.format(infile,  outfile,  imagedir, floatlistings))
-    
+  print('\nnotebook={}'.format(infile))
+  print('latex={}'.format(outfile))
+  print('imageDir={}'.format(imagedir))
+  print('float listings={}'.format(inlinelistings))
+  print('add url to bibtex url={}'.format(addurlcommand))
+  print('biblography style={}'.format(bibstyle))
+
   pdffile = outfile.replace('.tex', '.pdf')
   bibfile = outfile.replace('.tex', '.bib')
 
@@ -1155,7 +1164,7 @@ def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
     if cell.cell_type not in fnTableCell:
       raise NotImplementedError("Unknown cell type: >{}<.".format(cell.cell_type))
 
-    rtnString, rtnListing = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile, floatlistings)
+    rtnString, rtnListing = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile, inlinelistings,addurlcommand)
 
     output += rtnString
     listingsstring += rtnListing
@@ -1164,7 +1173,7 @@ def processOneIPynbFile(infile, outfile, imagedir, floatlistings):
     output += listingsstring
 
   if len(bibtexlist):
-    output += '\n\n\\bibliographystyle{IEEEtran}\n'
+    output += '\n\n\\bibliographystyle{{{0}}}\n'.format(bibstyle)
     output += '\\bibliography{{{0}}}\n\n'.format(bibfile.replace('.bib', ''))
 
   output += r'\end{document}'+'\n\n'
@@ -1198,16 +1207,16 @@ def getInfileNames(infile, outfile):
     if outfile is None:
       outfile = infile.replace('.ipynb', '.tex')
 
-    infiles.append(infile)    
-    outfiles.append(outfile) 
+    infiles.append(infile)
+    outfiles.append(outfile)
 
-  else: 
-    # no input filename supplied, get all   
+  else:
+    # no input filename supplied, get all
     ipynbfiles = listFiles('.', patterns='*.ipynb', recurse=0, return_folders=0)
     for ipynbfile in ipynbfiles:
       ipynbfile = os.path.basename(ipynbfile)
-      infiles.append(ipynbfile)    
-      outfiles.append(ipynbfile.replace('.ipynb', '.tex')) 
+      infiles.append(ipynbfile)
+      outfiles.append(ipynbfile.replace('.ipynb', '.tex'))
 
 
   return infiles, outfiles
@@ -1223,7 +1232,9 @@ args = docopt.docopt(docoptstring)
 infile = args['<ipnbfilename>']
 outfile = args['<outfilename>']
 imagedir =  args['<imagedir>']
-floatlistings = args['-l']
+inlinelistings = args['-i']
+addurlcommand = args['-u']
+bibstyle = args['--bibstyle']
 
 # find the image directory
 imagedir = createImageDir(imagedir)
@@ -1233,6 +1244,6 @@ infiles, outfiles = getInfileNames(infile, outfile)
 
 #process the list of files found in spec
 for infile, outfile in zip(infiles, outfiles):
-  processOneIPynbFile(infile, outfile, imagedir, floatlistings)
+  processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand, bibstyle)
 
 print('\nfini!')

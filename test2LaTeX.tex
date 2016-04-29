@@ -73,10 +73,13 @@ where
 
 
 \begin{itemize}
-\item \verb+file.ipynb+  [optional]  is the name of the input IPython notebook file.   If no input filename is  supplied, all  \verb+.ipynb+ files in current directory will be processed.   In this event the output filenames will be the same as the \verb+.ipynb+ files, just with a \verb+tex+ filetype.
-\item \verb+file.tex+ [optional] is the name of output \LaTeX{} file. If none is given the output filename will be the same as the input file, but with the \verb+.tex+ extension.
-\item \verb+imagedir+   [optional]  is the directory where images are written to.  If not given, this image directory will be the \verb+./pic+ directory.
-\item \verb+-l+ [optional] (the lower case letter el) if this option is given the code listings are floated to the end of the document. Otherwise the code listings are placed in the document where they occur in the notebook.
+\item \verb+file.ipynb+  [optional]   is the name of the input IPython notebook file.   If no input filename is  supplied, all  \verb+.ipynb+ files in current directory will be processed.   In this event the output filenames will be the same as the \verb+.ipynb+ files, just with a \verb+tex+ filetype.
+\item \verb+file.tex+ [optional]  is the name of output \LaTeX{} file. If none is given the output filename will be the same as the input file, but with the \verb+.tex+ extension.
+\item \verb+imagedir+   [optional]   is the directory where images are written to.  If not given, this image directory will be the \verb+./pic+ directory.
+\item \verb+-i+  [optional], the lower case letter \verb+i+, if this option is given the code     listings are printed inline with the body text where they occur,       otherwise listings are floated to the end of the document.
+\item \verb+-u+ [optional] add \verb+\url{}+ to the bibtex entries, to obtain  \verb+url = {\url{http://ipython.org/}}+, otherwise use the form \verb+url = {http://ipython.org/}+
+\item \verb+--bibstyle=<style>+  [optional] selects bibliography style to be used.
+     Use the form \verb+--bibstyle=natbib+ or \verb+--bibstyle="natbib"+ [default: \verb+IEEEtran+].
 \end{itemize}
 
 
@@ -970,6 +973,14 @@ Pandas dataframe tables are also rendered.
 
 See Listing~\ref{lst:autolistingcell70} for the code.
 
+
+\begin{lstlisting}[style=outcellstyle]
+C:\Anaconda2\lib\site-packages\pandas\computation\__init__.py:19: UserWarning: The installed version of numexpr 2.4.4 is not supported in pandas and will be not be used
+
+  UserWarning)
+
+\end{lstlisting}
+
 \begin{center}
 
 \begin{normalsize}
@@ -1062,7 +1073,7 @@ numpy&1.10.4\\\hline
 scipy&0.17.0\\\hline
 matplotlib&1.5.1\\\hline
 pandas&0.18.0\\\hline
-\multicolumn{2}{|c|}{Tue Apr 26 12:12:56 2016 South Africa Standard Time}\\\hline
+\multicolumn{2}{|c|}{Thu Apr 28 10:57:33 2016 South Africa Standard Time}\\\hline
 
 \end{tabular}
 \end{normalsize}
@@ -1078,7 +1089,7 @@ numpy 1.10.4
 scipy 0.17.0
 matplotlib 1.5.1
 pandas 0.18.0
-Tue Apr 26 12:12:56 2016 South Africa Standard Time
+Thu Apr 28 10:57:33 2016 South Africa Standard Time
 \end{lstlisting}
 
 
