@@ -1033,6 +1033,9 @@ def processParagraph(pnode, tmp, addurlcommand):
       url = child.get('href')
       if url is not None:
         citelabel = cleanFilename(url,  removestring =r" %:/,.\[]=?~!@#$^&*()-_{};")
+        # if the label is too long latex may choke
+        if len(citelabel) > 25:
+            citelabel = citelabel[:25]
         if citelabel in bibxref.keys():
           pass
           # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
