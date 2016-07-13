@@ -479,7 +479,7 @@ def encapsulateListing(outstr, captionStr):
 def prepInput(cell, cell_index, inlinelistings):
   rtnStr =''
   rtnSource = ''
-  captiopurp = ''
+  captiopurp = None
   # v3 if 'input' in cell.keys():
 
   if 'source' in cell.keys():
@@ -500,12 +500,17 @@ def prepInput(cell, cell_index, inlinelistings):
     if not inlinelistings and not len(labelStr):
       labelStr = 'lst:autolistingcell{}'.format(cell_index)
 
-    if not inlinelistings and not len(captionStr):
+    if not inlinelistings: # and not captionStr:
       if len(lsting):
         lstistrp = lsting.split('\n')
         if len(lstistrp[0]) > 0: # take care of blank first lines
-            if lstistrp[0][0]=='#':
-              captiopurp = ' ' + lstistrp[0][1:]
+          if lstistrp[0][0]=='#':
+            if len(lstistrp[0]) > 2: # take care of blank first lines
+              if not lstistrp[0][1]=='#':
+                captiopurp = ' ' + lstistrp[0][1:]
+          else:
+            captiopurp = ''
+
       captionStr = 'Code Listing in cell {}'.format(cell_index)
 
     if captionStr:
@@ -518,11 +523,15 @@ def prepInput(cell, cell_index, inlinelistings):
       tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
     tmpStr += '\\end{lstlisting}\n\n'
 
-  if not inlinelistings:
-    rtnSource = tmpStr
-    rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code{}.\n\n'.format(labelStr,captiopurp)
-  else:
+  if inlinelistings:
     rtnStr = tmpStr
+  else:
+    rtnSource = tmpStr
+    if captiopurp is not None:
+      rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code{}.\n\n'.format(labelStr,captiopurp)
+    else:
+      rtnStr = ''
+
 
   return rtnStr,rtnSource
 

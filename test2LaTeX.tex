@@ -299,7 +299,7 @@ In order to improve readability in the document, the code listings can be floate
 \verb+See Listing~\ref{lst:autolistingcellX} for the code {purpose}.+
 
 
-where the symbolic link is constructed using the cell number and the text used in the \verb+{purpose}+ part is taken from the first line of the code, if the first line is a comment.  Hence if the code in cell 3 starts with the lines
+where the symbolic link is constructed using the cell number and the text used in the \verb+{purpose}+ part is taken from the first line of the code, if the first line is a comment with a single \verb+#+ followed by a space.  Hence if the code in cell 3 starts with the lines
 
 
 \begin{verbatim}
@@ -323,9 +323,12 @@ If a code cell does not start with a comment, no text will be inserted and the f
 \verb+See Listing~\ref{lst:autolistingcell24} for the code.+
 
 
+If the code cell starts with a comment of the form \verb+##+ followed by a space, the listing will be made but there is no text entry in the location where the code cell was. i.e., no line starting with \verb+See Listing+...
 
 
-See Listing~\ref{lst:listing1} for the code.
+
+
+See Listing~\ref{lst:listing1} for the code  to prepare the environment.
 
 
 \begin{lstlisting}[style=outcellstyle,caption={Caption for first listing output \label{lst:listing1-out}}]
@@ -373,10 +376,6 @@ The code block also demonstrates how long lines are handled in this lstlistings 
 
 
 
-
-See Listing~\ref{lst:listing2} for the code.
-
-
 \begin{lstlisting}[style=outcellstyle]
  
 Radius = 6
@@ -387,7 +386,14 @@ This is a very long line of python code, that is supposed to flow over to the ne
 
 
 
-See Listing~\ref{lst:listing3} for the code.
+See Listing~\ref{lst:listing3} for the code  to print the value.
+
+
+\begin{lstlisting}[style=outcellstyle]
+a
+b
+
+\end{lstlisting}
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -401,7 +407,7 @@ The following code block has no metadata, and hence no captions on either the co
 
 
 
-See Listing~\ref{lst:autolistingcell36} for the code.
+See Listing~\ref{lst:autolistingcell37} for the code.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -414,11 +420,11 @@ Output emanating from different cells \textit{may} result in different output li
 
 
 
-See Listing~\ref{lst:autolistingcell38} for the code.
-
-
-
 See Listing~\ref{lst:autolistingcell39} for the code.
+
+
+
+See Listing~\ref{lst:autolistingcell40} for the code.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -474,12 +480,12 @@ If the \verb+caption+ field is given (or has non-zero length), the image will be
 
 
 
-See Listing~\ref{lst:figurelisting} for the code.
+See Listing~\ref{lst:figurelisting} for the code this figure is given meta data caption parameters, it will be floated in the latex export.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_42_0.png}
+\includegraphics{./pic/test2LaTeX_43_0.png}
 \caption{Caption text for first figure\label{fig:lab1-0}}
 \end{figure}
 
@@ -503,10 +509,10 @@ The following figure is not floating, but is scaled down to be smaller.
 
 
 
-See Listing~\ref{lst:autolistingcell44} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
+See Listing~\ref{lst:autolistingcell45} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
 
 \begin{center}
-\includegraphics{./pic/test2LaTeX_44_0.png}
+\includegraphics{./pic/test2LaTeX_45_0.png}
 \end{center}
 
 The following Matplotlib plot is scaled and floating.
@@ -525,12 +531,12 @@ The following Matplotlib plot is scaled and floating.
 
 
 
-See Listing~\ref{lst:autolistingcell46} for the code.
+See Listing~\ref{lst:autolistingcell47} for the code.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_46_0.png}
+\includegraphics{./pic/test2LaTeX_47_0.png}
 \caption{Caption text for third figure\label{fig:lab3-0}}
 \end{figure}
 
@@ -553,23 +559,23 @@ In this case the caption strings and scaling values are allocated to the sequenc
 
 
 
-See Listing~\ref{lst:autolistingcell48} for the code.
+See Listing~\ref{lst:autolistingcell49} for the code.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_48_0.png}
+\includegraphics{./pic/test2LaTeX_49_0.png}
 \caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
 \end{figure}
 
 \begin{center}
-\includegraphics{./pic/test2LaTeX_48_1.png}
+\includegraphics{./pic/test2LaTeX_49_1.png}
 \end{center}
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_48_2.png}
+\includegraphics{./pic/test2LaTeX_49_2.png}
 \caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
 \end{figure}
 
@@ -579,7 +585,7 @@ You can write HTML to the cell's output and have it displayed in the browser and
 
 
 
-See Listing~\ref{lst:autolistingcell51} for the code.
+See Listing~\ref{lst:autolistingcell52} for the code.
 
 \begin{center}
 \includegraphics[width=0.9\textwidth]{images/random-squares-2.png}
@@ -617,7 +623,7 @@ The following line must be uncommented to have effect.
 
 
 
-See Listing~\ref{lst:autolistingcell56} for the code  type(eval("this is a test string")) is not list.
+See Listing~\ref{lst:autolistingcell57} for the code  type(eval("this is a test string")) is not list.
 
 
 \section{Embedded code (verbatim text)}
@@ -656,7 +662,7 @@ def hello\_ipython():
 \label{sec:Embeddedhyperlinks}
 
 The IPython website\cite{httpipythonorg} is the central repository of all things IPython.
-There are some really nice videos\cite{httpswwwyoutubecomwatchvaIXED26Wppg} on YouTube.
+There are some really nice videos\cite{httpswwwyoutubecomwatchva} on YouTube.
 
 
 For \textit{URI references}, the \verb+[IPython website](http://ipython.org/)+ markup structure is read and the URI is used to create a citation label (\verb+httpipythonorg+) and the URI (\verb+http://ipython.org/+) is written to a new \LaTeX{} bibtex file for the references in this notebook.
@@ -971,15 +977,7 @@ Pandas dataframe tables are also rendered.
 
 
 
-See Listing~\ref{lst:autolistingcell70} for the code.
-
-
-\begin{lstlisting}[style=outcellstyle]
-C:\Anaconda2\lib\site-packages\pandas\computation\__init__.py:19: UserWarning: The installed version of numexpr 2.4.4 is not supported in pandas and will be not be used
-
-  UserWarning)
-
-\end{lstlisting}
+See Listing~\ref{lst:autolistingcell71} for the code.
 
 \begin{center}
 
@@ -1013,7 +1011,7 @@ Using math mode (anything between two dollar symbols) is interpreted as \LaTeX{}
 \begin{equation}D_{KL}(P||Q) = \sum\limits_{i}ln (\frac{P(i)}{Q(i)}) P(i).\end{equation}
 
 
-The probability density function for yaw angle is the wrapped normal distribution\cite{httpsenwikipediaorgwikiWrappednormaldistribution}.  The first form uses two dollar symbols  to show the equation in LaTeX display math:
+The probability density function for yaw angle is the wrapped normal distribution\cite{httpsenwikipediaorgwikiWr}.  The first form uses two dollar symbols  to show the equation in LaTeX display math:
 \begin{equation}f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]\end{equation}
 
 
@@ -1042,7 +1040,7 @@ f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty
 \section{Python and module versions, and dates}
 \label{sec:Pythonandmoduleversionsanddates}
 
-From: Introduction to scientific computing with Python\cite{httpnbvieweripythonorggithubjrjohanssonscientificpythonlecturesblobmasterLecture0ScientificComputingwithPythonipynb} we learn:
+From: Introduction to scientific computing with Python\cite{httpnbvieweripythonorggit} we learn:
 "To encourage the practice of recording Python and module versions in notebooks, I've created a simple IPython extension that produces a table with versions numbers of selected software components. I believe that it is a good practice to include this kind of table in every notebook you create. To install this IPython extension, run:"
 
 
@@ -1057,7 +1055,7 @@ Now, to load the extension and produce the version table
 
 
 
-See Listing~\ref{lst:autolistingcell78} for the code.
+See Listing~\ref{lst:autolistingcell79} for the code.
 
 \begin{center}
 
@@ -1073,7 +1071,7 @@ numpy&1.10.4\\\hline
 scipy&0.17.0\\\hline
 matplotlib&1.5.1\\\hline
 pandas&0.18.0\\\hline
-\multicolumn{2}{|c|}{Thu Apr 28 10:57:33 2016 South Africa Standard Time}\\\hline
+\multicolumn{2}{|c|}{Wed Jul 13 10:00:58 2016 South Africa Standard Time}\\\hline
 
 \end{tabular}
 \end{normalsize}
@@ -1089,7 +1087,7 @@ numpy 1.10.4
 scipy 0.17.0
 matplotlib 1.5.1
 pandas 0.18.0
-Thu Apr 28 10:57:33 2016 South Africa Standard Time
+Wed Jul 13 10:00:58 2016 South Africa Standard Time
 \end{lstlisting}
 
 
@@ -1097,7 +1095,7 @@ Thu Apr 28 10:57:33 2016 South Africa Standard Time
 \chapter{Listings}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Caption text for first listing \label{lst:listing1}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 31 \label{lst:listing1}}]
 # to prepare the environment
 from IPython.display import display
 from IPython.display import Image
@@ -1111,7 +1109,7 @@ import this
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Caption text for second listing \label{lst:listing2}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 33 \label{lst:listing2}}]
 #
 print(' ')
 print('Radius = {}'.format(6))
@@ -1120,27 +1118,35 @@ print('This is a very long line of python code, that is supposed to flow over to
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Caption text for third listing \label{lst:listing3}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 34 \label{lst:listing3}}]
 # to print the value
+a = ['a','b']
+for v in a:
+    print(v)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 35 \label{lst:autolistingcell35}}]
+## this should not appear in the body of the doc if float listings
 a = [0, 1]
 for v in a:
     print(v)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 36 \label{lst:autolistingcell36}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 37 \label{lst:autolistingcell37}}]
 print('code with no listing caption')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 38 \label{lst:autolistingcell38}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 39 \label{lst:autolistingcell39}}]
 def doprint(i):
     print('function output {}'.format(i))
     return int(i)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 39 \label{lst:autolistingcell39}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 40 \label{lst:autolistingcell40}}]
 for i in [1,2,3]:
     si = str(i)
     v = doprint(si)
@@ -1151,7 +1157,7 @@ print(v)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Listing caption in cell with a figure \label{lst:figurelisting}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 43 \label{lst:figurelisting}}]
 #this figure is given meta data caption parameters, it will be floated in the latex export
 display(Image(filename='images/keep-calm-and-code-python_BW.png', width=250, height=250))
 print('also force print output')
@@ -1159,13 +1165,13 @@ print('also force print output')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 44 \label{lst:autolistingcell44}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 45 \label{lst:autolistingcell45}}]
 #this figure is not given meta data caption parameters, it will be inlined in the latex export
 display(Image(filename='images/random-squares-2.png', width=200, height=200))
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 46 \label{lst:autolistingcell46}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 47 \label{lst:autolistingcell47}}]
 %matplotlib inline
 
 import pylab as pl
@@ -1182,7 +1188,7 @@ pl.grid(True)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 48 \label{lst:autolistingcell48}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 49 \label{lst:autolistingcell49}}]
 import pyradi.ryplot as ryplot
 
 x = np.linspace(0,10,10)
@@ -1196,18 +1202,18 @@ for i in [1,2]:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 51 \label{lst:autolistingcell51}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 52 \label{lst:autolistingcell52}}]
 htmlstr = '<p><img src="images/random-squares-2.png" width=100 />'
 HTML(htmlstr)                 
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 56 \label{lst:autolistingcell56}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 57 \label{lst:autolistingcell57}}]
 # type(eval("this is a test string")) is not list
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 70 \label{lst:autolistingcell70}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 71 \label{lst:autolistingcell71}}]
 import pandas as pd
 d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
      'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
@@ -1218,7 +1224,7 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 78 \label{lst:autolistingcell78}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 79 \label{lst:autolistingcell79}}]
 %load_ext version_information
 %version_information numpy, scipy, matplotlib,pandas
 \end{lstlisting}
