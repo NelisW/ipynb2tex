@@ -845,6 +845,13 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
   math_envs += [(s,e) for (s,e) in zip(starts, ends)]
   math_envs = sorted(math_envs)
 
+  starts = list(findAllStr(mkd, '\n\\begin{eqnarray}'))
+  ends = [e + 13 for e in findAllStr(mkd, '\\end{eqnarray}')]
+  if len(starts) > len(ends):
+    starts = starts[:-1]
+  math_envs += [(s,e) for (s,e) in zip(starts, ends)]
+  math_envs = sorted(math_envs)
+
   if math_envs:
     mkd_tmp = ""
     old_end = -1
@@ -953,9 +960,15 @@ def processHTMLTree(html,cell,addurlcommand):
     # check for inline math
     loc += offset_count
     inline_count = sum([1 for i in findAllStr(tmp, '$') if i < loc])
+
     env_count = sum([1 for i in findAllStr(tmp, r'\begin{equation') if i < loc]) \
       + sum([1 for i in findAllStr(tmp, r'\end{equation') if i < loc])
-    if (not inline_count % 2) and (not env_count % 2):
+    envs_count = sum([1 for i in findAllStr(tmp, r'\begin{equation*') if i < loc]) \
+      + sum([1 for i in findAllStr(tmp, r'\end{equation*') if i < loc])
+    enva_count = sum([1 for i in findAllStr(tmp, r'\begin{eqnarray') if i < loc]) \
+      + sum([1 for i in findAllStr(tmp, r'\end{eqnarray') if i < loc])
+
+    if (not inline_count % 2) and (not env_count % 2) and (not envs_count % 2) and (not enva_count % 2) :
       tmp = tmp[:loc] + '\\' + tmp[loc:]
       offset_count += 1
   return tmp
