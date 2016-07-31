@@ -95,6 +95,8 @@ r"""
 \usepackage{amsmath}
 \usepackage[printonlyused]{acronym}
 \usepackage{lastpage}
+\usepackage[Export]{adjustbox}
+\adjustboxset{max size={\textwidth}{0.7\textheight}}
 
 %the following is required for carriage return symbol
 %ftp://ftp.botik.ru/rented/znamensk/CTAN/fonts/mathabx/texinputs/mathabx.dcl
