@@ -226,7 +226,8 @@ def latexEscapeForHtmlTableOutput(string):
   if matches:
     lead, sign, pw = matches.groups()
     sign = sign.replace('+', '')
-    string = string.replace(matches.group(), lead + r'\times 10^{' + sign + pw.strip('0') + '}')
+    # string = string.replace(matches.group(), lead + r'\times 10^{' + sign + pw.strip('0') + '}')
+    string = string.replace(matches.group(), '$'+lead + r'\times 10^{' + sign + pw.strip('0') + '}'+'$')
   return string
 
 

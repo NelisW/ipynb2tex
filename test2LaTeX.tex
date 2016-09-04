@@ -926,6 +926,52 @@ RLevel 1:2\%\_&RLevel 2:1&A&6728&6595\\\cline{3-3}\cline{4-4}\cline{5-5}
 \end{normalsize}
 \end{table}
 
+The infrared sensor example has the following design characteristics:
+
+
+\begin{center}
+
+\begin{normalsize}
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+Characteristic&Value&Unit&Motivation\\\hline
+Spectral response&3.7--4.9&$\mu$m&detector specification\\\hline
+Pixel size (x and y)&12&$\mu$m&detector specification\\\hline
+Pixel fill factor&0.95&&detector specification\\\hline
+Detector temperature&80&K&detector specification\\\hline
+Detector external quantum efficiency&0.8&&detector specification\\\hline
+Detector internal quantum efficiency&0.75&&detector specification\\\hline
+Number rows&144&-&detector specification\\\hline
+Number columns&256&-&detector specification\\\hline
+Detector PRNU  stddev&0.2&&detector specification\\\hline
+Well capacity at 1 V&$3.2\times 10^{6}$&e&detector specification\\\hline
+Sense node voltage&3.0 $\rightarrow$ 1.0&V&detector specification\\\hline
+F-number&3.2&-&detector specification\\\hline
+Band gap 0~K&0.235&eV&material property\\\hline
+Varshni A&0.00068&&material model\\\hline
+Varshni B&500&&material model\\\hline
+Dark FOM&$4\times 10^{-9}$&nA/cm$^2$&material model\\\hline
+Dark cm&1&&material model\\\hline
+Dark FPN stddev&0.4&&material model\\\hline
+Well capacitance at 1.0 V&$5.13\times 10^{-13}$&F&by calculation\\\hline
+k1&$5.13\times 10^{-13}$&CV&by calculation\\\hline
+Gain at 1.0 V&$3.125\times 10^{-7}$&V/e&by calculation\\\hline
+Pixel IFOV (x and y)&$100.0\times 10^{-6}$&rad&design choice\\\hline
+Frame time&0.02&s&design choice\\\hline
+Focal length&0.12&m&design choice\\\hline
+Full field angle&0.84&deg&focal length and detector\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{center}
+
+Charge well (sense node) capacitance $C = nq/V$. The charge well is filled to capacity at the minimum sense node voltage $C = \num{3.2e6}\times\num{1.6e-19}/1.0= \num{0.513e-12}$~F.  Then $k_1=CV=\num{0.513e-12}\times 1=\num{0.513e-12}$.
+
+
+Sense node gain is given by $V/n = q/C = \num{1.6e-19}/\num{0.513e-12}=\num{3.12e-07}$ V/e.
+
+
 A table can be formatted with the metadata, even if the table is not floating with a caption. For example, the following table only uses the following metadata:
 
 
@@ -977,7 +1023,7 @@ Pandas dataframe tables are also rendered.
 
 
 
-See Listing~\ref{lst:autolistingcell71} for the code.
+See Listing~\ref{lst:autolistingcell72} for the code.
 
 \begin{center}
 
@@ -1055,7 +1101,7 @@ Now, to load the extension and produce the version table
 
 
 
-See Listing~\ref{lst:autolistingcell79} for the code.
+See Listing~\ref{lst:autolistingcell80} for the code.
 
 \begin{center}
 
@@ -1064,14 +1110,14 @@ See Listing~\ref{lst:autolistingcell79} for the code.
 \begin{tabular}{|c|c|}
 \hline
 Software&Version\\\hline
-Python&2.7.11 64bit [MSC v.1500 64 bit (AMD64)]\\\hline
-IPython&4.1.2\\\hline
+Python&2.7.12 64bit [MSC v.1500 64 bit (AMD64)]\\\hline
+IPython&4.2.0\\\hline
 OS&Windows 7 6.1.7601 SP1\\\hline
-numpy&1.10.4\\\hline
-scipy&0.17.0\\\hline
+numpy&1.11.1\\\hline
+scipy&0.17.1\\\hline
 matplotlib&1.5.1\\\hline
-pandas&0.18.0\\\hline
-\multicolumn{2}{|c|}{Wed Jul 13 10:00:58 2016 South Africa Standard Time}\\\hline
+pandas&0.18.1\\\hline
+\multicolumn{2}{|c|}{Sun Sep 04 21:50:34 2016 South Africa Standard Time}\\\hline
 
 \end{tabular}
 \end{normalsize}
@@ -1080,14 +1126,14 @@ pandas&0.18.0\\\hline
 
 \begin{lstlisting}[style=outcellstyle]
 Software versions
-Python 2.7.11 64bit [MSC v.1500 64 bit (AMD64)]
-IPython 4.1.2
+Python 2.7.12 64bit [MSC v.1500 64 bit (AMD64)]
+IPython 4.2.0
 OS Windows 7 6.1.7601 SP1
-numpy 1.10.4
-scipy 0.17.0
+numpy 1.11.1
+scipy 0.17.1
 matplotlib 1.5.1
-pandas 0.18.0
-Wed Jul 13 10:00:58 2016 South Africa Standard Time
+pandas 0.18.1
+Sun Sep 04 21:50:34 2016 South Africa Standard Time
 \end{lstlisting}
 
 
@@ -1213,7 +1259,7 @@ HTML(htmlstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 71 \label{lst:autolistingcell71}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 72 \label{lst:autolistingcell72}}]
 import pandas as pd
 d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
      'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
@@ -1224,7 +1270,7 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 79 \label{lst:autolistingcell79}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 80 \label{lst:autolistingcell80}}]
 %load_ext version_information
 %version_information numpy, scipy, matplotlib,pandas
 \end{lstlisting}
