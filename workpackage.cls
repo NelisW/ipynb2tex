@@ -153,6 +153,12 @@
 \newcommand{\WP@docECPnumber}{} 
 \@onlypreamble{\WPdocECPnumber}
 
+\newcommand{\WPdocLogo}[1]{\renewcommand{\WP@docLogo}{#1}}
+\newcommand{\WP@docLogo}{} 
+\@onlypreamble{\WPdocLogo}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Packages used in this style
 
@@ -251,12 +257,9 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newlength{\lengthbuf} 
-
-\newcommand{\ps@WPheadings}{
-\renewcommand{\@oddhead}{
-\begin{minipage}[t]{\textwidthm}
+% test if logo is empty, else make picture
+\newcommand{\doLogo}[1]{
+\ifthenelse{\equal{#1}{}}{}{%
 \begin{picture}(0,0)
 \ifpdf        %This text is produced when in pdfTeX mode.
 \put(-1,-8){ \includegraphics{logo.png}}
@@ -264,6 +267,17 @@
 \put(-1,-8){ \includegraphics[bb=0 0 2104 171,scale=0.22]{logo.png}}
 \fi
 \end{picture}
+}
+}
+
+
+
+\newlength{\lengthbuf} 
+
+\newcommand{\ps@WPheadings}{
+\renewcommand{\@oddhead}{
+\begin{minipage}[t]{\textwidthm}
+\doLogo{\WP@docLogo}
 \ \newline
 \vspace{-4mm}
 \settowidth{\lengthbuf}{\scshape\WP@classification}%
