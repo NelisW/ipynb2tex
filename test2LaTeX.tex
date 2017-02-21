@@ -10,12 +10,12 @@
 % this preamble content is special to the documentclass you defined above.
 \WPproject{ipnb2LaTeX}           % project name
 \WPequipment{Work package demonstrator}         % equipment name
-\WPsubject{How to use the converter to create a work package}           % main heading
+\WPsubject{How to use the converter to create a work package}           % main heading 
 \WPconclusions{\begin{enumerate}
 \item This work package demonstrates the use of the converter.
 \item It was tested with and should work on Python 2.7.11 and 3.5 and up.
-\end{enumerate}}
-\WPclassification{Unclassified}
+\end{enumerate}} 
+\WPclassification{Unclassified} 
 \WPdocauthor{CJ Willers}
 \WPcurrentpackdate{\today}
 \WPcurrentpacknumber{0001} % work package number
@@ -25,14 +25,12 @@
 \WPsuperpackdate{}     % work package which comes after this one
 \WPsuperpacknumber{}   % work package which comes after this one
 \WPdocontractdetails{false}
-\WPcontractname{}      % contract name
+\WPcontractname{}      % contract name 
 \WPorderno{}           % contract order number
 \WPmilestonenumber{}   % contract milestone number
 \WPmilestonetitle{}    % contract milestone title
-\WPcontractline{}      % contract milestone line number
+\WPcontractline{}      % contract milestone line number 
 \WPdocECPnumber{1234567}      % ecp/ecr number
-\WPdocECPnumber{1234567}      % ecp/ecr number
-\WPdocLogo{logo.png}
 \WPdistribution{
 %\vspace{0.1mm}
 %\begin{tabular}{lllll}
@@ -45,7 +43,7 @@
 \begin{document}
 \WPlayout
 % some Latex code to be used verbatim
-\
+\ 
 \vspace{50mm}
 \begin{center}
 \includegraphics[width=0.6\textwidth]{./images/keep-calm-and-code-python_BW.png}
@@ -91,7 +89,7 @@ where
 Heading 1 is a \LaTeX{} chapter.
 
 
-Headings down to level 5 (\LaTeX{} paragraph) are supported.
+Headings down to level 5 (\LaTeX{} paragraph) are supported. 
 Headings at level 6 are treated as normal body text.
 If you don't need a chapter (i.e., for an article), just don't use a heading at level 1.
 
@@ -185,9 +183,8 @@ The \verb+header.tex+ file provides the functionality required by the converter-
 \section{Company Logo}
 \label{sec:CompanyLogo}
 
-The company logo can be supplied in the form of a png file.  This file must be defined in the command:\\
-\verb+\WPdocLogo{logo.png}+\\
-If the command is not used or is empty, no image is shown. If it is not empty, the contents must be a path to a png picture file to be used as logo.  The picture fits flush to the left margin, so if the logo is only required on the right side, use lots of white or transparency on the left side.
+The work package template has a \verb+logo.png+ file which is used to define a logo on top of the page.  The present image is empty, so no logo will show.  You can add your own logo to this file.
+
 
 
 \section{The images directory}
@@ -206,13 +203,13 @@ The \verb+Raw NBConvert+ cell type can be used to propagate text without any mod
 This raw capability is very useful if the notebook is intended to be exported to \LaTeX{} as primary output.  I find myself writing most of such documentation in raw latex in a 'Raw NBConvert' cell.  In this mode most of the notebook cells are never rendered to HTML, since you are reading and editing the \LaTeX{} and it stays in \LaTeX{} for display purposes as well. So you get the full benefit of all \LaTeX{} functionality (except that it is not rendered inside the notebook) and all the other benefits of the notebook.
 
 
-Raw NBConvert cell.  This could be raw \LaTeX{} as in
+Raw NBConvert cell.  This could be raw \LaTeX{} as in 
 
 \begin{equation}
 f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^\infty_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
 \end{equation}
 
-The degree symbol in \LaTeX{} should not be done with \verb+\circ+ as shown here: 45$^\circ$.
+The degree symbol in \LaTeX{} should not be done with \verb+\circ+ as shown here: 45$^\circ$. 
 Rather load \verb+\usepackage{gensymb}+ package and use \verb+45\textdegree{}+ 45\textdegree{}, or \verb+17~\celsius+ 17~\celsius.
 
 \section{Captions}
@@ -290,6 +287,16 @@ We can refer to Listings~\ref{lst:listing1}, \ref{lst:listing1-out}, \ref{lst:li
 
 
 You can also refer to Figures~\ref{fig:lab1-0} and \ref{fig:lab4-2}.
+
+
+The default is to provide colour syntax highlighting. If you don't want colour in the listings, simply remove these lines from \verb+header.tex+
+
+
+\begin{verbatim}
+commentstyle=\color{mygreen},    \% comment style
+keywordstyle=\color{blue},       \% keyword style
+stringstyle=\color{mymauve},     \% string literal style
+\end{verbatim}
 
 
 
@@ -380,7 +387,7 @@ The code block also demonstrates how long lines are handled in this lstlistings 
 
 
 \begin{lstlisting}[style=outcellstyle]
-
+ 
 Radius = 6
 Frontal area = 7 m2
 This is a very long line of python code, that is supposed to flow over to the next line, in order to test the listing display
@@ -638,7 +645,7 @@ Some firewalls are set up to grant \verb+localhost+ execution rights.  In this c
 \verb+ipython notebook --ip=localhost+
 
 
-Once started, the pages are served from
+Once started, the pages are served from 
 
 
 \verb+http://localhost:8888/+
@@ -689,14 +696,14 @@ The metadata has two different fields, one to do the citation label mapping and 
   "bibxref": {
     "httpipythonorg": "httpipythonorg",
     "httpswwwyoutubecomwatchvaIXED26Wppg": "httpswwwyoutubecomwatchvaIXED26Wppg",
-    "httpsenwikipediaorgwikiWrappednormaldistribution":
+    "httpsenwikipediaorgwikiWrappednormaldistribution": 
             "httpsenwikipediaorgwikiWrappednormaldistribution"
   },
   "bibtexentry": {
-    "wing2006computational": "@article{wing2006computational,  title={Computational thinking},
-           author={Wing, Jeannette M},  journal={Communications of the ACM},  volume={49},
+    "wing2006computational": "@article{wing2006computational,  title={Computational thinking},  
+           author={Wing, Jeannette M},  journal={Communications of the ACM},  volume={49},  
            number={3},  pages={33--35},  year={2006}}",
-    "gracec": "@MISC{gracec,  author = {Grace Cathedral},  title = {The Cathedral Labyrinths},
+    "gracec": "@MISC{gracec,  author = {Grace Cathedral},  title = {The Cathedral Labyrinths},  
            url = {http://www.gracecathedral.org/labyrinth/}}"
   }
 }
@@ -997,24 +1004,24 @@ A table can be formatted with the metadata, even if the table is not floating wi
 Column Number&Column Description&Example Values\\\hline
 1&Unique row identifier&MOD15A2.A2000057.h12v03.004.2002357024124.FparExtra\_QC
         MOD15A2.A2000057.h12v03.004.2002357024124.Lai\_1km\\\hline
-2&MODIS Land Product
+2&MODIS Land Product 
         Code&MOD15A2\\\hline
-3&MODIS Acquisition
+3&MODIS Acquisition 
         Date [ A (YYYYDDD) ]&A2000057\\\hline
-4&User selected center
-        point coordinates and specified width (Samp) and height (Line) of
-        bounding rectangle in pixels. Width x height denotes number of
+4&User selected center 
+        point coordinates and specified width (Samp) and height (Line) of 
+        bounding rectangle in pixels. Width x height denotes number of 
         Product values starting in Column 7. (e.g.,  7 x 7 $=$ 49)&Lat55.879620Lon-98.480810Samp7Line7\\\hline
-5&MODIS Processing Date
+5&MODIS Processing Date 
         (YYYYDDDHHMMSS)&2002357024124\\\hline
-6&Product Scientific
-        Data Set (Band): Indicates type of values to follow. Specific values
-        vary by Product. Data quality information are interleaved.&MOD15A2: FparExtra\_QC,
+6&Product Scientific 
+        Data Set (Band): Indicates type of values to follow. Specific values 
+        vary by Product. Data quality information are interleaved.&MOD15A2: FparExtra\_QC,  
         FparLai\_QC,  Fpar\_1kmMOD17A2: Gpp\_1km,  PsnNet\_1km,  Psn\_QC\_1km\\\hline
-7 to N&Data values of type
+7 to N&Data values of type 
         as specified. Number of data columns as given in Column 4.
-        Definition of QC component values vary by Scientific Data Set.&QC:
-        00100001, 01100001, 01100001,  ...Measurement:
+        Definition of QC component values vary by Scientific Data Set.&QC: 
+        00100001, 01100001, 01100001,  ...Measurement: 
         2, 2, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, ...to N\\\hline
 
 \end{tabular}
@@ -1200,7 +1207,7 @@ for i in [1,2,3]:
     si = str(i)
     v = doprint(si)
 
-val = v * 3
+val = v * 3   
 print(val)
 print(v)
 \end{lstlisting}
@@ -1253,7 +1260,7 @@ for i in [1,2]:
 
 \begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 52 \label{lst:autolistingcell52}}]
 htmlstr = '<p><img src="images/random-squares-2.png" width=100 />'
-HTML(htmlstr)
+HTML(htmlstr)                 
 \end{lstlisting}
 
 
