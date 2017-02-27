@@ -603,11 +603,6 @@ See Listing~\ref{lst:autolistingcell52} for the code.
 
 
 
-\begin{lstlisting}[style=outcellstyle]
-<IPython.core.display.HTML object>
-\end{lstlisting}
-
-
 \section{Graphs as PDF documents}
 \label{sec:GraphsasPDFdocuments}
 
@@ -1052,10 +1047,28 @@ d&NaN&4.0\\\hline
 \end{center}
 
 
-\begin{lstlisting}[style=outcellstyle]
-<IPython.core.display.HTML object>
-\end{lstlisting}
+\chapter{Pandas DataFrame to LaTeX}
+\label{sec:PandasDataFrametoLaTeX}
 
+The following example shows how to export a Pandas dataframe to a \verb+IPython.core.display.Latex object+ in the string \verb+lstr+. When viewed in the notebook, the table is shown as a LaTeX code, but when the conversion to a LaTeX document takes place, the LaTeX is rendered as regular LaTeX in the output PDF file.
+
+
+
+
+See Listing~\ref{lst:autolistingcell74} for the code  to create the dataframe and write the output to LaTeX object..
+
+\begin{tabular}{lrrrr}
+\toprule
+{} &         A &         B &         C &         D \\
+\midrule
+2013-01-01 &  0.654775 & -0.299591 &  1.644861 &  1.180750 \\
+2013-01-02 &  1.088972 &  0.360493 &  0.973057 &  0.377922 \\
+2013-01-03 & -0.125629 & -0.465763 &  0.147044 & -0.197328 \\
+2013-01-04 &  0.451412 &  0.590262 & -1.591565 & -1.709695 \\
+2013-01-05 & -0.779887 &  1.608000 & -0.773122 & -1.870413 \\
+2013-01-06 &  0.026699 & -1.024107 & -0.155772 & -0.835824 \\
+\bottomrule
+\end{tabular}
 
 \chapter{Math}
 \label{sec:Math}
@@ -1111,7 +1124,7 @@ Now, to load the extension and produce the version table
 
 
 
-See Listing~\ref{lst:autolistingcell80} for the code.
+See Listing~\ref{lst:autolistingcell82} for the code.
 
 \begin{center}
 
@@ -1132,19 +1145,6 @@ pandas&0.18.1\\\hline
 \end{tabular}
 \end{normalsize}
 \end{center}
-
-
-\begin{lstlisting}[style=outcellstyle]
-Software versions
-Python 2.7.12 64bit [MSC v.1500 64 bit (AMD64)]
-IPython 4.2.0
-OS Windows 7 6.1.7601 SP1
-numpy 1.11.1
-scipy 0.17.1
-matplotlib 1.5.1
-pandas 0.18.1
-Sun Sep 04 21:50:34 2016 South Africa Standard Time
-\end{lstlisting}
 
 
 
@@ -1280,7 +1280,26 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 80 \label{lst:autolistingcell80}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74 \label{lst:autolistingcell74}}]
+# to create the dataframe and write the output to LaTeX object.
+import pandas as pd
+import numpy as np
+
+def makeDateRand(nrows=6, ncols=4):
+    dates = pd.date_range('20130101',periods=6)
+    df = pd.DataFrame(np.random.randn(nrows,ncols),index=dates,columns=list('ABCD')) 
+    return df
+
+df = makeDateRand(nrows=6, ncols=4)
+lstr = df.to_latex()
+
+from IPython.display import Latex
+Latex(lstr)
+
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 82 \label{lst:autolistingcell82}}]
 %load_ext version_information
 %version_information numpy, scipy, matplotlib,pandas
 \end{lstlisting}

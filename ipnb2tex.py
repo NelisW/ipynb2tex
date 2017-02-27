@@ -453,8 +453,14 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
         if 'text/html' in    cellOutput.data.keys():
             outs = cellOutput.data['text/html']
             outstr +=    processHTMLTree(outs,cell,addurlcommand)
-        if 'text/plain' in    cellOutput.data.keys():
+        elif 'text/latex' in    cellOutput.data.keys():
+            outs = cellOutput.data['text/latex']
+            outstr +=    outs
+        elif 'text/plain' in    cellOutput.data.keys():
             outstr += encapsulateListing(cellOutput.data['text/plain'], captionStr)
+        else:
+            raise NotImplementedError("Unable to process cell {}, \nlooking for subkeys: {}".\
+                format(cellOutput, cellOutput.data.keys()))
     else:
         raise NotImplementedError("Unable to process cell {}, \nlooking for keys: {}".\
             format(cellOutput, cellOutput.keys()))
@@ -760,6 +766,21 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
         return texStr
 
+
+
+
+    #handle latex in output cell
+    #nbformat 4
+    if 'data' in cellOutput.keys() and 'text/latex' in cellOutput.data.keys():
+        texStr += processLaTeX(cellOutput['text/latex'],cell,addurlcommand)
+        return texStr
+    #nbformat 3
+    if 'latex' in cellOutput.keys():
+        texStr += processLaTeX(cellOutput['text/latex'],cell,addurlcommand)
+        return texStr
+
+
+
     if 'text/plain' in cellOutput.keys():
         return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
@@ -767,7 +788,18 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
         if 'text/plain' in cellOutput.data.keys():
             return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
+
+
     raise NotImplementedError("Unknow cell type(s): {}".format(cellOutput.keys()))
+
+
+
+################################################################################
+#process an html tree
+def processLaTeX(latex,cell,addurlcommand):
+    print('processLaTeX',latex)
+    return latex
+
 
 ################################################################################
 def convertRawCell(cell, cell_index, imagedir, infile, inlinelistings,addurlcommand):
