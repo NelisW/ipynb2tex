@@ -15,6 +15,8 @@ The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python
 -  References and hyperlinks are treated as first-class LaTeX references.  
 -  HTML tables are reformatted as LaTeX tables.  
 -  The header template interface allows the user to add his own style file.
+-  Supports Pandas `to_latex()` dataframe exports as inline or floating tables
+-  Supports `IPython.core.display.Latex object` in the output cell.
 
 ##Deficiencies
 
