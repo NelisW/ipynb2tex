@@ -1053,22 +1053,166 @@ d&NaN&4.0\\\hline
 The following example shows how to export a Pandas dataframe to a \verb+IPython.core.display.Latex object+ in the string \verb+lstr+. When viewed in the notebook, the table is shown as a LaTeX code, but when the conversion to a LaTeX document takes place, the LaTeX is rendered as regular LaTeX in the output PDF file.
 
 
+The table format specification is provided by the Pandas  to\_latex(column\_format)\cite{httppandaspydataorgpandas} argument,  as in
 
 
-See Listing~\ref{lst:autolistingcell74} for the code  to create the dataframe and write the output to LaTeX object..
+\verb+'|l|l|p{50mm}|c|r|'+
 
-\begin{tabular}{lrrrr}
+
+
+
+See Listing~\ref{lst:autolistingcell74} for the code  to create the dataframe and write the output to LaTeX object at default font size.
+
+{{
+\begin{center}
+% to get unbroken vertical lines with booktabs, set separators to zero
+% also set all horizontal lines to same width
+\aboverulesep=0ex
+\belowrulesep=0ex
+\heavyrulewidth=.05em
+\lightrulewidth=.05em
+\cmidrulewidth=.05em
+\belowbottomsep=0pt
+\abovetopsep=0pt
+\renewcommand{\arraystretch}{1.1}
+
+\begin{normalsize}
+\begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 &  0.654775 & -0.299591 &  1.644861 &  1.180750 \\
-2013-01-02 &  1.088972 &  0.360493 &  0.973057 &  0.377922 \\
-2013-01-03 & -0.125629 & -0.465763 &  0.147044 & -0.197328 \\
-2013-01-04 &  0.451412 &  0.590262 & -1.591565 & -1.709695 \\
-2013-01-05 & -0.779887 &  1.608000 & -0.773122 & -1.870413 \\
-2013-01-06 &  0.026699 & -1.024107 & -0.155772 & -0.835824 \\
+2013-01-01 &  0.037157 &  0.035874 &  0.558059 & -0.662619 \\
+2013-01-02 &  1.702955 &  2.144802 &  0.379050 &  0.363756 \\
+2013-01-03 & -1.502385 & -0.162936 &  1.318680 &  0.090148 \\
+2013-01-04 & -1.084001 & -0.238068 & -1.162832 & -0.071281 \\
+2013-01-05 &  2.364933 & -1.690242 &  0.319271 &  0.269092 \\
+2013-01-06 &  1.314192 & -0.575850 &  1.729734 &  1.676059 \\
 \bottomrule
 \end{tabular}
+
+\end{normalsize}
+\end{center}
+
+\renewcommand{\arraystretch}{1}
+}
+
+Set the font size for the typesetting by using the \verb+latex/fontsize+ setting in the  cell json metadata.
+Use the regular LaTeX font size definitions but without the backslash (Huge, huge, LARGE, Large, large, normalsize, small, footnotesize, scriptsize, tiny):
+
+
+\begin{verbatim}
+{
+  "latex": {
+    "fontsize": "LARGE"
+  }
+}
+\end{verbatim}
+
+
+Of course you may have to use this setting in conjunction with any other json settings.
+
+
+
+
+See Listing~\ref{lst:autolistingcell76} for the code  to write the table in LARGE.
+
+{{
+\begin{center}
+% to get unbroken vertical lines with booktabs, set separators to zero
+% also set all horizontal lines to same width
+\aboverulesep=0ex
+\belowrulesep=0ex
+\heavyrulewidth=.05em
+\lightrulewidth=.05em
+\cmidrulewidth=.05em
+\belowbottomsep=0pt
+\abovetopsep=0pt
+\renewcommand{\arraystretch}{1.1}
+
+\begin{LARGE}
+\begin{tabular}{|l|l|p{50mm}|c|r|}
+\toprule
+{} &         A &         B &         C &         D \\
+\midrule
+2013-01-01 &  0.037157 &  0.035874 &  0.558059 & -0.662619 \\
+2013-01-02 &  1.702955 &  2.144802 &  0.379050 &  0.363756 \\
+2013-01-03 & -1.502385 & -0.162936 &  1.318680 &  0.090148 \\
+2013-01-04 & -1.084001 & -0.238068 & -1.162832 & -0.071281 \\
+2013-01-05 &  2.364933 & -1.690242 &  0.319271 &  0.269092 \\
+2013-01-06 &  1.314192 & -0.575850 &  1.729734 &  1.676059 \\
+\bottomrule
+\end{tabular}
+
+\end{LARGE}
+\end{center}
+
+\renewcommand{\arraystretch}{1}
+}
+
+An exported \verb+IPython.core.display.Latex object+ Pandas dataframe can also be typeset as a floating table by setting appropriate metadata for the floating table:
+
+
+\begin{verbatim}
+{
+  "latex": {
+    "fontsize": "scriptsize"
+  },
+  "tableCaption": {
+    "caption": "Caption text for Pandas table",
+    "label": "tab:lab1",
+    "format": "IGNORED!!",
+    "fontsize": "tiny"
+  }
+}
+\end{verbatim}
+
+
+If both \verb+latex/fontsize+ and \verb+tableCaption/fontsize+ are present then the \verb+tableCaption/fontsize+ takes preference, and the table (only) is rendered in the specified fontsize.  The floating caption is in the normal document font size.
+
+
+The table format specification is provided by the Pandas \verb+.to\_latex(column\_format)+  argument, so the \verb+tableCaption/format+ specification in the json is ignored.
+
+
+
+
+See Listing~\ref{lst:autolistingcell78} for the code  to write a floating table in tiny font size.
+
+{{
+
+\begin{table}[htb]
+\centering
+\caption{Caption text for the Pandas table\label{tab:lab1-0}}
+% to get unbroken vertical lines with booktabs, set separators to zero
+% also set all horizontal lines to same width
+\aboverulesep=0ex
+\belowrulesep=0ex
+\heavyrulewidth=.05em
+\lightrulewidth=.05em
+\cmidrulewidth=.05em
+\belowbottomsep=0pt
+\abovetopsep=0pt
+\renewcommand{\arraystretch}{1.1}
+
+\begin{tiny}
+\begin{tabular}{|l|l|p{50mm}|c|r|}
+\toprule
+{} &         A &         B &         C &         D \\
+\midrule
+2013-01-01 &  0.037157 &  0.035874 &  0.558059 & -0.662619 \\
+2013-01-02 &  1.702955 &  2.144802 &  0.379050 &  0.363756 \\
+2013-01-03 & -1.502385 & -0.162936 &  1.318680 &  0.090148 \\
+2013-01-04 & -1.084001 & -0.238068 & -1.162832 & -0.071281 \\
+2013-01-05 &  2.364933 & -1.690242 &  0.319271 &  0.269092 \\
+2013-01-06 &  1.314192 & -0.575850 &  1.729734 &  1.676059 \\
+\bottomrule
+\end{tabular}
+
+\end{tiny}
+\end{table}
+
+\renewcommand{\arraystretch}{1}
+}
+
 
 \chapter{Math}
 \label{sec:Math}
@@ -1124,7 +1268,7 @@ Now, to load the extension and produce the version table
 
 
 
-See Listing~\ref{lst:autolistingcell82} for the code.
+See Listing~\ref{lst:autolistingcell86} for the code.
 
 \begin{center}
 
@@ -1281,7 +1425,7 @@ HTML(df.to_html())
 
 
 \begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74 \label{lst:autolistingcell74}}]
-# to create the dataframe and write the output to LaTeX object.
+# to create the dataframe and write the output to LaTeX object at default font size
 import pandas as pd
 import numpy as np
 
@@ -1291,7 +1435,7 @@ def makeDateRand(nrows=6, ncols=4):
     return df
 
 df = makeDateRand(nrows=6, ncols=4)
-lstr = df.to_latex()
+lstr = df.to_latex(column_format='|l|l|p{50mm}|c|r|')
 
 from IPython.display import Latex
 Latex(lstr)
@@ -1299,7 +1443,21 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 82 \label{lst:autolistingcell82}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76 \label{lst:autolistingcell76}}]
+# to write the table in LARGE
+
+Latex(lstr)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 78 \label{lst:autolistingcell78}}]
+# to write a floating table in tiny font size
+
+Latex(lstr)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 86 \label{lst:autolistingcell86}}]
 %load_ext version_information
 %version_information numpy, scipy, matplotlib,pandas
 \end{lstlisting}

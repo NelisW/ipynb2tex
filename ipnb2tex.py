@@ -439,7 +439,7 @@ def cleanFilename(sourcestring,  removestring=r" %:/,.\[]"):
     return ''.join([i for i in sourcestring if i not in removestring])
 
 ################################################################################
-def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
+def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand, table_index=0):
 
     captionStr = getMetaDataString(cell, 0, 'listingCaption', 'outputCaption','')
     labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
@@ -454,8 +454,59 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
             outs = cellOutput.data['text/html']
             outstr +=    processHTMLTree(outs,cell,addurlcommand)
         elif 'text/latex' in    cellOutput.data.keys():
-            outs = cellOutput.data['text/latex']
-            outstr +=    outs
+
+            fontsizeStr = getMetaDataString(cell, output_index, 'latex', 'fontsize','normalsize')
+            #######################################
+           
+            #process the caption string, either a string or a list of strings
+            captionStr = getMetaDataString(cell, table_index, 'tableCaption', 'caption','')
+            fontsizeStr = getMetaDataString(cell, table_index, 'tableCaption', 'fontsize',fontsizeStr)
+            labelStr = getMetaDataString(cell, table_index, 'tableCaption', 'label','')
+            if labelStr:
+                labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
+
+            outstr += '{{\n'
+            if captionStr:
+                outstr += '\n\\begin{table}[htb]\n'
+                outstr += '\\centering\n'
+                outstr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+            else:
+                 outstr += '\\begin{center}\n'
+            #####################################
+            # outstr += '{{\n\\{}'.format(fontsize)
+            # outstr +=    cellOutput.data['text/latex'] + '\n'
+            # outstr += '}\n\n'
+
+##############################
+ 
+            outstr += '% to get unbroken vertical lines with booktabs, set separators to zero\n'
+            outstr += '% also set all horizontal lines to same width\n'
+            outstr += '\\aboverulesep=0ex\n'
+            outstr += '\\belowrulesep=0ex\n'
+            outstr += '\\heavyrulewidth=.05em\n'
+            outstr += '\\lightrulewidth=.05em\n'
+            outstr += '\\cmidrulewidth=.05em\n'
+            outstr += '\\belowbottomsep=0pt\n'
+            outstr += '\\abovetopsep=0pt\n'
+            outstr += '\\renewcommand{\\arraystretch}{1.1}\n'
+            outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
+            outstr +=    cellOutput.data['text/latex'] + '\n'
+            outstr += '\\end{{{}}}\n'.format(fontsizeStr)
+
+            #########################################
+
+            if captionStr:
+                outstr += '\\end{table}\n\n'
+            else:
+                outstr += '\\end{center}\n\n'
+
+            outstr += '\\renewcommand{\\arraystretch}{1}\n'
+            outstr += '}\n\n'
+
+            table_index += 1
+            ####################################
+
+
         elif 'text/plain' in    cellOutput.data.keys():
             outstr += encapsulateListing(cellOutput.data['text/plain'], captionStr)
         else:
