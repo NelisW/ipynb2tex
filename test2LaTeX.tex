@@ -1071,6 +1071,9 @@ Latex(lstr)
 Will make a mime type \verb+text/latex+ data entry with the contents of \verb+lstr+ in the output cell.  When rendered in the notebook, it will simply show the text as entered.
 
 
+With this functionality, LaTeX code of any complexity can be constructed by code, for eventual typesetting by the LaTeX compiler after the notebook has been converted to LaTeX.
+
+
 
 \section{Pandas DataFrame to LaTeX}
 \label{sec:PandasDataFrametoLaTeX}
@@ -1104,12 +1107,12 @@ See Listing~\ref{lst:autolistingcell76} for the code  to create the dataframe an
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -0.251946 &  1.013312 &  0.289812 & -0.097520 \\
-2013-01-02 & -1.610935 &  0.566269 & -0.239368 & -0.220086 \\
-2013-01-03 & -0.032273 & -1.789629 & -0.613276 &  1.502650 \\
-2013-01-04 &  0.243616 & -0.507611 & -1.341374 &  0.551187 \\
-2013-01-05 &  0.898034 &  1.487103 &  0.699644 & -0.770059 \\
-2013-01-06 & -0.455991 & -0.275918 & -0.119921 &  2.070104 \\
+2013-01-01 & -1.268282 &  1.812701 & -0.201025 &  0.797597 \\
+2013-01-02 &  1.047219 &  0.281324 & -1.890740 &  1.591323 \\
+2013-01-03 &  1.109811 & -0.200233 & -0.844918 & -0.629818 \\
+2013-01-04 &  1.591857 & -0.285774 &  0.587640 & -2.948210 \\
+2013-01-05 &  0.940730 & -1.167735 & -2.340891 &  0.124803 \\
+2013-01-06 & -0.277566 &  0.070237 & -0.300494 & -0.566420 \\
 \bottomrule
 \end{tabular}
 
@@ -1152,12 +1155,12 @@ See Listing~\ref{lst:autolistingcell78} for the code  to write the table in LARG
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -0.251946 &  1.013312 &  0.289812 & -0.097520 \\
-2013-01-02 & -1.610935 &  0.566269 & -0.239368 & -0.220086 \\
-2013-01-03 & -0.032273 & -1.789629 & -0.613276 &  1.502650 \\
-2013-01-04 &  0.243616 & -0.507611 & -1.341374 &  0.551187 \\
-2013-01-05 &  0.898034 &  1.487103 &  0.699644 & -0.770059 \\
-2013-01-06 & -0.455991 & -0.275918 & -0.119921 &  2.070104 \\
+2013-01-01 & -1.268282 &  1.812701 & -0.201025 &  0.797597 \\
+2013-01-02 &  1.047219 &  0.281324 & -1.890740 &  1.591323 \\
+2013-01-03 &  1.109811 & -0.200233 & -0.844918 & -0.629818 \\
+2013-01-04 &  1.591857 & -0.285774 &  0.587640 & -2.948210 \\
+2013-01-05 &  0.940730 & -1.167735 & -2.340891 &  0.124803 \\
+2013-01-06 & -0.277566 &  0.070237 & -0.300494 & -0.566420 \\
 \bottomrule
 \end{tabular}
 
@@ -1213,12 +1216,12 @@ See Listing~\ref{lst:autolistingcell80} for the code  to write a floating table 
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -0.251946 &  1.013312 &  0.289812 & -0.097520 \\
-2013-01-02 & -1.610935 &  0.566269 & -0.239368 & -0.220086 \\
-2013-01-03 & -0.032273 & -1.789629 & -0.613276 &  1.502650 \\
-2013-01-04 &  0.243616 & -0.507611 & -1.341374 &  0.551187 \\
-2013-01-05 &  0.898034 &  1.487103 &  0.699644 & -0.770059 \\
-2013-01-06 & -0.455991 & -0.275918 & -0.119921 &  2.070104 \\
+2013-01-01 & -1.268282 &  1.812701 & -0.201025 &  0.797597 \\
+2013-01-02 &  1.047219 &  0.281324 & -1.890740 &  1.591323 \\
+2013-01-03 &  1.109811 & -0.200233 & -0.844918 & -0.629818 \\
+2013-01-04 &  1.591857 & -0.285774 &  0.587640 & -2.948210 \\
+2013-01-05 &  0.940730 & -1.167735 & -2.340891 &  0.124803 \\
+2013-01-06 & -0.277566 &  0.070237 & -0.300494 & -0.566420 \\
 \bottomrule
 \end{tabular}
 
@@ -1340,7 +1343,7 @@ See Listing~\ref{lst:autolistingcell83} for the code  display another tikz graph
 
 }
 
-The next example creates a LaTeX string and outputs it as a Latex object.  The code calculate rules with increasing heights, with this code:
+The next example creates a LaTeX string and outputs it as a Latex object.  The code calculates rules with increasing heights, with this code:
 
 
 \begin{verbatim}
@@ -1358,6 +1361,26 @@ Latex(lstr + '\n')
 This paragraph is embedded as \LaTeX{} in a Jupyter output cell. One day this could be a complex computed \LaTeX{} string.  This example only has rising rules...  
 \rule[0pt]{10pt}{1pt} \rule[0pt]{10pt}{2pt} \rule[0pt]{10pt}{3pt} \rule[0pt]{10pt}{4pt} \rule[0pt]{10pt}{5pt} \rule[0pt]{10pt}{6pt} \rule[0pt]{10pt}{7pt} \rule[0pt]{10pt}{8pt} \rule[0pt]{10pt}{9pt} \rule[0pt]{10pt}{10pt} \rule[0pt]{10pt}{11pt} \rule[0pt]{10pt}{12pt} \rule[0pt]{10pt}{13pt} \rule[0pt]{10pt}{14pt} \rule[0pt]{10pt}{15pt} \rule[0pt]{10pt}{16pt} \rule[0pt]{10pt}{17pt} \rule[0pt]{10pt}{18pt} \rule[0pt]{10pt}{19pt} 
 
+Jelte Fennema wrote pylatex\cite{httpsgithubcomJelteFPyLaT} to create LaTeX text using Python code.  He wrote the code to create complete documents, but also to write  fragments\cite{httpsjeltefgithubioPyLaTe} --- which we can use here: "Classes can be part of a single document, or can act as pieces on their own. With the \verb+dumps\_as\_content+ method, most classes can return their LaTeX-formatted code, and with the \verb+generate\_tex+ method, this code can be written to a file."
+
+
+I only spent limited time on pylatex and got the following example to work (it requires \verb+pip install pylatex+).
+
+
+
+
+See Listing~\ref{lst:autolistingcell87} for the code  to format a numy array in \LaTeX{}.
+
+\[%
+arr= \begin{bmatrix}%
+-0.318321849373&2.56329278694&-2.12719181446&0.0729062460686\\%
+0.931586498395&-0.00295785179876&-0.152603517505&-0.906774902076\\%
+-0.420618972082&-1.09147819961&1.42667946538&0.242862131114\\%
+-1.47914392887&0.174836316235&0.898639169037&0.0439616278845\\%
+-0.493898711242&-0.0240584674892&-0.468508030406&0.311000429564\\%
+-0.996791597898&1.50090062979&-1.30433976844&-1.10215774509%
+\end{bmatrix}%
+\]
 
 \chapter{Math}
 \label{sec:Math}
@@ -1413,7 +1436,7 @@ Now, to load the extension and produce the version table
 
 
 
-See Listing~\ref{lst:autolistingcell93} for the code.
+See Listing~\ref{lst:autolistingcell95} for the code.
 
 \begin{center}
 
@@ -1717,7 +1740,20 @@ Latex(lstr + '\n')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 93 \label{lst:autolistingcell93}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 87 \label{lst:autolistingcell87}}]
+# to format a numy array in \LaTeX{}
+import numpy as np
+import pylatex as pyl
+
+arr = makeDateRand(nrows=6, ncols=4).values
+matrix = pyl.Matrix(arr, mtype='b')
+math = pyl.Math(data=['arr=', matrix])
+Latex(math.dumps_as_content())   
+
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 95 \label{lst:autolistingcell95}}]
 %load_ext version_information
 %version_information numpy, scipy, matplotlib,pandas
 \end{lstlisting}
