@@ -6,6 +6,11 @@
 % input the common preamble content (required by the ipnb2latex converter)
 \input{header.tex}
 
+% the following three lines are required to support the tikz examples
+\usepackage{tikz}
+\usepackage{sansmath}
+\usetikzlibrary{shadings,intersections}
+
 % then follows the rest of the preamble to be placed before the begin document
 % this preamble content is special to the documentclass you defined above.
 \WPproject{ipnb2LaTeX}           % project name
@@ -1047,7 +1052,27 @@ d&NaN&4.0\\\hline
 \end{center}
 
 
-\chapter{Pandas DataFrame to LaTeX}
+\chapter{Embedding LaTeX code in output cells}
+\label{sec:EmbeddingLaTeXcodeinoutputcells}
+
+Jupyer uses MathJax for LaTeX rendering in the markdown cells.  This is very useful for documentation in general, but sometimes MathJax is not sufficient for special LaTeX constructs. LaTeX constructs can be embedded (but not rendered in Jupyter) in output cells.   The LaTeX in the output cell can then be rendered/typeset when the converted LaTeX document is built.
+
+
+Any string you construct in a code cell and then use the \verb+IPython.display.Latex+ function to display will be embedded in the output cell as a data of mime type \verb+text/latex+.  The ipynb2tex converter will then process this LaTeX in the output cell as regular LaTeX in the target document.  So the following code:
+
+
+\begin{verbatim}
+from IPython.display import Latex
+lstr = 'This is a \LaTeX string.'
+Latex(lstr)
+\end{verbatim}
+
+
+Will make a mime type \verb+text/latex+ data entry with the contents of \verb+lstr+ in the output cell.  When rendered in the notebook, it will simply show the text as entered.
+
+
+
+\section{Pandas DataFrame to LaTeX}
 \label{sec:PandasDataFrametoLaTeX}
 
 The following example shows how to export a Pandas dataframe to a \verb+IPython.core.display.Latex object+ in the string \verb+lstr+. When viewed in the notebook, the table is shown as a LaTeX code, but when the conversion to a LaTeX document takes place, the LaTeX is rendered as regular LaTeX in the output PDF file.
@@ -1061,10 +1086,11 @@ The table format specification is provided by the Pandas  to\_latex(column\_form
 
 
 
-See Listing~\ref{lst:autolistingcell74} for the code  to create the dataframe and write the output to LaTeX object at default font size.
+See Listing~\ref{lst:autolistingcell76} for the code  to create the dataframe and write the output to LaTeX object at default font size.
 
 {{
-\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\centering
 % to get unbroken vertical lines with booktabs, set separators to zero
 % also set all horizontal lines to same width
 \aboverulesep=0ex
@@ -1074,24 +1100,18 @@ See Listing~\ref{lst:autolistingcell74} for the code  to create the dataframe an
 \cmidrulewidth=.05em
 \belowbottomsep=0pt
 \abovetopsep=0pt
-\renewcommand{\arraystretch}{1.1}
-
-\begin{normalsize}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 &  0.037157 &  0.035874 &  0.558059 & -0.662619 \\
-2013-01-02 &  1.702955 &  2.144802 &  0.379050 &  0.363756 \\
-2013-01-03 & -1.502385 & -0.162936 &  1.318680 &  0.090148 \\
-2013-01-04 & -1.084001 & -0.238068 & -1.162832 & -0.071281 \\
-2013-01-05 &  2.364933 & -1.690242 &  0.319271 &  0.269092 \\
-2013-01-06 &  1.314192 & -0.575850 &  1.729734 &  1.676059 \\
+2013-01-01 & -0.251946 &  1.013312 &  0.289812 & -0.097520 \\
+2013-01-02 & -1.610935 &  0.566269 & -0.239368 & -0.220086 \\
+2013-01-03 & -0.032273 & -1.789629 & -0.613276 &  1.502650 \\
+2013-01-04 &  0.243616 & -0.507611 & -1.341374 &  0.551187 \\
+2013-01-05 &  0.898034 &  1.487103 &  0.699644 & -0.770059 \\
+2013-01-06 & -0.455991 & -0.275918 & -0.119921 &  2.070104 \\
 \bottomrule
 \end{tabular}
-
-\end{normalsize}
-\end{center}
 
 \renewcommand{\arraystretch}{1}
 }
@@ -1114,10 +1134,11 @@ Of course you may have to use this setting in conjunction with any other json se
 
 
 
-See Listing~\ref{lst:autolistingcell76} for the code  to write the table in LARGE.
+See Listing~\ref{lst:autolistingcell78} for the code  to write the table in LARGE.
 
 {{
-\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\centering
 % to get unbroken vertical lines with booktabs, set separators to zero
 % also set all horizontal lines to same width
 \aboverulesep=0ex
@@ -1127,24 +1148,18 @@ See Listing~\ref{lst:autolistingcell76} for the code  to write the table in LARG
 \cmidrulewidth=.05em
 \belowbottomsep=0pt
 \abovetopsep=0pt
-\renewcommand{\arraystretch}{1.1}
-
-\begin{LARGE}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 &  0.037157 &  0.035874 &  0.558059 & -0.662619 \\
-2013-01-02 &  1.702955 &  2.144802 &  0.379050 &  0.363756 \\
-2013-01-03 & -1.502385 & -0.162936 &  1.318680 &  0.090148 \\
-2013-01-04 & -1.084001 & -0.238068 & -1.162832 & -0.071281 \\
-2013-01-05 &  2.364933 & -1.690242 &  0.319271 &  0.269092 \\
-2013-01-06 &  1.314192 & -0.575850 &  1.729734 &  1.676059 \\
+2013-01-01 & -0.251946 &  1.013312 &  0.289812 & -0.097520 \\
+2013-01-02 & -1.610935 &  0.566269 & -0.239368 & -0.220086 \\
+2013-01-03 & -0.032273 & -1.789629 & -0.613276 &  1.502650 \\
+2013-01-04 &  0.243616 & -0.507611 & -1.341374 &  0.551187 \\
+2013-01-05 &  0.898034 &  1.487103 &  0.699644 & -0.770059 \\
+2013-01-06 & -0.455991 & -0.275918 & -0.119921 &  2.070104 \\
 \bottomrule
 \end{tabular}
-
-\end{LARGE}
-\end{center}
 
 \renewcommand{\arraystretch}{1}
 }
@@ -1175,7 +1190,7 @@ The table format specification is provided by the Pandas \verb+.to\_latex(column
 
 
 
-See Listing~\ref{lst:autolistingcell78} for the code  to write a floating table in tiny font size.
+See Listing~\ref{lst:autolistingcell80} for the code  to write a floating table in tiny font size.
 
 {{
 
@@ -1191,27 +1206,157 @@ See Listing~\ref{lst:autolistingcell78} for the code  to write a floating table 
 \cmidrulewidth=.05em
 \belowbottomsep=0pt
 \abovetopsep=0pt
-\renewcommand{\arraystretch}{1.1}
 
 \begin{tiny}
+\renewcommand{\arraystretch}{1.1}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 &  0.037157 &  0.035874 &  0.558059 & -0.662619 \\
-2013-01-02 &  1.702955 &  2.144802 &  0.379050 &  0.363756 \\
-2013-01-03 & -1.502385 & -0.162936 &  1.318680 &  0.090148 \\
-2013-01-04 & -1.084001 & -0.238068 & -1.162832 & -0.071281 \\
-2013-01-05 &  2.364933 & -1.690242 &  0.319271 &  0.269092 \\
-2013-01-06 &  1.314192 & -0.575850 &  1.729734 &  1.676059 \\
+2013-01-01 & -0.251946 &  1.013312 &  0.289812 & -0.097520 \\
+2013-01-02 & -1.610935 &  0.566269 & -0.239368 & -0.220086 \\
+2013-01-03 & -0.032273 & -1.789629 & -0.613276 &  1.502650 \\
+2013-01-04 &  0.243616 & -0.507611 & -1.341374 &  0.551187 \\
+2013-01-05 &  0.898034 &  1.487103 &  0.699644 & -0.770059 \\
+2013-01-06 & -0.455991 & -0.275918 & -0.119921 &  2.070104 \\
 \bottomrule
 \end{tabular}
 
+\renewcommand{\arraystretch}{1}
 \end{tiny}
 \end{table}
 
-\renewcommand{\arraystretch}{1}
 }
+
+
+\section{Other LaTeX exports}
+\label{sec:OtherLaTeXexports}
+
+
+
+See Listing~\ref{lst:autolistingcell82} for the code  display a tikz graphic.
+
+
+    \begin{tikzpicture}[scale=4.5, line join=bevel]
+      % \a and \b are two macros defining characteristic
+      % dimensions of the impossible brick.
+      \pgfmathsetmacro{\a}{0.18}
+      \pgfmathsetmacro{\b}{1.37}
+
+      \tikzset{%
+        apply style/.code={\tikzset{#1}},
+        brick_edges/.style={thick,draw=black},
+        face_colourA/.style={fill=gray!50},
+        face_colourB/.style={fill=gray!25},
+        face_colourC/.style={fill=gray!90},
+      }
+
+      \foreach \theta/\v/\facestyleone/\facestyletwo in {%
+        0/0/{brick_edges,face_colourA}/{brick_edges,face_colourC},
+        180/-\a/{brick_edges,face_colourB}/{brick_edges,face_colourC}
+      }{
+      \begin{scope}[rotate=\theta,shift={(\v,0)}]
+        \draw[apply style/.expand once=\facestyleone]  		
+          ({-.5*\b},{1.5*\a}) --
+          ++(\b,0)            --
+          ++(-\a,-\a)         --
+          ++({-\b+2*\a},0)    --
+          ++(0,-{2*\a})       --
+          ++(\b,0)            --
+          ++(-\a,-\a)         --
+          ++(-\b,0)           --
+          cycle;
+        \draw[apply style/.expand once=\facestyletwo] 
+          ({.5*\b},{1.5*\a})  --
+          ++(0,{-2*\a})       --
+          ++(-\a,0)           --
+          ++(0,\a)            --
+          cycle;
+        \end{scope}
+      }
+    \end{tikzpicture}
+
+
+
+See Listing~\ref{lst:autolistingcell83} for the code  display another tikz graphic, as a floating figure.
+
+{{
+
+\begin{figure}[htb]
+\centering
+
+\begin{normalsize}
+
+\begin{tikzpicture}[font = \sansmath]
+  \coordinate (O) at (0,0);
+
+  % ball background color
+  \shade[ball color = blue, opacity = 0.2] (0,0) circle [radius = 2cm];
+
+  % cone
+  \begin{scope}
+    \def\rx{0.71}% horizontal radius of the ellipse
+    \def\ry{0.15}% vertical radius of the ellipse
+    \def\z{0.725}% distance from center of ellipse to origin
+
+    \path [name path = ellipse]    (0,\z) ellipse ({\rx} and {\ry});
+    \path [name path = horizontal] (-\rx,\z-\ry*\ry/\z)
+                                -- (\rx,\z-\ry*\ry/\z);
+    \path [name intersections = {of = ellipse and horizontal}];
+
+    % radius to base of cone in ball
+    \draw[fill = gray!50, gray!50] (intersection-1) -- (0,0)
+      -- (intersection-2) -- cycle;
+    % base of cone in ball
+    \draw[fill = gray!30, densely dashed] (0,\z) ellipse ({\rx} and {\ry});
+  \end{scope}
+
+  % label of cone
+  \draw (0.25,0.4) -- (0.9,0.1) node at (1.05,0.0) {$q$};
+
+  % ball
+  \draw (O) circle [radius=2cm];
+  % label of ball center point
+  \filldraw (O) circle (1pt) node[below] {$P$};
+
+  % radius
+  \draw[densely dashed] (O) to [edge label = $r$] (-1.33,1.33);
+  \draw[densely dashed] (O) -- (1.33,1.33);
+
+  % cut of ball surface
+  \draw[red] (-1.35,1.47) arc [start angle = 140, end angle = 40,
+    x radius = 17.6mm, y radius = 14.75mm];
+  \draw[red, densely dashed] (-1.36,1.46) arc [start angle = 170, end angle = 10,
+    x radius = 13.8mm, y radius = 3.6mm];
+  \draw[red] (-1.29,1.52) arc [start angle=-200, end angle = 20,
+    x radius = 13.75mm, y radius = 3.15mm];
+
+  % label of cut of ball surface
+  \draw (-1.2,2.2) -- (-0.53,1.83) node at (-1.37,2.37) {$A$};
+\end{tikzpicture}
+\end{normalsize}
+\caption{Caption text for tikz figure\label{fig:tikz-0}}
+\end{figure}
+
+}
+
+The next example creates a LaTeX string and outputs it as a Latex object.  The code calculate rules with increasing heights, with this code:
+
+
+\begin{verbatim}
+lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
+            + 'One day this could be a complex computed \LaTeX{} string.  '\
+            + 'This example only has rising rules...  \n'
+for height in range(1,20):
+    lstr += '\\rule[0pt]{{10pt}}{}{}pt{} '.format('{',height,'}')
+Latex(lstr + '\n')
+\end{verbatim}
+
+
+
+
+This paragraph is embedded as \LaTeX{} in a Jupyter output cell. One day this could be a complex computed \LaTeX{} string.  This example only has rising rules...  
+\rule[0pt]{10pt}{1pt} \rule[0pt]{10pt}{2pt} \rule[0pt]{10pt}{3pt} \rule[0pt]{10pt}{4pt} \rule[0pt]{10pt}{5pt} \rule[0pt]{10pt}{6pt} \rule[0pt]{10pt}{7pt} \rule[0pt]{10pt}{8pt} \rule[0pt]{10pt}{9pt} \rule[0pt]{10pt}{10pt} \rule[0pt]{10pt}{11pt} \rule[0pt]{10pt}{12pt} \rule[0pt]{10pt}{13pt} \rule[0pt]{10pt}{14pt} \rule[0pt]{10pt}{15pt} \rule[0pt]{10pt}{16pt} \rule[0pt]{10pt}{17pt} \rule[0pt]{10pt}{18pt} \rule[0pt]{10pt}{19pt} 
 
 
 \chapter{Math}
@@ -1268,7 +1413,7 @@ Now, to load the extension and produce the version table
 
 
 
-See Listing~\ref{lst:autolistingcell86} for the code.
+See Listing~\ref{lst:autolistingcell93} for the code.
 
 \begin{center}
 
@@ -1424,7 +1569,7 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74 \label{lst:autolistingcell74}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76 \label{lst:autolistingcell76}}]
 # to create the dataframe and write the output to LaTeX object at default font size
 import pandas as pd
 import numpy as np
@@ -1443,21 +1588,136 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76 \label{lst:autolistingcell76}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 78 \label{lst:autolistingcell78}}]
 # to write the table in LARGE
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 78 \label{lst:autolistingcell78}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 80 \label{lst:autolistingcell80}}]
 # to write a floating table in tiny font size
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 86 \label{lst:autolistingcell86}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 82 \label{lst:autolistingcell82}}]
+# display a tikz graphic
+lstr = r"""
+    \begin{tikzpicture}[scale=4.5, line join=bevel]
+      % \a and \b are two macros defining characteristic
+      % dimensions of the impossible brick.
+      \pgfmathsetmacro{\a}{0.18}
+      \pgfmathsetmacro{\b}{1.37}
+
+      \tikzset{%
+        apply style/.code={\tikzset{#1}},
+        brick_edges/.style={thick,draw=black},
+        face_colourA/.style={fill=gray!50},
+        face_colourB/.style={fill=gray!25},
+        face_colourC/.style={fill=gray!90},
+      }
+
+      \foreach \theta/\v/\facestyleone/\facestyletwo in {%
+        0/0/{brick_edges,face_colourA}/{brick_edges,face_colourC},
+        180/-\a/{brick_edges,face_colourB}/{brick_edges,face_colourC}
+      }{
+      \begin{scope}[rotate=\theta,shift={(\v,0)}]
+        \draw[apply style/.expand once=\facestyleone]  		
+          ({-.5*\b},{1.5*\a}) --
+          ++(\b,0)            --
+          ++(-\a,-\a)         --
+          ++({-\b+2*\a},0)    --
+          ++(0,-{2*\a})       --
+          ++(\b,0)            --
+          ++(-\a,-\a)         --
+          ++(-\b,0)           --
+          cycle;
+        \draw[apply style/.expand once=\facestyletwo] 
+          ({.5*\b},{1.5*\a})  --
+          ++(0,{-2*\a})       --
+          ++(-\a,0)           --
+          ++(0,\a)            --
+          cycle;
+        \end{scope}
+      }
+    \end{tikzpicture}
+"""
+
+Latex(lstr)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 83 \label{lst:autolistingcell83}}]
+# display another tikz graphic, as a floating figure
+
+lstr = r"""
+\begin{tikzpicture}[font = \sansmath]
+  \coordinate (O) at (0,0);
+
+  % ball background color
+  \shade[ball color = blue, opacity = 0.2] (0,0) circle [radius = 2cm];
+
+  % cone
+  \begin{scope}
+    \def\rx{0.71}% horizontal radius of the ellipse
+    \def\ry{0.15}% vertical radius of the ellipse
+    \def\z{0.725}% distance from center of ellipse to origin
+
+    \path [name path = ellipse]    (0,\z) ellipse ({\rx} and {\ry});
+    \path [name path = horizontal] (-\rx,\z-\ry*\ry/\z)
+                                -- (\rx,\z-\ry*\ry/\z);
+    \path [name intersections = {of = ellipse and horizontal}];
+
+    % radius to base of cone in ball
+    \draw[fill = gray!50, gray!50] (intersection-1) -- (0,0)
+      -- (intersection-2) -- cycle;
+    % base of cone in ball
+    \draw[fill = gray!30, densely dashed] (0,\z) ellipse ({\rx} and {\ry});
+  \end{scope}
+
+  % label of cone
+  \draw (0.25,0.4) -- (0.9,0.1) node at (1.05,0.0) {$q$};
+
+  % ball
+  \draw (O) circle [radius=2cm];
+  % label of ball center point
+  \filldraw (O) circle (1pt) node[below] {$P$};
+
+  % radius
+  \draw[densely dashed] (O) to [edge label = $r$] (-1.33,1.33);
+  \draw[densely dashed] (O) -- (1.33,1.33);
+
+  % cut of ball surface
+  \draw[red] (-1.35,1.47) arc [start angle = 140, end angle = 40,
+    x radius = 17.6mm, y radius = 14.75mm];
+  \draw[red, densely dashed] (-1.36,1.46) arc [start angle = 170, end angle = 10,
+    x radius = 13.8mm, y radius = 3.6mm];
+  \draw[red] (-1.29,1.52) arc [start angle=-200, end angle = 20,
+    x radius = 13.75mm, y radius = 3.15mm];
+
+  % label of cut of ball surface
+  \draw (-1.2,2.2) -- (-0.53,1.83) node at (-1.37,2.37) {$A$};
+\end{tikzpicture}
+"""
+
+Latex(lstr)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 85 \label{lst:autolistingcell85}}]
+##
+lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
+            + 'One day this could be a complex computed \LaTeX{} string.  '\
+            + 'This example only has rising rules...  \n'
+for height in range(1,20):
+    lstr += '\\rule[0pt]{{10pt}}{}{}pt{} '.format('{',height,'}')
+Latex(lstr + '\n')
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 93 \label{lst:autolistingcell93}}]
 %load_ext version_information
 %version_information numpy, scipy, matplotlib,pandas
 \end{lstlisting}
