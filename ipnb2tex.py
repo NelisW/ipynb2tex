@@ -46,6 +46,7 @@ nbformat
 bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
 bibxref = {}
+bibtexindex = 0
 
 docoptstring = """Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-i] [-u] [--bibstyle=<style>]
        ipnb2tex.py  (-h | --help)
@@ -1133,6 +1134,9 @@ def processList(lnode,addurlcommand):
 
 ################################################################################
 def processParagraph(pnode, tmp, addurlcommand):
+    
+    global bibtexindex
+    
     # tmp = ""
     if pnode.text:
         # print('pnode.text={}'.format(pnode.text))
@@ -1181,8 +1185,9 @@ def processParagraph(pnode, tmp, addurlcommand):
             if url is not None:
                 citelabel = cleanFilename(url,  removestring =r" %:/,.\[]=?~!@#$^&*()-_{};")
                 # if the label is too long latex may choke
-                if len(citelabel) > 25:
-                    citelabel = citelabel[:25]
+                if len(citelabel) > 20:
+                    citelabel = '{}{:05d}'.format(citelabel[:20],bibtexindex)
+                    bibtexindex += 1
                 if citelabel in bibxref.keys():
                     pass
                     # tmp +=  child.text + r'\cite{{{0}}}'.format(bibxref[citelabel]) + childtail
