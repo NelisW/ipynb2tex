@@ -65,6 +65,217 @@
 \listoftables
 \lstlistoflistings
 
+\chapter{General \LaTeX{} Crib Notes}
+\label{sec:GeneralLaTeXCribNotes}
+
+This chapter contains general notes, not necessarily pertaining to the Jupyter notebook converter.
+
+
+
+\section{Quotes}
+\label{sec:Quotes}
+
+Use \verb+`word'+ [`word'] instead of \verb+'word'+ ['word'].\\
+Likewise \verb+``word'''+ [``word''] instead of \verb+''word''+ [''word''].
+\section{Degree Symbol}
+\label{sec:DegreeSymbol}
+
+The degree symbol in \LaTeX{} should not be done with \verb+\circ+ as shown here: 45$^\circ$. 
+Rather use \verb+\usepackage{gensymb}+ and then \verb+45\textdegree{}+ 45\textdegree{}, or \verb+17~\celsius+ 17~\celsius. Better yet, use the siunitx package described below.
+\section{Test Sub- and Superscripts}
+\label{sec:TestSubandSuperscripts}
+
+Create superscripts and subscripts in body text with \verb+m\textsuperscript{2}+ and \verb+CO\textsubscript{2}+ to get  m\textsuperscript{2} and CO\textsubscript{2}, instead of $m^2$ or CO$_2$.
+\section{siunitx}
+\label{sec:siunitx}
+
+Load \verb+siunitx+  package for  some really nice features. Load it with \\
+\verb+\usepackage[detect-weight,detect-mode]{siunitx}+.
+
+\newcommand{\tabentry}[1]{\detokenize{#1} & #1}
+
+\begin{tabular}{p{110mm}|l}
+\textbf{\LaTeX{}} & \textbf{Output}\\\hline
+\tabentry{\num{3e-5}}\\
+\tabentry{\si{\metre\per\second\squared}}\\
+\tabentry{\si{\micro\metre}} upright,  instead of $\mu m$\\
+\tabentry{\SIlist{0.13;0.67;0.80}{\milli\metre}}\\
+\tabentry{\si{\metre\per\second\squared}}\\
+\tabentry{\si{kg.m.s^{-1}}}\\
+\tabentry{\si{\kilogram\metre\per\second}}\\
+\tabentry{\si[per-mode=symbol]{\kilogram\metre\per\second}}\\
+\tabentry{\si[per-mode=symbol]{\kilogram\metre\per\ampere\per\second}}\\
+\tabentry{\si[per-mode=reciprocal]{\kilogram\metre\per\ampere\per\second}}\\
+\tabentry{\si{\kilogram\metre\per\ampere\per\second}}\\
+\tabentry{\si[per-mode=fraction]{\kilogram\metre\per\ampere\per\second}}\\
+\tabentry{\si[per-mode=symbol]{\watt\per\metre\squared\per \steradian}}\\
+\tabentry{\ang{12.3}}\\
+\tabentry{\ang{1;2;3}}\\
+\tabentry{\si{\farad\squared\lumen\candela}}\\
+\tabentry{\si[inter-unit-product = \ensuremath{{}\cdot{}}]{\farad\squared\lumen\candela}}\\
+%\tabentry{}\\
+\end{tabular}
+\section{Math functions}
+\label{sec:Mathfunctions}
+
+Math functions should be entered thus: \verb+\tan()+ to yield $\tan()$ \\
+rather than \verb+tan()+ to yield $tan()$.
+
+\section{Use of itemize and enumerate}
+\label{sec:Useofitemizeandenumerate}
+
+Use \verb+itemize+ and \verb+enumerate+ only when there is a sense of counting or a need to have an explicit list where the difference between the entries must be emphasised. Don't use these lists when a simple sentence would suffice.
+
+For example, the following would work better in a normal sentence and not as an `itemize':\\
+The following types of sensors are commonly used for kinematic recordings:
+\begin{itemize}
+\item accelerometers
+\item gyroscopes
+\item Hall sensors (for static magnetic fields)
+\item induction sensors (for dynamic magnetic fields)
+\end{itemize}
+Instead write:\\
+Sensors such as accelerometers, gyroscopes, Hall sensors (for static magnetic fields), and induction sensors (for dynamic magnetic fields) are commonly used for kinematic recordings.
+
+Obey the grammar rules for punctuation in these types of lists. If each entry is a separate sentence, start with a capital letter and end with a full stop.  If the sentence spreads across the list use commas and capital letters appropriately, as follows:\\
+The following types of sensors are commonly used for kinematic recordings:
+\begin{itemize}
+\item accelerometers,
+\item gyroscopes,
+\item Hall sensors (for static magnetic fields), and
+\item induction sensors (for dynamic magnetic fields).
+\end{itemize}
+
+\section{\LaTeX{} fonts in Figures}
+\label{sec:LaTeXfontsinFigures}
+
+If at all possible use \LaTeX{} fonts in figures. For example in the following figure, the fonts on the left side fits better with the equation
+\begin{equation}
+x(k)=\alpha_1 e(k)+\alpha_0 e(k-1)-\beta_0 x(k-1)
+\end{equation}
+\begin{center}
+\includegraphics{images/flow2-zzz.png}
+\end{center}
+\section{Fonts, Emphasis and Shouting}
+\label{sec:FontsEmphasisandShouting}
+
+Avoid CAPITALISATION OF WORDS. It is like SHOUTING!
+
+Avoid \underline{underlined words}, unless there it is really necessary.  It is like shouting when normal voice is adequate.
+
+Use emphasis to \textit{emphasise words that must stand out}.
+Do not use it too often, perhaps less than three to five times per page. 
+Emphasis is like a \textit{waving flag}. If there are \textit{too many flags} waving on a page, it \textit{confuses the reader}.
+
+Use \lstinline{verbatim} to highlight software-related words, such as variable names, module/package/library names, command line text, program output, etc. 
+The user associates verbatim font with source code listings, so use verbatim with software `words'.
+
+
+
+\section{Math Conventions}
+\label{sec:MathConventions}
+
+
+
+The IUPAC Green Book, \lstinline{https://en.wikipedia.org/wiki/IUPAC_book}, conveniently summarises international standards in formatting mathematics text and SI units. See also \lstinline{www.tug.org/TUGboat/Articles/tb18-1/tb54becc.pdf} and \lstinline{https://www.iso.org/standard/31887.html}.
+
+
+
+The mathematical differential operator must be [ISO 80000-2:2009(E), 2-11.12] upright, not cursive (although pure mathematicians and some house styles prefer cursive).  
+
+\begin{lstlisting}
+\usepackage{commath}
+\newcommand{\der}{\operatorname{d\!}{}}
+$(\der{}x)$  or $(\dif{}x)$ instead of $(dx)$
+\end{lstlisting}
+
+\newcommand{\der}{\operatorname{d\!}{}}
+$(\der{}x)$  or $(\dif{}x)$ instead of $(dx)$
+
+
+\begin{lstlisting}
+\usepackage{commath}
+\begin{equation*}
+F(t) = m \od[2]{x(t)}{t}
+\end{equation*}
+\end{lstlisting}
+
+
+\begin{equation*}
+F(t) = m \od[2]{x(t)}{t}
+\end{equation*}
+
+
+Mathematical variables must be cursive ($\alpha\beta$), but constants must be upright ($\mathrm{\pi}$) not cursive ($\pi$). The code
+
+\begin{lstlisting}
+\usepackage[utopia]{mathdesign}
+\usepackage[OMLmathrm,OMLmathbf]{isomath}
+\newcommand\ct[1]{\text{\rmfamily\upshape #1}}
+cursive: $\pi$  $\mathbfit{\pi}$ or upright $\mathrm{\pi}$ $\mathbf{\pi}$\\
+or\\
+cursive: $e^{i\pi}-1=0$ or upright $\ct{e}^{\ct{i}\piup}-1=0$.
+\end{lstlisting}
+yields cursive: $\pi$  $\mathbfit{\pi}$ or upright $\mathrm{\pi}$ $\mathbf{\pi}$\\
+or \\
+cursive: $e^{i\pi}-1=0$ or upright $\ct{e}^{\ct{i}\piup}-1=0$.
+
+Variable subscripts should be typeset in roman if the subscript is a recognisable word:\\
+$v_\textrm{aircraft}$ instead of $v_{aircraft}$
+\section{Centering in Floats}
+\label{sec:CenteringinFloats}
+
+Use \verb=\centering= in floats instead of \verb|\begin{center}\end{center}|, as in 
+
+\begin{verbatim}
+\begin{figure}
+\centering
+\includegraphics[width=0.1\textwidth]{./images/keep-calm-and-code-python_BW.png}
+\caption{Keep calm and code Python\label{fig:keep-calm-and-code-python_BW}}
+\end{figure}
+\end{verbatim}
+
+\section{Forcing Floats to Show}
+\label{sec:ForcingFloatstoShow}
+
+The floats accumulate up to a point where some or all of these floats are processed an displayed on a page. The floats are displayed in the order given in the input file.  The rules as to when the float are processed and displayed are not entirely clear to me.  \LaTeX\ appears to have a limit of around 18 unprocessed floats, beyond which an error message is given.  
+
+You can force all unprocessed floats to output in a number of different ways:
+
+\begin{enumerate}
+\item
+ Use the \verb+\clearpage+ command.  This command immediately stops any further text output and displays all unprocessed floats in the order given.  The problem with this command is that no text is output until all floats are output. This means that if the \verb+\clearpage+ command is near the top of a page, the rest of the page could be empty (unless a float fits there).  
+
+\item
+The \verb+\afterpage{}+ command processes whatever command you have given in, after the text on the current page is processed and output. So by using an \verb+\afterpage{\clearpage}+ command at the point where you want to force float output, further text is processed on the current page, filling and outputting  the current page, before the \verb+\clearpage+ command is issued: no more half-empty pages!
+
+\item
+The \verb"\FloatBarrier" command causes all unprocessed floats to be processed
+immediately. Unlike \verb"\clearpage", it does not start a new page. The command requires the \texttt{placeins} package.
+
+\item
+To keep floats in the sections in which they were included, use 
+\verb"\usepackage[section]{placeins}".
+
+\item
+If you don't want your floats to float, you can use the [H] float specifier from the \verb"float" package. 
+
+\item
+If you don't want your figure to float, don't use a floating environment; you can use, for example, a center environment and (if a caption is needed) the \verb"\captionof" command provided by the \texttt{capt-of} (or \texttt{caption}) package.
+\lstinline{http://tex.stackexchange.com/questions/32598/force-latex-image-to-appear-in-the-section-in-which-its-declared}
+
+
+\begin{lstlisting}
+\usepackage{capt-of}
+\centering
+  \includegraphics{foo}
+  \captionof{figure}{A non floating figure}
+  \label{fig:test}
+\end{lstlisting}
+
+
+\end{enumerate}
+\clearpage
 \chapter{The ipnb2tex.py Script}
 \label{sec:Theipnb2texpyScript}
 
@@ -214,8 +425,7 @@ Raw NBConvert cell.  This could be raw \LaTeX{} as in
 f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^\infty_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
 \end{equation}
 
-The degree symbol in \LaTeX{} should not be done with \verb+\circ+ as shown here: 45$^\circ$. 
-Rather load \verb+\usepackage{gensymb}+ package and use \verb+45\textdegree{}+ 45\textdegree{}, or \verb+17~\celsius+ 17~\celsius.
+
 
 \section{Captions}
 \label{sec:Captions}
@@ -422,7 +632,7 @@ The following code block has no metadata, and hence no captions on either the co
 
 
 
-See Listing~\ref{lst:autolistingcell37} for the code.
+See Listing~\ref{lst:autolistingcell64} for the code.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -435,11 +645,11 @@ Output emanating from different cells \textit{may} result in different output li
 
 
 
-See Listing~\ref{lst:autolistingcell39} for the code.
+See Listing~\ref{lst:autolistingcell66} for the code.
 
 
 
-See Listing~\ref{lst:autolistingcell40} for the code.
+See Listing~\ref{lst:autolistingcell67} for the code.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -500,7 +710,7 @@ See Listing~\ref{lst:figurelisting} for the code this figure is given meta data 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_43_0.png}
+\includegraphics{./pic/test2LaTeX_70_0.png}
 \caption{Caption text for first figure\label{fig:lab1-0}}
 \end{figure}
 
@@ -524,10 +734,10 @@ The following figure is not floating, but is scaled down to be smaller.
 
 
 
-See Listing~\ref{lst:autolistingcell45} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
+See Listing~\ref{lst:autolistingcell72} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
 
 \begin{center}
-\includegraphics{./pic/test2LaTeX_45_0.png}
+\includegraphics{./pic/test2LaTeX_72_0.png}
 \end{center}
 
 The following Matplotlib plot is scaled and floating.
@@ -546,12 +756,12 @@ The following Matplotlib plot is scaled and floating.
 
 
 
-See Listing~\ref{lst:autolistingcell47} for the code.
+See Listing~\ref{lst:autolistingcell74} for the code.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_47_0.png}
+\includegraphics{./pic/test2LaTeX_74_0.png}
 \caption{Caption text for third figure\label{fig:lab3-0}}
 \end{figure}
 
@@ -574,23 +784,23 @@ In this case the caption strings and scaling values are allocated to the sequenc
 
 
 
-See Listing~\ref{lst:autolistingcell49} for the code.
+See Listing~\ref{lst:autolistingcell76} for the code.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_49_0.png}
+\includegraphics{./pic/test2LaTeX_76_0.png}
 \caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
 \end{figure}
 
 \begin{center}
-\includegraphics{./pic/test2LaTeX_49_1.png}
+\includegraphics{./pic/test2LaTeX_76_1.png}
 \end{center}
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_49_2.png}
+\includegraphics{./pic/test2LaTeX_76_2.png}
 \caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
 \end{figure}
 
@@ -600,7 +810,7 @@ You can write HTML to the cell's output and have it displayed in the browser and
 
 
 
-See Listing~\ref{lst:autolistingcell52} for the code.
+See Listing~\ref{lst:autolistingcell79} for the code.
 
 \begin{center}
 \includegraphics[width=0.9\textwidth]{images/random-squares-2.png}
@@ -633,7 +843,7 @@ The following line must be uncommented to have effect.
 
 
 
-See Listing~\ref{lst:autolistingcell57} for the code  type(eval("this is a test string")) is not list.
+See Listing~\ref{lst:autolistingcell84} for the code  type(eval("this is a test string")) is not list.
 
 
 \section{Embedded code (verbatim text)}
@@ -672,7 +882,7 @@ def hello\_ipython():
 \label{sec:Embeddedhyperlinks}
 
 The IPython website\cite{httpipythonorg} is the central repository of all things IPython.
-There are some really nice videos\cite{httpswwwyoutubecomwatchva} on YouTube.
+There are some really nice videos\cite{httpswwwyoutubecomwa00000} on YouTube.
 
 
 For \textit{URI references}, the \verb+[IPython website](http://ipython.org/)+ markup structure is read and the URI is used to create a citation label (\verb+httpipythonorg+) and the URI (\verb+http://ipython.org/+) is written to a new \LaTeX{} bibtex file for the references in this notebook.
@@ -900,7 +1110,7 @@ Content Cell&Content Cell\\\hline
 Both of these markup extensions require Python Markdown 2.4.1 to render HTML.
 
 
-Table~\ref{tab:hiertab12-0} has an hierarchical structure on both columns and rows.  The percentage and underine characters are also preserved.
+Table~\ref{tab:hiertab12-0} has an hierarchical structure on both columns and rows.  The percentage and underline characters are also preserved.
 
 \begin{table}[htb]
 \centering
@@ -1033,7 +1243,7 @@ Pandas dataframe tables are also rendered.
 
 
 
-See Listing~\ref{lst:autolistingcell72} for the code.
+See Listing~\ref{lst:autolistingcell99} for the code.
 
 \begin{center}
 
@@ -1081,7 +1291,7 @@ With this functionality, LaTeX code of any complexity can be constructed by code
 The following example shows how to export a Pandas dataframe to a \verb+IPython.core.display.Latex object+ in the string \verb+lstr+. When viewed in the notebook, the table is shown as a LaTeX code, but when the conversion to a LaTeX document takes place, the LaTeX is rendered as regular LaTeX in the output PDF file.
 
 
-The table format specification is provided by the Pandas  to\_latex(column\_format)\cite{httppandaspydataorgpandas} argument,  as in
+The table format specification is provided by the Pandas  to\_latex(column\_format)\cite{httppandaspydataorgp00001} argument,  as in
 
 
 \verb+'|l|l|p{50mm}|c|r|'+
@@ -1089,7 +1299,7 @@ The table format specification is provided by the Pandas  to\_latex(column\_form
 
 
 
-See Listing~\ref{lst:autolistingcell76} for the code  to create the dataframe and write the output to LaTeX object at default font size.
+See Listing~\ref{lst:autolistingcell103} for the code  to create the dataframe and write the output to LaTeX object at default font size.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1107,12 +1317,44 @@ See Listing~\ref{lst:autolistingcell76} for the code  to create the dataframe an
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -1.268282 &  1.812701 & -0.201025 &  0.797597 \\
-2013-01-02 &  1.047219 &  0.281324 & -1.890740 &  1.591323 \\
-2013-01-03 &  1.109811 & -0.200233 & -0.844918 & -0.629818 \\
-2013-01-04 &  1.591857 & -0.285774 &  0.587640 & -2.948210 \\
-2013-01-05 &  0.940730 & -1.167735 & -2.340891 &  0.124803 \\
-2013-01-06 & -0.277566 &  0.070237 & -0.300494 & -0.566420 \\
+2013-01-01 & -0.499672 &  0.444337 &  0.157120 &  1.172152 \\
+2013-01-02 & -0.824540 &  1.439689 &  1.134088 &  1.737746 \\
+2013-01-03 & -0.231630 & -1.529798 & -0.441057 &  0.489255 \\
+2013-01-04 & -0.785652 & -0.964813 &  0.992210 & -0.788130 \\
+2013-01-05 & -0.324326 & -0.133479 &  2.699443 & -1.080114 \\
+2013-01-06 &  0.245934 &  0.278880 &  0.062924 &  0.567669 \\
+\bottomrule
+\end{tabular}
+
+\renewcommand{\arraystretch}{1}
+}
+
+
+
+See Listing~\ref{lst:autolistingcell104} for the code.
+
+{{
+\renewcommand{\arraystretch}{1.1}
+\centering
+% to get unbroken vertical lines with booktabs, set separators to zero
+% also set all horizontal lines to same width
+\aboverulesep=0ex
+\belowrulesep=0ex
+\heavyrulewidth=.05em
+\lightrulewidth=.05em
+\cmidrulewidth=.05em
+\belowbottomsep=0pt
+\abovetopsep=0pt
+\begin{tabular}{|l|l|p{50mm}|c|r|}
+\toprule
+        A &         B &         C &         D \\
+\midrule
+-0.499672 &  0.444337 &  0.157120 &  1.172152 \\
+-0.824540 &  1.439689 &  1.134088 &  1.737746 \\
+-0.231630 & -1.529798 & -0.441057 &  0.489255 \\
+-0.785652 & -0.964813 &  0.992210 & -0.788130 \\
+-0.324326 & -0.133479 &  2.699443 & -1.080114 \\
+ 0.245934 &  0.278880 &  0.062924 &  0.567669 \\
 \bottomrule
 \end{tabular}
 
@@ -1137,7 +1379,7 @@ Of course you may have to use this setting in conjunction with any other json se
 
 
 
-See Listing~\ref{lst:autolistingcell78} for the code  to write the table in LARGE.
+See Listing~\ref{lst:autolistingcell106} for the code  to write the table in LARGE.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1155,12 +1397,12 @@ See Listing~\ref{lst:autolistingcell78} for the code  to write the table in LARG
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -1.268282 &  1.812701 & -0.201025 &  0.797597 \\
-2013-01-02 &  1.047219 &  0.281324 & -1.890740 &  1.591323 \\
-2013-01-03 &  1.109811 & -0.200233 & -0.844918 & -0.629818 \\
-2013-01-04 &  1.591857 & -0.285774 &  0.587640 & -2.948210 \\
-2013-01-05 &  0.940730 & -1.167735 & -2.340891 &  0.124803 \\
-2013-01-06 & -0.277566 &  0.070237 & -0.300494 & -0.566420 \\
+2013-01-01 & -0.499672 &  0.444337 &  0.157120 &  1.172152 \\
+2013-01-02 & -0.824540 &  1.439689 &  1.134088 &  1.737746 \\
+2013-01-03 & -0.231630 & -1.529798 & -0.441057 &  0.489255 \\
+2013-01-04 & -0.785652 & -0.964813 &  0.992210 & -0.788130 \\
+2013-01-05 & -0.324326 & -0.133479 &  2.699443 & -1.080114 \\
+2013-01-06 &  0.245934 &  0.278880 &  0.062924 &  0.567669 \\
 \bottomrule
 \end{tabular}
 
@@ -1193,7 +1435,7 @@ The table format specification is provided by the Pandas \verb+.to\_latex(column
 
 
 
-See Listing~\ref{lst:autolistingcell80} for the code  to write a floating table in tiny font size.
+See Listing~\ref{lst:autolistingcell108} for the code  to write a floating table in tiny font size.
 
 {{
 
@@ -1216,12 +1458,12 @@ See Listing~\ref{lst:autolistingcell80} for the code  to write a floating table 
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -1.268282 &  1.812701 & -0.201025 &  0.797597 \\
-2013-01-02 &  1.047219 &  0.281324 & -1.890740 &  1.591323 \\
-2013-01-03 &  1.109811 & -0.200233 & -0.844918 & -0.629818 \\
-2013-01-04 &  1.591857 & -0.285774 &  0.587640 & -2.948210 \\
-2013-01-05 &  0.940730 & -1.167735 & -2.340891 &  0.124803 \\
-2013-01-06 & -0.277566 &  0.070237 & -0.300494 & -0.566420 \\
+2013-01-01 & -0.499672 &  0.444337 &  0.157120 &  1.172152 \\
+2013-01-02 & -0.824540 &  1.439689 &  1.134088 &  1.737746 \\
+2013-01-03 & -0.231630 & -1.529798 & -0.441057 &  0.489255 \\
+2013-01-04 & -0.785652 & -0.964813 &  0.992210 & -0.788130 \\
+2013-01-05 & -0.324326 & -0.133479 &  2.699443 & -1.080114 \\
+2013-01-06 &  0.245934 &  0.278880 &  0.062924 &  0.567669 \\
 \bottomrule
 \end{tabular}
 
@@ -1237,7 +1479,7 @@ See Listing~\ref{lst:autolistingcell80} for the code  to write a floating table 
 
 
 
-See Listing~\ref{lst:autolistingcell82} for the code  display a tikz graphic.
+See Listing~\ref{lst:autolistingcell110} for the code  display a tikz graphic.
 
 
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1281,7 +1523,7 @@ See Listing~\ref{lst:autolistingcell82} for the code  display a tikz graphic.
 
 
 
-See Listing~\ref{lst:autolistingcell83} for the code  display another tikz graphic, as a floating figure.
+See Listing~\ref{lst:autolistingcell111} for the code  display another tikz graphic, as a floating figure.
 
 {{
 
@@ -1361,7 +1603,7 @@ Latex(lstr + '\n')
 This paragraph is embedded as \LaTeX{} in a Jupyter output cell. One day this could be a complex computed \LaTeX{} string.  This example only has rising rules...  
 \rule[0pt]{10pt}{1pt} \rule[0pt]{10pt}{2pt} \rule[0pt]{10pt}{3pt} \rule[0pt]{10pt}{4pt} \rule[0pt]{10pt}{5pt} \rule[0pt]{10pt}{6pt} \rule[0pt]{10pt}{7pt} \rule[0pt]{10pt}{8pt} \rule[0pt]{10pt}{9pt} \rule[0pt]{10pt}{10pt} \rule[0pt]{10pt}{11pt} \rule[0pt]{10pt}{12pt} \rule[0pt]{10pt}{13pt} \rule[0pt]{10pt}{14pt} \rule[0pt]{10pt}{15pt} \rule[0pt]{10pt}{16pt} \rule[0pt]{10pt}{17pt} \rule[0pt]{10pt}{18pt} \rule[0pt]{10pt}{19pt} 
 
-Jelte Fennema wrote pylatex\cite{httpsgithubcomJelteFPyLaT} to create LaTeX text using Python code.  He wrote the code to create complete documents, but also to write  fragments\cite{httpsjeltefgithubioPyLaTe} --- which we can use here: "Classes can be part of a single document, or can act as pieces on their own. With the \verb+dumps\_as\_content+ method, most classes can return their LaTeX-formatted code, and with the \verb+generate\_tex+ method, this code can be written to a file."
+Jelte Fennema wrote pylatex\cite{httpsgithubcomJelteF00002} to create LaTeX text using Python code.  He wrote the code to create complete documents, but also to write  fragments\cite{httpsjeltefgithubioP00003} --- which we can use here: "Classes can be part of a single document, or can act as pieces on their own. With the \verb+dumps\_as\_content+ method, most classes can return their LaTeX-formatted code, and with the \verb+generate\_tex+ method, this code can be written to a file."
 
 
 I only spent limited time on pylatex and got the following example to work (it requires \verb+pip install pylatex+).
@@ -1369,16 +1611,16 @@ I only spent limited time on pylatex and got the following example to work (it r
 
 
 
-See Listing~\ref{lst:autolistingcell87} for the code  to format a numy array in \LaTeX{}.
+See Listing~\ref{lst:autolistingcell115} for the code  to format a numy array in \LaTeX{}.
 
 \[%
 arr= \begin{bmatrix}%
--0.318321849373&2.56329278694&-2.12719181446&0.0729062460686\\%
-0.931586498395&-0.00295785179876&-0.152603517505&-0.906774902076\\%
--0.420618972082&-1.09147819961&1.42667946538&0.242862131114\\%
--1.47914392887&0.174836316235&0.898639169037&0.0439616278845\\%
--0.493898711242&-0.0240584674892&-0.468508030406&0.311000429564\\%
--0.996791597898&1.50090062979&-1.30433976844&-1.10215774509%
+2.20933147105&-0.364499233192&1.03790643044&-1.70070134856\\%
+-0.369316854451&-1.82493237525&-0.1200067982&0.127551206345\\%
+1.718174135&-1.14652153776&-0.78516420308&0.931955312718\\%
+0.0400112074057&1.04921934892&0.0172503236&0.568769621282\\%
+-1.26853581225&1.30993082821&-1.06483595642&1.01135986356\\%
+-0.262242505888&0.153521261855&1.83803102384&1.44699723446%
 \end{bmatrix}%
 \]
 
@@ -1392,7 +1634,7 @@ Using math mode (anything between two dollar symbols) is interpreted as \LaTeX{}
 \begin{equation}D_{KL}(P||Q) = \sum\limits_{i}ln (\frac{P(i)}{Q(i)}) P(i).\end{equation}
 
 
-The probability density function for yaw angle is the wrapped normal distribution\cite{httpsenwikipediaorgwikiWr}.  The first form uses two dollar symbols  to show the equation in LaTeX display math:
+The probability density function for yaw angle is the wrapped normal distribution\cite{httpsenwikipediaorgw00004}.  The first form uses two dollar symbols  to show the equation in LaTeX display math:
 \begin{equation}f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]\end{equation}
 
 
@@ -1421,49 +1663,36 @@ f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty
 \section{Python and module versions, and dates}
 \label{sec:Pythonandmoduleversionsanddates}
 
-From: Introduction to scientific computing with Python\cite{httpnbvieweripythonorggit} we learn:
-"To encourage the practice of recording Python and module versions in notebooks, I've created a simple IPython extension that produces a table with versions numbers of selected software components. I believe that it is a good practice to include this kind of table in every notebook you create. To install this IPython extension, run:"
 
 
-\begin{verbatim}
-# you only need to do this once
-\%install\_ext http://raw.github.com/jrjohansson/version\_information/master/version\_information.py
-\end{verbatim}
+See Listing~\ref{lst:autolistingcell122} for the code  to get software versions.
 
 
-Now, to load the extension and produce the version table
+\begin{lstlisting}[style=outcellstyle]
+CPython 2.7.13
+IPython 5.3.0
 
+numpy 1.12.1
+scipy 0.19.0
+pyradi 1.1.3
 
+compiler   : MSC v.1500 64 bit (AMD64)
+system     : Windows
+release    : 7
+machine    : AMD64
+processor  : Intel64 Family 6 Model 94 Stepping 3, GenuineIntel
+CPU cores  : 8
+interpreter: 64bit
+Git hash   : f56bb8c1e5ffc64234583582fd49c96ac5788179
 
-
-See Listing~\ref{lst:autolistingcell95} for the code.
-
-\begin{center}
-
-\begin{normalsize}
-
-\begin{tabular}{|c|c|}
-\hline
-Software&Version\\\hline
-Python&2.7.12 64bit [MSC v.1500 64 bit (AMD64)]\\\hline
-IPython&4.2.0\\\hline
-OS&Windows 7 6.1.7601 SP1\\\hline
-numpy&1.11.1\\\hline
-scipy&0.17.1\\\hline
-matplotlib&1.5.1\\\hline
-pandas&0.18.1\\\hline
-\multicolumn{2}{|c|}{Sun Sep 04 21:50:34 2016 South Africa Standard Time}\\\hline
-
-\end{tabular}
-\end{normalsize}
-\end{center}
+\end{lstlisting}
 
 
 
 \chapter{Listings}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 31 \label{lst:listing1}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 58 \label{lst:listing1}}]
 # to prepare the environment
 from IPython.display import display
 from IPython.display import Image
@@ -1477,7 +1706,7 @@ import this
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 33 \label{lst:listing2}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 60 \label{lst:listing2}}]
 #
 print(' ')
 print('Radius = {}'.format(6))
@@ -1486,7 +1715,7 @@ print('This is a very long line of python code, that is supposed to flow over to
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 34 \label{lst:listing3}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 61 \label{lst:listing3}}]
 # to print the value
 a = ['a','b']
 for v in a:
@@ -1494,7 +1723,7 @@ for v in a:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 35 \label{lst:autolistingcell35}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 62 \label{lst:autolistingcell62}}]
 ## this should not appear in the body of the doc if float listings
 a = [0, 1]
 for v in a:
@@ -1502,19 +1731,19 @@ for v in a:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 37 \label{lst:autolistingcell37}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 64 \label{lst:autolistingcell64}}]
 print('code with no listing caption')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 39 \label{lst:autolistingcell39}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 66 \label{lst:autolistingcell66}}]
 def doprint(i):
     print('function output {}'.format(i))
     return int(i)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 40 \label{lst:autolistingcell40}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 67 \label{lst:autolistingcell67}}]
 for i in [1,2,3]:
     si = str(i)
     v = doprint(si)
@@ -1525,7 +1754,7 @@ print(v)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 43 \label{lst:figurelisting}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 70 \label{lst:figurelisting}}]
 #this figure is given meta data caption parameters, it will be floated in the latex export
 display(Image(filename='images/keep-calm-and-code-python_BW.png', width=250, height=250))
 print('also force print output')
@@ -1533,13 +1762,13 @@ print('also force print output')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 45 \label{lst:autolistingcell45}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 72 \label{lst:autolistingcell72}}]
 #this figure is not given meta data caption parameters, it will be inlined in the latex export
 display(Image(filename='images/random-squares-2.png', width=200, height=200))
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 47 \label{lst:autolistingcell47}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74 \label{lst:autolistingcell74}}]
 %matplotlib inline
 
 import pylab as pl
@@ -1556,7 +1785,7 @@ pl.grid(True)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 49 \label{lst:autolistingcell49}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76 \label{lst:autolistingcell76}}]
 import pyradi.ryplot as ryplot
 
 x = np.linspace(0,10,10)
@@ -1570,18 +1799,18 @@ for i in [1,2]:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 52 \label{lst:autolistingcell52}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 79 \label{lst:autolistingcell79}}]
 htmlstr = '<p><img src="images/random-squares-2.png" width=100 />'
 HTML(htmlstr)                 
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 57 \label{lst:autolistingcell57}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 84 \label{lst:autolistingcell84}}]
 # type(eval("this is a test string")) is not list
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 72 \label{lst:autolistingcell72}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 99 \label{lst:autolistingcell99}}]
 import pandas as pd
 d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
      'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
@@ -1592,10 +1821,11 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76 \label{lst:autolistingcell76}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 103 \label{lst:autolistingcell103}}]
 # to create the dataframe and write the output to LaTeX object at default font size
 import pandas as pd
 import numpy as np
+from IPython.display import Latex
 
 def makeDateRand(nrows=6, ncols=4):
     dates = pd.date_range('20130101',periods=6)
@@ -1604,28 +1834,33 @@ def makeDateRand(nrows=6, ncols=4):
 
 df = makeDateRand(nrows=6, ncols=4)
 lstr = df.to_latex(column_format='|l|l|p{50mm}|c|r|')
-
-from IPython.display import Latex
 Latex(lstr)
+
 
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 78 \label{lst:autolistingcell78}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 104 \label{lst:autolistingcell104}}]
+lstrno = df.to_latex(index=False,column_format='|l|l|p{50mm}|c|r|')
+Latex(lstrno)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 106 \label{lst:autolistingcell106}}]
 # to write the table in LARGE
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 80 \label{lst:autolistingcell80}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 108 \label{lst:autolistingcell108}}]
 # to write a floating table in tiny font size
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 82 \label{lst:autolistingcell82}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 110 \label{lst:autolistingcell110}}]
 # display a tikz graphic
 lstr = r"""
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1672,7 +1907,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 83 \label{lst:autolistingcell83}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 111 \label{lst:autolistingcell111}}]
 # display another tikz graphic, as a floating figure
 
 lstr = r"""
@@ -1729,7 +1964,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 85 \label{lst:autolistingcell85}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 113 \label{lst:autolistingcell113}}]
 ##
 lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
             + 'One day this could be a complex computed \LaTeX{} string.  '\
@@ -1740,9 +1975,10 @@ Latex(lstr + '\n')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 87 \label{lst:autolistingcell87}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 115 \label{lst:autolistingcell115}}]
 # to format a numy array in \LaTeX{}
 import numpy as np
+# install with pip install pylatex
 import pylatex as pyl
 
 arr = makeDateRand(nrows=6, ncols=4).values
@@ -1753,9 +1989,19 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 95 \label{lst:autolistingcell95}}]
-%load_ext version_information
-%version_information numpy, scipy, matplotlib,pandas
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 122 \label{lst:autolistingcell122}}]
+# to get software versions
+# https://github.com/rasbt/watermark
+# you only need to do this once
+# pip install watermark
+
+%load_ext watermark
+%watermark -v -m -p numpy,scipy,pyradi -g 
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 123 \label{lst:autolistingcell123}}]
+
 \end{lstlisting}
 
 
