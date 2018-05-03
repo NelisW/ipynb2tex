@@ -5,7 +5,7 @@ Yet another IPython notebook to LaTeX converter - this one exports clean code in
 
 The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python code, as well as several other features which do not fit my requirement. 
 
-##Features
+## Features
   
 -  Reads and converts IPython 2.x and 3.x files (nbformats 3 and 4).
 -  Code is formatted as a LaTeX `lstlistings` environment, which looks neater to my eye.  
@@ -18,7 +18,7 @@ The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python
 -  Supports Pandas `to_latex()` dataframe exports as inline or floating tables
 -  Supports `IPython.core.display.Latex object` in the output cell.
 
-##Deficiencies
+## Deficiencies
 
    
 1. Some complex cell-merged HTML tables may not render correctly in LaTeX (let me know if you have such a table).     
@@ -29,7 +29,7 @@ The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python
 
 
 
-##Instructions
+## Instructions
 
 The instructions on how to set up the notebook is given in the example notebook `test2LaTeX.ipynb`, please study it carefully. Someday when I have more time, I will write better instructions :-).
 
