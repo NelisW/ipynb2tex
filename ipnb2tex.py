@@ -48,6 +48,10 @@ bibtexlist = []
 bibxref = {}
 bibtexindex = 0
 
+protectEvnStringStart = 'beginincludegraphics\n'
+protectEvnStringEnd = 'endincludegraphics\n'
+
+
 docoptstring = """Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-i] [-u] [--bibstyle=<style>]
        ipnb2tex.py  (-h | --help)
 
@@ -1064,8 +1068,11 @@ def processHTMLTree(html,cell,addurlcommand):
         elif child.tag == 'img':
             filename = child.attrib['src']
             tmp += '\\begin{center}\n'
+            tmp += protectEvnStringStart
             tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+            tmp += protectEvnStringEnd
             tmp += '\\end{center}'
+
 
         else:
             raise ValueError("Unable to process tag of type ", child.tag)
@@ -1093,12 +1100,14 @@ def processHTMLTree(html,cell,addurlcommand):
             + sum([1 for i in findAllStr(tmp, r'\end{equation*') if i < loc])
         enva_count = sum([1 for i in findAllStr(tmp, r'\begin{eqnarray') if i < loc]) \
             + sum([1 for i in findAllStr(tmp, r'\end{eqnarray') if i < loc])
+        envg_count = sum([1 for i in findAllStr(tmp, protectEvnStringStart) if i < loc]) \
+            + sum([1 for i in findAllStr(tmp, protectEvnStringEnd) if i < loc])
 
-        if (not inline_count % 2) and (not env_count % 2) and (not envs_count % 2) and (not enva_count % 2) :
+        # replace _ with \_ if not in one of above environments
+        if (not inline_count % 2) and (not env_count % 2) and (not envs_count % 2) and (not enva_count % 2)  and (not envg_count % 2) :
             tmp = tmp[:loc] + '\\' + tmp[loc:]
             offset_count += 1
     return tmp
-
 
 ################################################################################
 def processHeading(hstring, cstring):
@@ -1221,10 +1230,13 @@ def processParagraph(pnode, tmp, addurlcommand):
 
         elif child.tag == 'img':
             filename = child.attrib['src']
+            if '_' in filename:
+                print(filename)
             tmp += '\\begin{center}\n'
+            tmp += protectEvnStringStart
             tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+            tmp += protectEvnStringEnd
             tmp += '\\end{center}'
-
 
         else:
             raise ValueError('so far={}, need to learn to process this:'.format(tmp), child.tag)
@@ -1321,6 +1333,10 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
 
         rtnString, rtnListing = fnTableCell[cell.cell_type](cell, cell_index, imagedir, infile, inlinelistings,addurlcommand)
 
+        # remove the begin/end markers to protect latex special conversion
+        rtnString = re.sub(protectEvnStringStart,'',rtnString)
+        rtnString = re.sub(protectEvnStringEnd,'',rtnString)
+
         output += rtnString
         listingsstring += rtnListing
 
@@ -1332,6 +1348,8 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         output += '\\bibliography{{{0}}}\n\n'.format(bibfile.replace('.bib', ''))
 
     output += r'\end{document}'+'\n\n'
+
+
 
     with io.open(outfile, 'w', encoding='utf-8') as f:
       if int(sys.version[0]) < 3:
