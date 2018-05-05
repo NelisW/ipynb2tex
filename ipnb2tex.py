@@ -624,7 +624,8 @@ def prepInput(cell, cell_index, inlinelistings):
         if captionStr:
             tmpStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
         else:
-            tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
+            # tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
+            tmpStr += '[style=incellstyle]\n{}\n'.format(lsting)
         tmpStr += '\\end{lstlisting}\n\n'
 
         if inlinelistings:
