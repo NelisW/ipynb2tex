@@ -519,7 +519,9 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
         outstr += '\\centering\n'
         if booktabstr:
             outstr += booktabstr
+        outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
         outstr +=  payload + '\n'
+        outstr += '\\end{{{}}}\n'.format(fontsizeStr)
         outstr += '\\renewcommand{\\arraystretch}{1}\n'
         outstr += '}\n\n'
     else:
@@ -820,7 +822,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             if int(sys.version[0]) < 3:
                 fpng.write(base64.decodestring(picCell))
             else:
-                fpng.write(base64.decodestring(bytes(picCell, 'utf-8')))
+                fpng.write(base64.decodebytes(bytes(picCell, 'utf-8')))
 
             #process the caption string, either a string or a list of strings
             captionStr = getMetaDataString(cell, output_index, 'figureCaption', 'caption','')
@@ -864,16 +866,18 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
 
 
-
-    #handle latex in output cell
-    #nbformat 4
-    if 'data' in cellOutput.keys() and 'text/latex' in cellOutput.data.keys():
-        texStr += processLaTeX(cellOutput['text/latex'],cell,addurlcommand)
-        return texStr
-    #nbformat 3
-    if 'latex' in cellOutput.keys():
-        texStr += processLaTeX(cellOutput['text/latex'],cell,addurlcommand)
-        return texStr
+# not sure wht this is still here, there is another processor caught in 
+# the 'data' key processing done further down below (processLaTeXOutCell)
+    # #handle latex in output cell
+    # #nbformat 4
+    # if 'data' in cellOutput.keys() and 'text/latex' in cellOutput.data.keys():
+    #     print('process latex 2')
+    #     texStr += processLaTeX(cellOutput['data']['text/latex'],cell,addurlcommand)
+    #     return texStr
+    # #nbformat 3
+    # if 'latex' in cellOutput.keys():
+    #     texStr += processLaTeX(cellOutput['text/latex'],cell,addurlcommand)
+    #     return texStr
 
 
 
@@ -893,7 +897,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 ################################################################################
 #process an html tree
 def processLaTeX(latex,cell,addurlcommand):
-    print('processLaTeX',latex)
+    # print('processLaTeX',latex)
     return latex
 
 

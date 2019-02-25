@@ -153,6 +153,11 @@
 \newcommand{\WP@docECPnumber}{} 
 \@onlypreamble{\WPdocECPnumber}
 
+\newcommand{\WPdocECPtext}[1]{\renewcommand{\WP@docECPtext}{#1}}
+\newcommand{\WP@docECPtext}{ECP} 
+\@onlypreamble{\WPdocECPtext}
+
+
 \newcommand{\WPdocLogo}[1]{\renewcommand{\WP@docLogo}{#1}}
 \newcommand{\WP@docLogo}{} 
 \@onlypreamble{\WPdocLogo}
@@ -194,7 +199,7 @@
     {\textsc{Contract Title:} \WP@contractname} \ \ \ \ 
     {\textsc{Order Number:} \WP@orderno} \ \ \ \ 
     {\textsc{Line Number:} \WP@contractline} \ \ \ \ 
-    {\textsc{ECP number:} \WP@docECPnumber}
+    {\textsc{\WP@docECPtext number:} \WP@docECPnumber}
     }}}  
     \put(2,219){\makebox(0,0)[lc]{{\scriptsize 
     {\textsc{Milestone Number:} \WP@milestonenumber} \ \ \ \ 
@@ -296,7 +301,7 @@
 \sloppy \hbadness=10000
 \hrule
      \small{\vrule height10pt width0pt depth10pt } %
-         \scshape{ECP \WP@docECPnumber\hfill 
+         \scshape{\WP@docECPtext \WP@docECPnumber\hfill 
      \WP@classification \hfill Page \thepage\ of \WP@docmaxpage}
 \end{minipage}\fussy
 }
