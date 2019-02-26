@@ -697,7 +697,10 @@ def prepError(cellOutput, cell, cell_index, output_index, imagedir, infile,addur
         if output['output_type'] == 'error':
             for trace in output['traceback']:
                 #convert to ascii and remove control chars
-                rtnStr += re.sub(r'\033\[[0-9;]+m',"", trace.decode('ascii','ignore'))
+                # rtnStr += re.sub(r'\033\[[0-9;]+m',"", bytes(trace).decode('ascii','ignore'))
+                rtnStr += re.sub(r'\033\[[0-9;]+m',"", trace)
+
+
     rtnStr += '\\end{verbatim}\n'
     return rtnStr
 
