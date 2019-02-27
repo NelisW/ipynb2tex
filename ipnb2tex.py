@@ -545,11 +545,11 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
     outstr = ''
     if 'text' in cellOutput.keys():
         outstr += encapsulateListing(cellOutput['text'], captionStr)
-    elif 'data' in    cellOutput.keys():
+    elif 'data' in cellOutput.keys():
         if 'text/html' in    cellOutput.data.keys():
             outs = cellOutput.data['text/html']
             outstr +=    processHTMLTree(outs,cell,addurlcommand)
-        elif 'text/latex' in    cellOutput.data.keys():
+        elif 'text/latex' in cellOutput.data.keys():
             lstr,table_index,figure_index = processLaTeXOutCell(
                   cellOutput,output_index,outstr,cell,addurlcommand,table_index,figure_index)
             outstr += lstr
@@ -606,14 +606,18 @@ def prepInput(cell, cell_index, inlinelistings):
         if not inlinelistings and not len(labelStr):
             labelStr = 'lst:autolistingcell{}'.format(cell_index)
 
+        showFloatListing = True
         if not inlinelistings: # and not captionStr:
             if len(lsting):
                 lstistrp = lsting.split('\n')
                 if len(lstistrp[0]) > 0: # take care of blank first lines
                     if lstistrp[0][0]=='#':
-                        if len(lstistrp[0]) > 2: # take care of blank first lines
+                        if len(lstistrp[0]) > 1: # take care of blank first lines
                             if not lstistrp[0][1]=='#':
                                 captiopurp = ' ' + lstistrp[0][1:]
+                        if len(lstistrp[0]) > 2: # take care of blank first lines
+                                if lstistrp[0][2]=='#':
+                                    showFloatListing = False
                     else:
                         captiopurp = ''
 
@@ -622,16 +626,21 @@ def prepInput(cell, cell_index, inlinelistings):
         if captionStr:
             captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
 
-        tmpStr = '\n\\begin{lstlisting}'
-        if captionStr:
-            tmpStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
-        else:
-            # tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
-            tmpStr += '[style=incellstyle]\n{}\n'.format(lsting)
-        tmpStr += '\\end{lstlisting}\n\n'
+        tmpStr = ''
+        if showFloatListing:
+            tmpStr += '\n\\begin{lstlisting}'
+            if captionStr:
+                tmpStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
+            else:
+                # tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
+                tmpStr += '[style=incellstyle]\n{}\n'.format(lsting)
+            tmpStr += '\\end{lstlisting}\n\n'
 
         if inlinelistings:
+            if not lines[0][2] == '#':
                 rtnStr = tmpStr
+            else:
+                rtnStr = ''
         else:
                 rtnSource = tmpStr
                 if captiopurp is not None:
@@ -839,13 +848,11 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
             scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 0.0)
 
-            # if the adjustbox package is used in latex preamble, this code is redundant
-            #\usepackage[Export]{adjustbox}
-            #\adjustboxset{max size={\textwidth}{0.7\textheight}}
-            # if width: # first priority
-            #     sizeStr = '[width={}\\textwidth]'.format(width)
-            # elif scale: # second priority
-            #     sizeStr = '[scale={}]'.format(scale) if scale else ''
+            sizeStr = None
+            if width: # first priority
+                sizeStr = '[width={}\\textwidth]'.format(width)
+            elif scale: # second priority
+                sizeStr = '[scale={}]'.format(scale) if scale else ''
             # else: # none given, use assumed textwidth
             #     sizeStr = '[width=0.9\\textwidth]'
 
@@ -856,8 +863,10 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
                  texStr += '\\begin{center}\n'
 
             # if the adjustbox package is used, this code is redundant
-            # texStr += '\\includegraphics{}{{{}{}}}\n'.format(sizeStr,imagedir,imageName)
-            texStr += '\\includegraphics{{{}{}}}\n'.format(imagedir,imageName)
+            if sizeStr is not None:
+                texStr += '\\includegraphics{}{{{}{}}}\n'.format(sizeStr,imagedir,imageName)
+            else:
+                texStr += '\\includegraphics{{{}{}}}\n'.format(imagedir,imageName)
 
             if captionStr:
                 texStr += '\\caption{'+'{}{}'.format(captionStr, labelStr) + '}\n'
