@@ -1,11 +1,5 @@
-#!/usr/bin/env python
-
-## $Id: _cleanBat.py 3024 2017-12-05 16:09:49Z riana $
-## $HeadURL: svn://146.64.81.56/cms/trunk/green/red/user/bin/bat/_cleanBat.py $
-
-
-#clean a precisely defines set of files from a precisely defined directory set.
-#the specified files are deleted
+#clean a precisely defined set of files from a precisely defined directory set.
+#the specified files are deleted, after the user has been prompted
 
 import os.path, fnmatch
 import sys
