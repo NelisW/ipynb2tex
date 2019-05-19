@@ -389,7 +389,7 @@ whatever preamble lines you require
 \end{verbatim}
 
 
-Then follows whatever content you need to use your document style. Write/change this file to change the front  matter and appearance of the document.  The script adds the \verb+\end{document}+ line after the notebook cells' contents.
+Then follows whatever content you need to use your document style, e.g., font style. Write/change this file to change the front  matter and appearance of the document.  The script adds the \verb+\end{document}+ line after the notebook cells' contents.
 
 
 The \verb+header.tex+ file provides the functionality required by the converter-created code. This content is input using the \LaTeX{} input command.  A number of pacakges are \verb+\usepackage{}+ed, as required by the converted LaTeX code.
@@ -548,7 +548,10 @@ If a code cell does not start with a comment, no text will be inserted and the f
 \verb+See Listing~\ref{lst:autolistingcell24} for the code.+
 
 
-If the code cell starts with a comment of the form \verb+##+ followed by a space, the listing will be made but there is no text entry in the location where the code cell was. i.e., no line starting with \verb+See Listing+...
+If the code cell starts with a comment of the form \verb+##+, the listing will output to the tex file, but there is no text entry in the location where the code cell was. i.e., no line starting with \verb+See Listing+...
+
+
+If the code cell starts with a comment of the form \verb+###+, neither the listing nor the  text entry referring to it is written to the latex file.  So if you don't want the code to be shown or a reference to it made, start the first code line with \verb+###+.
 
 
 
@@ -710,7 +713,7 @@ See Listing~\ref{lst:figurelisting} for the code this figure is given meta data 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_70_0.png}
+\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_70_0.png}
 \caption{Caption text for first figure\label{fig:lab1-0}}
 \end{figure}
 
@@ -737,7 +740,7 @@ The following figure is not floating, but is scaled down to be smaller.
 See Listing~\ref{lst:autolistingcell72} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
 
 \begin{center}
-\includegraphics{./pic/test2LaTeX_72_0.png}
+\includegraphics[scale=0.3]{./pic/test2LaTeX_72_0.png}
 \end{center}
 
 The following Matplotlib plot is scaled and floating.
@@ -761,7 +764,7 @@ See Listing~\ref{lst:autolistingcell74} for the code.
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_74_0.png}
+\includegraphics[width=0.3\textwidth]{./pic/test2LaTeX_74_0.png}
 \caption{Caption text for third figure\label{fig:lab3-0}}
 \end{figure}
 
@@ -789,18 +792,18 @@ See Listing~\ref{lst:autolistingcell76} for the code.
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_76_0.png}
+\includegraphics[scale=0.5]{./pic/test2LaTeX_76_0.png}
 \caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
 \end{figure}
 
 \begin{center}
-\includegraphics{./pic/test2LaTeX_76_1.png}
+\includegraphics[scale=0.5]{./pic/test2LaTeX_76_1.png}
 \end{center}
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics{./pic/test2LaTeX_76_2.png}
+\includegraphics[scale=0.5]{./pic/test2LaTeX_76_2.png}
 \caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
 \end{figure}
 
@@ -1313,19 +1316,22 @@ See Listing~\ref{lst:autolistingcell103} for the code  to create the dataframe a
 \cmidrulewidth=.05em
 \belowbottomsep=0pt
 \abovetopsep=0pt
+
+\begin{normalsize}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
 {} &         A &         B &         C &         D \\
 \midrule
-2013-01-01 & -0.499672 &  0.444337 &  0.157120 &  1.172152 \\
-2013-01-02 & -0.824540 &  1.439689 &  1.134088 &  1.737746 \\
-2013-01-03 & -0.231630 & -1.529798 & -0.441057 &  0.489255 \\
-2013-01-04 & -0.785652 & -0.964813 &  0.992210 & -0.788130 \\
-2013-01-05 & -0.324326 & -0.133479 &  2.699443 & -1.080114 \\
-2013-01-06 &  0.245934 &  0.278880 &  0.062924 &  0.567669 \\
+2013-01-01 & -1.035296 & -0.022336 & -0.348781 & -0.966851 \\
+2013-01-02 & -1.354021 &  0.090028 &  0.234674 &  0.647160 \\
+2013-01-03 & -0.074347 &  0.555429 & -1.434345 &  0.833438 \\
+2013-01-04 &  0.791960 &  0.467772 & -0.319447 &  0.613592 \\
+2013-01-05 &  1.104326 &  0.829684 &  2.241559 &  0.628348 \\
+2013-01-06 &  0.002941 &  0.859695 &  0.470280 &  0.868744 \\
 \bottomrule
 \end{tabular}
 
+\end{normalsize}
 \renewcommand{\arraystretch}{1}
 }
 
@@ -1345,19 +1351,22 @@ See Listing~\ref{lst:autolistingcell104} for the code.
 \cmidrulewidth=.05em
 \belowbottomsep=0pt
 \abovetopsep=0pt
+
+\begin{normalsize}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
         A &         B &         C &         D \\
 \midrule
--0.499672 &  0.444337 &  0.157120 &  1.172152 \\
--0.824540 &  1.439689 &  1.134088 &  1.737746 \\
--0.231630 & -1.529798 & -0.441057 &  0.489255 \\
--0.785652 & -0.964813 &  0.992210 & -0.788130 \\
--0.324326 & -0.133479 &  2.699443 & -1.080114 \\
- 0.245934 &  0.278880 &  0.062924 &  0.567669 \\
+-1.035296 & -0.022336 & -0.348781 & -0.966851 \\
+-1.354021 &  0.090028 &  0.234674 &  0.647160 \\
+-0.074347 &  0.555429 & -1.434345 &  0.833438 \\
+ 0.791960 &  0.467772 & -0.319447 &  0.613592 \\
+ 1.104326 &  0.829684 &  2.241559 &  0.628348 \\
+ 0.002941 &  0.859695 &  0.470280 &  0.868744 \\
 \bottomrule
 \end{tabular}
 
+\end{normalsize}
 \renewcommand{\arraystretch}{1}
 }
 
@@ -1393,6 +1402,8 @@ See Listing~\ref{lst:autolistingcell106} for the code  to write the table in LAR
 \cmidrulewidth=.05em
 \belowbottomsep=0pt
 \abovetopsep=0pt
+
+\begin{LARGE}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
 {} &         A &         B &         C &         D \\
@@ -1406,6 +1417,7 @@ See Listing~\ref{lst:autolistingcell106} for the code  to write the table in LAR
 \bottomrule
 \end{tabular}
 
+\end{LARGE}
 \renewcommand{\arraystretch}{1}
 }
 
@@ -1631,20 +1643,27 @@ Inline math delineated with single dollar symbols are rendered inline with parag
 
 
 Using math mode (anything between two dollar symbols) is interpreted as \LaTeX{} math:
+
+
 \begin{equation}D_{KL}(P||Q) = \sum\limits_{i}ln (\frac{P(i)}{Q(i)}) P(i).\end{equation}
 
 
+\begin{equation}\begin{array}{llll}E = \frac{\phi}{A_o} = \int \left[\right.&&&\\&\tau_a(R) \tau_o &&\\&\left[\right.&&\\&&\mkern-82mu \Omega_t k_i\left(\epsilon_t L(T_t)\right)&[1]\\&&\mkern-99mu +\,\,\Omega_t k_i(1-\epsilon_t)\left(\frac{\rho E_\textrm{sun}}{\pi}\right)&[2]\\&&\mkern-98mu +\,\,\Omega_t(1-k_i)(1-\epsilon_t)\left(\frac{\rho E_\textrm{sun}}{\pi}\right)&[3]\\&&\mkern-98mu  +\,\, (\Omega_p -\Omega_t) \left(\frac{\rho E_\textrm{sun}}{\pi}\right)&[4]\\&\left.\right]&&\\&+\,\,\tau_o L_\textrm{path}(R) \Omega_p&&[5]\\&\left.\right]d\lambda& &\end{array}\end{equation}
+
+
 The probability density function for yaw angle is the wrapped normal distribution\cite{httpsenwikipediaorgw00004}.  The first form uses two dollar symbols  to show the equation in LaTeX display math:
+
+
 \begin{equation}f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]\end{equation}
 
 
-The second example uses  \verb+\begin{equation}+ and \verb+\end{equation}+:
-`:
+The second example uses  \verb+begin{equation}+ and \verb+end{equation}+:
 
 
-\begin{equation}
-f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
-\end{equation}
+\begin{equation}f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]\end{equation}
+
+
+\begin{equation}\begin{array}{l}X_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]\end{array}\end{equation}
 
 
 
@@ -1665,7 +1684,7 @@ f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^{\infty}_{k=-\infty
 
 
 
-See Listing~\ref{lst:autolistingcell122} for the code  to get software versions.
+See Listing~\ref{lst:autolistingcell124} for the code  to get software versions.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -1989,7 +2008,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 122 \label{lst:autolistingcell122}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 124 \label{lst:autolistingcell124}}]
 # to get software versions
 # https://github.com/rasbt/watermark
 # you only need to do this once
@@ -2000,7 +2019,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 123 \label{lst:autolistingcell123}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 125 \label{lst:autolistingcell125}}]
 
 \end{lstlisting}
 

@@ -978,21 +978,24 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
         starts = starts[:-1]
     math_envs += [(s,e) for (s,e) in zip(starts, ends)]
 
-    starts = list(findAllStr(mkd, '\n\\begin{equation}'))
+    # starts = list(findAllStr(mkd, '\n\\begin{equation}'))
+    starts = list(findAllStr(mkd, '\\begin{equation}'))
     ends = [e + 13 for e in findAllStr(mkd, '\\end{equation}')]
     if len(starts) > len(ends):
         starts = starts[:-1]
     math_envs += [(s,e) for (s,e) in zip(starts, ends)]
     math_envs = sorted(math_envs)
 
-    starts = list(findAllStr(mkd, '\n\\begin{equation*}'))
+    # starts = list(findAllStr(mkd, '\n\\begin{equation*}'))
+    starts = list(findAllStr(mkd, '\\begin{equation*}'))
     ends = [e + 14 for e in findAllStr(mkd, '\\end{equation*}')]
     if len(starts) > len(ends):
         starts = starts[:-1]
     math_envs += [(s,e) for (s,e) in zip(starts, ends)]
     math_envs = sorted(math_envs)
 
-    starts = list(findAllStr(mkd, '\n\\begin{eqnarray}'))
+    # starts = list(findAllStr(mkd, '\n\\begin{eqnarray}'))
+    starts = list(findAllStr(mkd, '\\begin{eqnarray}'))
     ends = [e + 13 for e in findAllStr(mkd, '\\end{eqnarray}')]
     if len(starts) > len(ends):
         starts = starts[:-1]
