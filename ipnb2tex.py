@@ -1377,8 +1377,22 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
       else:
         f.write(output)
 
-    if len(bibtexlist):
-        with io.open(bibfile, 'w', encoding='utf-8') as f:
+    filenames = listFiles('.','*.bib',recurse=1)
+    with io.open(bibfile, 'w', encoding='utf-8') as f:
+        # write any other bib files found in the root folder
+        if len(filenames)>0:
+            for filename in filenames:
+                if filename not in bibfile:
+                    print(f'Appending {filename}')
+                    with open(filename,'r') as fin:
+                        lines = fin.read()
+                        if int(sys.version[0]) < 3:
+                            f.write(unicode(lines))
+                        else:
+                            f.write(lines)
+
+        #write the entries gathered from the notebook
+        if len(bibtexlist):
             for bib in bibtexlist:
                 if int(sys.version[0]) < 3:
                     f.write(unicode(bib))
@@ -1414,6 +1428,95 @@ def getInfileNames(infile, outfile):
 
     return infiles, outfiles
 
+################################################################
+#lists the files in a directory and subdirectories
+#this code is adapted from a recipe in the Python Cookbook
+def listFiles(root, patterns='*', recurse=1, return_folders=0, useRegex=False):
+    """Lists the files/directories meeting specific requirement
+
+        Returns a list of file paths to files in a file system, searching a 
+        directory structure along the specified path, looking for files 
+        that matches the glob pattern. If specified, the search will continue 
+        into sub-directories.  A list of matching names is returned. The 
+        function supports a local or network reachable filesystem, but not URLs.
+
+    Args:
+        | root (string): directory root from where the search must take place
+        | patterns (string): glob/regex pattern for filename matching. Multiple pattens 
+          may be present, each one separated by ;
+        | recurse (unt): flag to indicate if subdirectories must also be searched (optional)
+        | return_folders (int): flag to indicate if folder names must also be returned (optional)
+        | useRegex (bool): flag to indicate if patterns areregular expression strings (optional)
+
+    Returns:
+        | A list with matching file/directory names
+
+    Raises:
+        | No exception is raised.
+    """
+    if useRegex:
+        import re
+
+    # Expand patterns from semicolon-separated string to list
+    pattern_list = patterns.split(';')
+    filenames = []
+    filertn = []
+
+    if sys.version_info[0] < 3:
+
+        # Collect input and output arguments into one bunch
+        class Bunch(object):
+            def __init__(self, **kwds): self.__dict__.update(kwds)
+        arg = Bunch(recurse=recurse, pattern_list=pattern_list,
+                                return_folders=return_folders, results=[])
+
+        def visit(arg, dirname, files):
+            # Append to arg.results all relevant files (and perhaps folders)
+            for name in files:
+                fullname = os.path.normpath(os.path.join(dirname, name))
+                if arg.return_folders or os.path.isfile(fullname):
+                    for pattern in arg.pattern_list:
+                        if useRegex:
+                            #search returns None is pattern not found
+                            regex = re.compile(pattern)
+                            if regex.search(name):
+                                arg.results.append(fullname)
+                                break
+                        else:
+                            if fnmatch.fnmatch(name, pattern):
+                                arg.results.append(fullname)
+                                break
+            # Block recursion if recursion was disallowed
+            if not arg.recurse: files[:]=[]
+        os.path.walk(root, visit, arg)
+        return arg.results
+
+    else: #python 3
+        for dirpath,dirnames,files in os.walk(root):
+            if dirpath==root or recurse:
+                for filen in files:
+                    # filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,filen)))
+                    filenames.append(os.path.relpath(os.path.join(dirpath,filen)))
+                if return_folders:
+                    for dirn in dirnames:
+                        # filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,dirn)))
+                        filenames.append(os.path.relpath(os.path.join(dirpath,dirn)))
+
+        for name in filenames:
+            if return_folders or os.path.isfile(name):
+                for pattern in pattern_list:
+                    if useRegex:
+                        #search returns None is pattern not found
+                        regex = re.compile(pattern)
+                        if regex.search(name):
+                            filertn.append(name)
+                            break
+                    else:
+                        # split only the filename to compare, discard folder path
+                        if fnmatch.fnmatch(os.path.basename(name), pattern):
+                            filertn.append(name)
+                            break
+    return filertn
 
 ################################################################################
 ################################################################################
