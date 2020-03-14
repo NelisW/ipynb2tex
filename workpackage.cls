@@ -4,7 +4,7 @@
 \def\fileversion{ver 0.9.0}%
 \def\filedate{2012-04-03}%
 \ProvidesClass{workpackage}[2012/04/03 v-0.9.0 work package style]
-\LoadClass[11pt,a4paper]{report}[1994/12/09]
+\LoadClass[12pt,a4paper]{report}[1994/12/09]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{ifthen}

@@ -1093,8 +1093,15 @@ def processHTMLTree(html,cell,addurlcommand):
             tmp += protectEvnStringEnd
             tmp += '\\end{center}'
 
+        elif child.tag == 'style':
+            pass
 
         else:
+            print('Unknown tag in this cell:')
+            print(f'child.tag: {child.tag}')
+            print(f'child.text: {child.text}')
+            print(f'cell contents: {cell}')
+            print('')
             raise ValueError("Unable to process tag of type ", child.tag)
 
     # fix the lxml parser ignoring the \ for the latex envs
