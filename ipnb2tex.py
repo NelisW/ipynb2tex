@@ -637,8 +637,11 @@ def prepInput(cell, cell_index, inlinelistings):
             tmpStr += '\\end{lstlisting}\n\n'
 
         if inlinelistings:
-            if not lines[0][2] == '#':
-                rtnStr = tmpStr
+            if len(lines[0]) > 2:
+                if not lines[0][2] == '#':
+                    rtnStr = tmpStr
+                else:
+                    rtnStr = ''
             else:
                 rtnStr = ''
         else:
