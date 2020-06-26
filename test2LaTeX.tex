@@ -976,46 +976,25 @@ Markdown basics: lists, markup and code
 The markup language (or the converter) breaks if an itemized list and an enumerated list are immediately adjacent --- we need to separate the lists by text with with a \verb+<p/>+.
 
 
+Please note that the converter does not currently allow free standing (enter-twice) paragraphs inside lists.  Please make the paragraphs touch and use double spaces at the end to force a new line. This will be converted to loose standing paragraphs in LaTeX.
+
+
 \begin{enumerate}
 \item list item1 in markdown format.
-\item list item2
+\item list item2  
 
 
-list item2
+   item2 new parra 1 
 
 
-item2 new parra 1
-
-
-list item2
-
-
-list item2
-
-
-item2 new parra 1
-
-
-item2 new parra 2
+   item2 new parra 1
 \item list item3
 
 
-list item3
+    item3 new parra 1
 
 
-item3 new parra 1
-
-
-list item3
-
-
-list item3
-
-
-item3 new parra 1
-
-
-item3 new parra 2
+    item3 new parra 2
 \end{enumerate}
 
 Lists in HTML format

@@ -1157,12 +1157,14 @@ def processList(lnode,addurlcommand):
 
     for li in lnode:
 
-        if li.tag == 'li':
+        if li.tag == 'ul' or li.tag == 'ol':
+            tmp += processList(li,addurlcommand).strip() + '\n'
+
+        elif li.tag == 'li':
             tmp += r"\item " + processParagraph(li,'',addurlcommand).strip() + '\n'
 
-        elif li.tag == 'ul' or li.tag == 'ol':
-            tmp += processList(li,addurlcommand).strip() + '\n'
         else:
+            print('this should not be reached!')
             pass
 
     if lnode.tag == 'ul' or lnode.tag == 'ol':
