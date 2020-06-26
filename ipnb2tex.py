@@ -624,7 +624,7 @@ def prepInput(cell, cell_index, inlinelistings):
             captionStr = 'Code Listing in cell {}'.format(cell_index)
 
         if captionStr:
-            captionStr = '{'+r'{} \label{{{}}}'.format(captionStr, labelStr)+'}'
+            captionStr = '{'+r'{}}}, label={}'.format(captionStr, labelStr)
 
         tmpStr = ''
         if showFloatListing:

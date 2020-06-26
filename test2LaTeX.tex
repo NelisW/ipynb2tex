@@ -13,7 +13,7 @@
 
 % then follows the rest of the preamble to be placed before the begin document
 % this preamble content is special to the documentclass you defined above.
-\WPproject{ipnb2LaTeX}           % project name
+\WPproject{K-Line}           % project name
 \WPequipment{Work package demonstrator}         % equipment name
 \WPsubject{How to use the converter to create a work package}           % main heading 
 \WPconclusions{\begin{enumerate}
@@ -976,6 +976,48 @@ Markdown basics: lists, markup and code
 The markup language (or the converter) breaks if an itemized list and an enumerated list are immediately adjacent --- we need to separate the lists by text with with a \verb+<p/>+.
 
 
+\begin{enumerate}
+\item list item1 in markdown format.
+\item list item2
+
+
+list item2
+
+
+item2 new parra 1
+
+
+list item2
+
+
+list item2
+
+
+item2 new parra 1
+
+
+item2 new parra 2
+\item list item3
+
+
+list item3
+
+
+item3 new parra 1
+
+
+list item3
+
+
+list item3
+
+
+item3 new parra 1
+
+
+item3 new parra 2
+\end{enumerate}
+
 Lists in HTML format
 
 
@@ -1246,7 +1288,7 @@ Pandas dataframe tables are also rendered.
 
 
 
-See Listing~\ref{lst:autolistingcell99} for the code.
+See Listing~\ref{lst:autolistingcell100} for the code.
 
 \begin{center}
 
@@ -1302,7 +1344,7 @@ The table format specification is provided by the Pandas  to\_latex(column\_form
 
 
 
-See Listing~\ref{lst:autolistingcell103} for the code  to create the dataframe and write the output to LaTeX object at default font size.
+See Listing~\ref{lst:autolistingcell104} for the code  to create the dataframe and write the output to LaTeX object at default font size.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1337,7 +1379,7 @@ See Listing~\ref{lst:autolistingcell103} for the code  to create the dataframe a
 
 
 
-See Listing~\ref{lst:autolistingcell104} for the code.
+See Listing~\ref{lst:autolistingcell105} for the code.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1388,7 +1430,7 @@ Of course you may have to use this setting in conjunction with any other json se
 
 
 
-See Listing~\ref{lst:autolistingcell106} for the code  to write the table in LARGE.
+See Listing~\ref{lst:autolistingcell107} for the code  to write the table in LARGE.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1447,7 +1489,7 @@ The table format specification is provided by the Pandas \verb+.to\_latex(column
 
 
 
-See Listing~\ref{lst:autolistingcell108} for the code  to write a floating table in tiny font size.
+See Listing~\ref{lst:autolistingcell109} for the code  to write a floating table in tiny font size.
 
 {{
 
@@ -1491,7 +1533,7 @@ See Listing~\ref{lst:autolistingcell108} for the code  to write a floating table
 
 
 
-See Listing~\ref{lst:autolistingcell110} for the code  display a tikz graphic.
+See Listing~\ref{lst:autolistingcell111} for the code  display a tikz graphic.
 
 
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1535,7 +1577,7 @@ See Listing~\ref{lst:autolistingcell110} for the code  display a tikz graphic.
 
 
 
-See Listing~\ref{lst:autolistingcell111} for the code  display another tikz graphic, as a floating figure.
+See Listing~\ref{lst:autolistingcell112} for the code  display another tikz graphic, as a floating figure.
 
 {{
 
@@ -1623,7 +1665,7 @@ I only spent limited time on pylatex and got the following example to work (it r
 
 
 
-See Listing~\ref{lst:autolistingcell115} for the code  to format a numy array in \LaTeX{}.
+See Listing~\ref{lst:autolistingcell116} for the code  to format a numy array in \LaTeX{}.
 
 \[%
 arr= \begin{bmatrix}%
@@ -1684,7 +1726,7 @@ The second example uses  \verb+begin{equation}+ and \verb+end{equation}+:
 
 
 
-See Listing~\ref{lst:autolistingcell124} for the code  to get software versions.
+See Listing~\ref{lst:autolistingcell125} for the code  to get software versions.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -1711,7 +1753,7 @@ Git hash   : f56bb8c1e5ffc64234583582fd49c96ac5788179
 \chapter{Listings}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 58 \label{lst:listing1}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 58}, label=lst:listing1]
 # to prepare the environment
 from IPython.display import display
 from IPython.display import Image
@@ -1725,7 +1767,7 @@ import this
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 60 \label{lst:listing2}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 60}, label=lst:listing2]
 #
 print(' ')
 print('Radius = {}'.format(6))
@@ -1734,7 +1776,7 @@ print('This is a very long line of python code, that is supposed to flow over to
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 61 \label{lst:listing3}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 61}, label=lst:listing3]
 # to print the value
 a = ['a','b']
 for v in a:
@@ -1742,7 +1784,7 @@ for v in a:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 62 \label{lst:autolistingcell62}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 62}, label=lst:autolistingcell62]
 ## this should not appear in the body of the doc if float listings
 a = [0, 1]
 for v in a:
@@ -1750,19 +1792,19 @@ for v in a:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 64 \label{lst:autolistingcell64}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 64}, label=lst:autolistingcell64]
 print('code with no listing caption')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 66 \label{lst:autolistingcell66}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 66}, label=lst:autolistingcell66]
 def doprint(i):
     print('function output {}'.format(i))
     return int(i)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 67 \label{lst:autolistingcell67}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 67}, label=lst:autolistingcell67]
 for i in [1,2,3]:
     si = str(i)
     v = doprint(si)
@@ -1773,7 +1815,7 @@ print(v)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 70 \label{lst:figurelisting}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 70}, label=lst:figurelisting]
 #this figure is given meta data caption parameters, it will be floated in the latex export
 display(Image(filename='images/keep-calm-and-code-python_BW.png', width=250, height=250))
 print('also force print output')
@@ -1781,13 +1823,13 @@ print('also force print output')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 72 \label{lst:autolistingcell72}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 72}, label=lst:autolistingcell72]
 #this figure is not given meta data caption parameters, it will be inlined in the latex export
 display(Image(filename='images/random-squares-2.png', width=200, height=200))
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74 \label{lst:autolistingcell74}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74}, label=lst:autolistingcell74]
 %matplotlib inline
 
 import pylab as pl
@@ -1804,7 +1846,7 @@ pl.grid(True)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76 \label{lst:autolistingcell76}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76}, label=lst:autolistingcell76]
 import pyradi.ryplot as ryplot
 
 x = np.linspace(0,10,10)
@@ -1818,18 +1860,18 @@ for i in [1,2]:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 79 \label{lst:autolistingcell79}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 79}, label=lst:autolistingcell79]
 htmlstr = '<p><img src="images/random-squares-2.png" width=100 />'
 HTML(htmlstr)                 
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 84 \label{lst:autolistingcell84}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 84}, label=lst:autolistingcell84]
 # type(eval("this is a test string")) is not list
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 99 \label{lst:autolistingcell99}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 100}, label=lst:autolistingcell100]
 import pandas as pd
 d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
      'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
@@ -1840,7 +1882,7 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 103 \label{lst:autolistingcell103}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 104}, label=lst:autolistingcell104]
 # to create the dataframe and write the output to LaTeX object at default font size
 import pandas as pd
 import numpy as np
@@ -1859,27 +1901,27 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 104 \label{lst:autolistingcell104}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 105}, label=lst:autolistingcell105]
 lstrno = df.to_latex(index=False,column_format='|l|l|p{50mm}|c|r|')
 Latex(lstrno)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 106 \label{lst:autolistingcell106}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 107}, label=lst:autolistingcell107]
 # to write the table in LARGE
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 108 \label{lst:autolistingcell108}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 109}, label=lst:autolistingcell109]
 # to write a floating table in tiny font size
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 110 \label{lst:autolistingcell110}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 111}, label=lst:autolistingcell111]
 # display a tikz graphic
 lstr = r"""
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1926,7 +1968,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 111 \label{lst:autolistingcell111}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 112}, label=lst:autolistingcell112]
 # display another tikz graphic, as a floating figure
 
 lstr = r"""
@@ -1983,7 +2025,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 113 \label{lst:autolistingcell113}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 114}, label=lst:autolistingcell114]
 ##
 lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
             + 'One day this could be a complex computed \LaTeX{} string.  '\
@@ -1994,7 +2036,7 @@ Latex(lstr + '\n')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 115 \label{lst:autolistingcell115}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 116}, label=lst:autolistingcell116]
 # to format a numy array in \LaTeX{}
 import numpy as np
 # install with pip install pylatex
@@ -2008,7 +2050,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 124 \label{lst:autolistingcell124}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 125}, label=lst:autolistingcell125]
 # to get software versions
 # https://github.com/rasbt/watermark
 # you only need to do this once
@@ -2019,7 +2061,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 125 \label{lst:autolistingcell125}}]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 126}, label=lst:autolistingcell126]
 
 \end{lstlisting}
 
