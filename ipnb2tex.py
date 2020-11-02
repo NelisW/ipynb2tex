@@ -38,7 +38,7 @@ if int(sys.version[0]) < 3:
 else:
     from builtins import bytes,chr
     from builtins import str
-    print('\nPorted from Python 2: limited support for unicode characters\n')
+    # print('\nPorted from Python 2: limited support for unicode characters\n')
 
 nbformat
 
@@ -750,7 +750,7 @@ def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
             else:
                 strIn = cell['metadata'][captionID][metaID]
             if len(strIn):
-                if strIn[0] is not '[':
+                if '[' not in strIn[0]:
                     outStr = strIn
                 else:
                     stringlst = (eval(strIn))
@@ -866,10 +866,13 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
                  texStr += '\\begin{center}\n'
 
             # if the adjustbox package is used, this code is redundant
+            tempstr = os.path.join(imagedir,imageName)
+            tempstr = tempstr.replace('\\','/')
+            # print(tempstr)
             if sizeStr is not None:
-                texStr += '\\includegraphics{}{{{}{}}}\n'.format(sizeStr,imagedir,imageName)
+                texStr += '\\includegraphics{}{{{}}}\n'.format(sizeStr,tempstr)
             else:
-                texStr += '\\includegraphics{{{}{}}}\n'.format(imagedir,imageName)
+                texStr += '\\includegraphics{{{}}}\n'.format(tempstr)
 
             if captionStr:
                 texStr += '\\caption{'+'{}{}'.format(captionStr, labelStr) + '}\n'
@@ -1090,6 +1093,7 @@ def processHTMLTree(html,cell,addurlcommand):
 
         elif child.tag == 'img':
             filename = child.attrib['src']
+            # print(filename)
             tmp += '\\begin{center}\n'
             tmp += protectEvnStringStart
             tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
@@ -1262,6 +1266,7 @@ def processParagraph(pnode, tmp, addurlcommand):
 
         elif child.tag == 'img':
             filename = child.attrib['src']
+            # print(filename)
             if '_' in filename:
                 print(filename)
             tmp += '\\begin{center}\n'
@@ -1310,7 +1315,7 @@ def createImageDir(imagedir):
 
     # print(imagedir, imagedir[-1])
 
-    if imagedir[-1] is '\\' or imagedir[-1] is  '/':
+    if '\\' in imagedir[-1] or '/' in imagedir[-1]:
         pass
     else:
         imagedir += '/'
