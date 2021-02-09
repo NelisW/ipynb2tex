@@ -13,12 +13,12 @@
 
 % then follows the rest of the preamble to be placed before the begin document
 % this preamble content is special to the documentclass you defined above.
-\WPproject{K-Line}           % project name
+\WPproject{My Project}           % project name
 \WPequipment{Work package demonstrator}         % equipment name
 \WPsubject{How to use the converter to create a work package}           % main heading 
 \WPconclusions{\begin{enumerate}
 \item This work package demonstrates the use of the converter.
-\item It was tested with and should work on Python 2.7.11 and 3.5 and up.
+\item It was tested with and should work on Python 3.5 and up.
 \end{enumerate}} 
 \WPclassification{Unclassified} 
 \WPdocauthor{CJ Willers}
@@ -456,13 +456,15 @@ The metadata has the following structure:
     "caption": "Caption text for first figure",
     "label": "fig:lab1",
     "scale": "0.2",
-    "width": "0.2"
+    "width": "0.2",
+    "locator": "t"
   },
   "tableCaption": {
     "caption": "Caption text for first table",
     "label": "tab:lab1",
     "format": "{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}",
-    "fontsize": "normalsize"
+    "fontsize": "normalsize",
+    "locator": "t"
   }
 }
 \end{verbatim}
@@ -686,7 +688,8 @@ The scale or width is read from the metadata, which must be structured as follow
     "caption": "Caption text for first figure",
     "label": "fig:lab1",
     "scale": "0.2",
-    "width": "0.2"
+    "width": "0.2",
+    "locator": "t"
   },
   "listingCaption": {
     "caption": "Listing caption in cell with a figure",
@@ -697,13 +700,23 @@ The scale or width is read from the metadata, which must be structured as follow
 \end{verbatim}
 
 
-Width is the fraction of \LaTeX{} textwidth, i.e., if width=1, the graphic will be the full width of the text on the page. Width have precedance over scale and if width is given, scale is ignored.
+Width is the fraction of \LaTeX{} textwidth, i.e., if width=1, the graphic will be the full width of the text on the page.
+
+
+Width has precedence over scale and if width is given, scale is ignored.
+
+
+The locator value is used in \verb+\begin{figure}[tb]+ or \verb+\begin{table}[tb]+ to locate the float on the page. Default value is 'tb', can be any combination of \verb+tbhp+.
 
 
 The metadata also contains a caption string, and a label for the figure.  The type must be \verb+figure+.
 
 
 If the \verb+caption+ field is given (or has non-zero length), the image will be written to a \LaTeX{} float with a caption (and label).  If the \verb+caption+ fields is not given, the image will not be encapsulated in the floating figure.
+
+
+To edit the meta data: on the left panel click on the Property Inspector (gear icon) and open the \verb+Advanced Tools+ drop-down to expose the \verb+Cell Metadata+ text box.
+Enter the meta data into the text box. Ensure that the tabs and commas are all in the right places: if so, a small tick mark will appear for you to approve the new metadata, by clicking on the tick mark.  If the tabs and commas are not exactly right, the text box boundary will be red (error) and the tick mark will not be shown.
 
 
 
@@ -713,7 +726,7 @@ See Listing~\ref{lst:figurelisting} for the code this figure is given meta data 
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_70_0.png}
+\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_71_0.png}
 \caption{Caption text for first figure\label{fig:lab1-0}}
 \end{figure}
 
@@ -737,10 +750,10 @@ The following figure is not floating, but is scaled down to be smaller.
 
 
 
-See Listing~\ref{lst:autolistingcell72} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
+See Listing~\ref{lst:autolistingcell73} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
 
 \begin{center}
-\includegraphics[scale=0.3]{./pic/test2LaTeX_72_0.png}
+\includegraphics[scale=0.3]{./pic/test2LaTeX_73_0.png}
 \end{center}
 
 The following Matplotlib plot is scaled and floating.
@@ -759,12 +772,12 @@ The following Matplotlib plot is scaled and floating.
 
 
 
-See Listing~\ref{lst:autolistingcell74} for the code.
+See Listing~\ref{lst:autolistingcell75} for the code.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.3\textwidth]{./pic/test2LaTeX_74_0.png}
+\includegraphics[width=0.3\textwidth]{./pic/test2LaTeX_75_0.png}
 \caption{Caption text for third figure\label{fig:lab3-0}}
 \end{figure}
 
@@ -787,23 +800,23 @@ In this case the caption strings and scaling values are allocated to the sequenc
 
 
 
-See Listing~\ref{lst:autolistingcell76} for the code.
+See Listing~\ref{lst:autolistingcell77} for the code.
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics[scale=0.5]{./pic/test2LaTeX_76_0.png}
+\includegraphics[scale=0.5]{./pic/test2LaTeX_77_0.png}
 \caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
 \end{figure}
 
 \begin{center}
-\includegraphics[scale=0.5]{./pic/test2LaTeX_76_1.png}
+\includegraphics[scale=0.5]{./pic/test2LaTeX_77_1.png}
 \end{center}
 
 
 \begin{figure}[tb]
 \centering
-\includegraphics[scale=0.5]{./pic/test2LaTeX_76_2.png}
+\includegraphics[scale=0.5]{./pic/test2LaTeX_77_2.png}
 \caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
 \end{figure}
 
@@ -813,7 +826,7 @@ You can write HTML to the cell's output and have it displayed in the browser and
 
 
 
-See Listing~\ref{lst:autolistingcell79} for the code.
+See Listing~\ref{lst:autolistingcell80} for the code.
 
 \begin{center}
 \includegraphics[width=0.9\textwidth]{images/random-squares-2.png}
@@ -846,7 +859,7 @@ The following line must be uncommented to have effect.
 
 
 
-See Listing~\ref{lst:autolistingcell84} for the code  type(eval("this is a test string")) is not list.
+See Listing~\ref{lst:autolistingcell85} for the code  type(eval("this is a test string")) is not list.
 
 
 \section{Embedded code (verbatim text)}
@@ -1061,7 +1074,8 @@ The table in this cell is rendered in \LaTeX{} with the following metadata:
     "caption": "Caption text for first table",
     "label": "tab:lab1",
     "format": "{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}",
-    "fontsize": "normalsize"
+    "fontsize": "normalsize",
+    "locator": "t"
   }
 }
 \end{verbatim}
@@ -1071,7 +1085,7 @@ A complex HTML table with row spans and column spans:
 
 
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Caption text for first table\label{tab:lab1-0}}
 
@@ -1108,7 +1122,7 @@ Github flavoured markdown tables are supported in the IPython notebook (floating
 
 
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Caption text for (first) second table\label{tab:lab2-0}}
 
@@ -1143,7 +1157,7 @@ PHP Markdown Extra is also supported  (floating in \LaTeX{} as Table~\ref{tab:la
 
 
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Caption text for (third) second table\label{tab:lab2-2}}
 
@@ -1164,7 +1178,7 @@ Both of these markup extensions require Python Markdown 2.4.1 to render HTML.
 
 Table~\ref{tab:hiertab12-0} has an hierarchical structure on both columns and rows.  The percentage and underline characters are also preserved.
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Caption text for hierarchical table\label{tab:hiertab12-0}}
 
@@ -1295,7 +1309,7 @@ Pandas dataframe tables are also rendered.
 
 
 
-See Listing~\ref{lst:autolistingcell100} for the code.
+See Listing~\ref{lst:autolistingcell101} for the code.
 
 \begin{center}
 
@@ -1351,7 +1365,7 @@ The table format specification is provided by the Pandas  to\_latex(column\_form
 
 
 
-See Listing~\ref{lst:autolistingcell104} for the code  to create the dataframe and write the output to LaTeX object at default font size.
+See Listing~\ref{lst:autolistingcell105} for the code  to create the dataframe and write the output to LaTeX object at default font size.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1386,7 +1400,7 @@ See Listing~\ref{lst:autolistingcell104} for the code  to create the dataframe a
 
 
 
-See Listing~\ref{lst:autolistingcell105} for the code.
+See Listing~\ref{lst:autolistingcell106} for the code.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1437,7 +1451,7 @@ Of course you may have to use this setting in conjunction with any other json se
 
 
 
-See Listing~\ref{lst:autolistingcell107} for the code  to write the table in LARGE.
+See Listing~\ref{lst:autolistingcell108} for the code  to write the table in LARGE.
 
 {{
 \renewcommand{\arraystretch}{1.1}
@@ -1496,11 +1510,11 @@ The table format specification is provided by the Pandas \verb+.to\_latex(column
 
 
 
-See Listing~\ref{lst:autolistingcell109} for the code  to write a floating table in tiny font size.
+See Listing~\ref{lst:autolistingcell110} for the code  to write a floating table in tiny font size.
 
 {{
 
-\begin{table}[htb]
+\begin{table}[tb]
 \centering
 \caption{Caption text for the Pandas table\label{tab:lab1-0}}
 % to get unbroken vertical lines with booktabs, set separators to zero
@@ -1540,7 +1554,7 @@ See Listing~\ref{lst:autolistingcell109} for the code  to write a floating table
 
 
 
-See Listing~\ref{lst:autolistingcell111} for the code  display a tikz graphic.
+See Listing~\ref{lst:autolistingcell112} for the code  display a tikz graphic.
 
 
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1584,11 +1598,11 @@ See Listing~\ref{lst:autolistingcell111} for the code  display a tikz graphic.
 
 
 
-See Listing~\ref{lst:autolistingcell112} for the code  display another tikz graphic, as a floating figure.
+See Listing~\ref{lst:autolistingcell113} for the code  display another tikz graphic, as a floating figure.
 
 {{
 
-\begin{figure}[htb]
+\begin{figure}[tb]
 \centering
 
 \begin{normalsize}
@@ -1672,7 +1686,7 @@ I only spent limited time on pylatex and got the following example to work (it r
 
 
 
-See Listing~\ref{lst:autolistingcell116} for the code  to format a numy array in \LaTeX{}.
+See Listing~\ref{lst:autolistingcell117} for the code  to format a numy array in \LaTeX{}.
 
 \[%
 arr= \begin{bmatrix}%
@@ -1733,7 +1747,7 @@ The second example uses  \verb+begin{equation}+ and \verb+end{equation}+:
 
 
 
-See Listing~\ref{lst:autolistingcell125} for the code  to get software versions.
+See Listing~\ref{lst:autolistingcell126} for the code  to get software versions.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -1822,7 +1836,7 @@ print(v)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 70}, label=lst:figurelisting]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 71}, label=lst:figurelisting]
 #this figure is given meta data caption parameters, it will be floated in the latex export
 display(Image(filename='images/keep-calm-and-code-python_BW.png', width=250, height=250))
 print('also force print output')
@@ -1830,13 +1844,13 @@ print('also force print output')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 72}, label=lst:autolistingcell72]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 73}, label=lst:autolistingcell73]
 #this figure is not given meta data caption parameters, it will be inlined in the latex export
 display(Image(filename='images/random-squares-2.png', width=200, height=200))
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 74}, label=lst:autolistingcell74]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 75}, label=lst:autolistingcell75]
 %matplotlib inline
 
 import pylab as pl
@@ -1853,7 +1867,7 @@ pl.grid(True)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 76}, label=lst:autolistingcell76]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 77}, label=lst:autolistingcell77]
 import pyradi.ryplot as ryplot
 
 x = np.linspace(0,10,10)
@@ -1867,18 +1881,18 @@ for i in [1,2]:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 79}, label=lst:autolistingcell79]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 80}, label=lst:autolistingcell80]
 htmlstr = '<p><img src="images/random-squares-2.png" width=100 />'
 HTML(htmlstr)                 
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 84}, label=lst:autolistingcell84]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 85}, label=lst:autolistingcell85]
 # type(eval("this is a test string")) is not list
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 100}, label=lst:autolistingcell100]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 101}, label=lst:autolistingcell101]
 import pandas as pd
 d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
      'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
@@ -1889,7 +1903,7 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 104}, label=lst:autolistingcell104]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 105}, label=lst:autolistingcell105]
 # to create the dataframe and write the output to LaTeX object at default font size
 import pandas as pd
 import numpy as np
@@ -1908,27 +1922,27 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 105}, label=lst:autolistingcell105]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 106}, label=lst:autolistingcell106]
 lstrno = df.to_latex(index=False,column_format='|l|l|p{50mm}|c|r|')
 Latex(lstrno)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 107}, label=lst:autolistingcell107]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 108}, label=lst:autolistingcell108]
 # to write the table in LARGE
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 109}, label=lst:autolistingcell109]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 110}, label=lst:autolistingcell110]
 # to write a floating table in tiny font size
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 111}, label=lst:autolistingcell111]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 112}, label=lst:autolistingcell112]
 # display a tikz graphic
 lstr = r"""
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1975,7 +1989,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 112}, label=lst:autolistingcell112]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 113}, label=lst:autolistingcell113]
 # display another tikz graphic, as a floating figure
 
 lstr = r"""
@@ -2032,7 +2046,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 114}, label=lst:autolistingcell114]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 115}, label=lst:autolistingcell115]
 ##
 lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
             + 'One day this could be a complex computed \LaTeX{} string.  '\
@@ -2043,7 +2057,7 @@ Latex(lstr + '\n')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 116}, label=lst:autolistingcell116]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 117}, label=lst:autolistingcell117]
 # to format a numy array in \LaTeX{}
 import numpy as np
 # install with pip install pylatex
@@ -2057,7 +2071,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 125}, label=lst:autolistingcell125]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 126}, label=lst:autolistingcell126]
 # to get software versions
 # https://github.com/rasbt/watermark
 # you only need to do this once
@@ -2068,7 +2082,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 126}, label=lst:autolistingcell126]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 127}, label=lst:autolistingcell127]
 
 \end{lstlisting}
 

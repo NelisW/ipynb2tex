@@ -370,13 +370,14 @@ def convertHtmlTable(html, cell, table_index=0):
         #process the caption string, either a string or a list of strings
         captionStr = getMetaDataString(cell, table_index, 'tableCaption', 'caption','')
         fontsizeStr = getMetaDataString(cell, table_index, 'tableCaption', 'fontsize','normalsize')
+        locator = getMetaDataString(cell, table_index, 'tableCaption', 'locator', 'tb')
         labelStr = getMetaDataString(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
             labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
 
         texStr = ''
         if captionStr:
-            texStr += '\n\\begin{table}[htb]\n'
+            texStr = texStr + '\n\\begin{table}['+locator+']\n'
             texStr += '\\centering\n'
             texStr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
         else:
@@ -470,12 +471,13 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
     if getMetaDataString(cell, table_index, 'tableCaption', 'caption',''):
         captionStr = getMetaDataString(cell, table_index, 'tableCaption', 'caption','')
         fontsizeStr = getMetaDataString(cell, table_index, 'tableCaption', 'fontsize',fontsizeStr)
+        locator = getMetaDataString(cell, table_index, 'tableCaption', 'locator', 'tb')
         labelStr = getMetaDataString(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
             labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
         outstr += '{{\n'
         if captionStr:
-            outstr += '\n\\begin{table}[htb]\n'
+            outstr =  outstr + '\n\\begin{table}['+locator+']\n'
             outstr += '\\centering\n'
             outstr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
         outstr += booktabstr
@@ -499,10 +501,11 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
         #build the complete bitmap size latex string
         width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
         scale = getMetaDataVal(cell, figure_index, 'figureCaption', 'scale', 0.0)
+        locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
             
         outstr += '{{\n'
         if captionStr:
-            outstr += '\n\\begin{figure}[htb]\n'
+            outstr = outstr + '\n\\begin{figure}['+locator+']\n'
             outstr += '\\centering\n'
         outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
         # any figure here will not be a png, jpg or eps, so just dump
@@ -852,6 +855,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             #build the complete bitmap size latex string
             width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
             scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 0.0)
+            locator = getMetaDataString(cell, output_index, 'figureCaption', 'locator', 'tb')
 
             sizeStr = None
             if width: # first priority
@@ -862,7 +866,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             #     sizeStr = '[width=0.9\\textwidth]'
 
             if captionStr:
-                texStr += '\n\\begin{figure}[tb]\n'
+                texStr = texStr + '\n\\begin{figure}['+locator+']\n'
                 texStr += '\\centering\n'
             else:
                  texStr += '\\begin{center}\n'
