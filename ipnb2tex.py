@@ -47,6 +47,8 @@ bibtexlist = []
 #dict of bibtex label crossreferences between local and existing bibtex files.
 bibxref = {}
 bibtexindex = 0
+listindentcurrent = 0
+listindentprevious = 0
 
 protectEvnStringStart = 'beginincludegraphics\n'
 protectEvnStringEnd = 'endincludegraphics\n'
@@ -872,7 +874,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             if sizeStr is not None:
                 texStr += '\\includegraphics{}{{{}}}\n'.format(sizeStr,tempstr)
             else:
-                texStr += '\\includegraphics{{{}}}\n'.format(tempstr)
+                texStr += '\\includegraphics[width=0.7\\textwidth]{{{}}}\n'.format(tempstr)
 
             if captionStr:
                 texStr += '\\caption{'+'{}{}'.format(captionStr, labelStr) + '}\n'
@@ -984,7 +986,6 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
         starts = starts[:-1]
     math_envs += [(s,e) for (s,e) in zip(starts, ends)]
 
-    # starts = list(findAllStr(mkd, '\n\\begin{equation}'))
     starts = list(findAllStr(mkd, '\\begin{equation}'))
     ends = [e + 13 for e in findAllStr(mkd, '\\end{equation}')]
     if len(starts) > len(ends):
@@ -992,7 +993,6 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
     math_envs += [(s,e) for (s,e) in zip(starts, ends)]
     math_envs = sorted(math_envs)
 
-    # starts = list(findAllStr(mkd, '\n\\begin{equation*}'))
     starts = list(findAllStr(mkd, '\\begin{equation*}'))
     ends = [e + 14 for e in findAllStr(mkd, '\\end{equation*}')]
     if len(starts) > len(ends):
@@ -1000,7 +1000,6 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
     math_envs += [(s,e) for (s,e) in zip(starts, ends)]
     math_envs = sorted(math_envs)
 
-    # starts = list(findAllStr(mkd, '\n\\begin{eqnarray}'))
     starts = list(findAllStr(mkd, '\\begin{eqnarray}'))
     ends = [e + 13 for e in findAllStr(mkd, '\\end{eqnarray}')]
     if len(starts) > len(ends):
@@ -1154,6 +1153,9 @@ def processHeading(hstring, cstring):
 ################################################################################
 #this call may be recursive for nested lists
 def processList(lnode,addurlcommand):
+    # global listindentcurrent
+    # global listindentprevious
+
     tmp = ''
     if lnode.tag == 'ul' or lnode.tag == 'ol':
         envtype = 'itemize' if lnode.tag == 'ul' else 'enumerate'
@@ -1165,7 +1167,22 @@ def processList(lnode,addurlcommand):
             tmp += processList(li,addurlcommand).strip() + '\n'
 
         elif li.tag == 'li':
-            tmp += r"\item " + processParagraph(li,'',addurlcommand).strip() + '\n'
+            # if listindentcurrent==listindentprevious:
+            #     # if len(li.tail) == 0:
+            #         li.tag = 'br'
+            #         li.tail = li.text
+            #         li.text = None
+            #         print('*****************')
+            # #     else:
+
+            # print(f'Identlevels (p,c)=({listindentprevious}{listindentcurrent})')
+            # print(f'  tag={li.tag}')
+            # print(f'  text={li.text}')
+            # print(f'  tail={li.tail}')
+
+            tstr = r"\item " + processParagraph(li,'',addurlcommand).strip() + '\n'
+            # print(tstr)
+            tmp += tstr
 
         else:
             print('this should not be reached!')
@@ -1182,10 +1199,12 @@ def processParagraph(pnode, tmp, addurlcommand):
     
     global bibtexindex
     
+    # print('------------------------------------')
     # tmp = ""
     if pnode.text:
         # print('pnode.text={}'.format(pnode.text))
         tmp += pnode.text
+
 
 
     for child in pnode:
@@ -1256,7 +1275,7 @@ def processParagraph(pnode, tmp, addurlcommand):
 
         # handle  embedded lists
         elif child.tag == 'ul' or child.tag == 'ol':
-           tmp += processList(child,addurlcommand) + childtail
+            tmp += processList(child,addurlcommand) + childtail
 
         elif child.tag == 'pre':
             tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'',addurlcommand).strip() + "\\end{verbatim}\n\n"
