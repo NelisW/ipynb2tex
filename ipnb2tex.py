@@ -292,7 +292,7 @@ def convertHtmlTable(html, cell):
         # print('colspan=\n{}\n'.format(colspan))
         # print('rowspan=\n{}\n'.format(rowspan))
 
-        formatStr = getMetaDataString(cell, table_index, 'tableCaption', 'format','')
+        formatStr = getMetaData(cell, table_index, 'tableCaption', 'format','')
         if not formatStr:
             formatStr = '|' + "|".join(['c'] * col_counts) + '|'
 
@@ -337,10 +337,10 @@ def convertHtmlTable(html, cell):
 
 
         #process the caption string, either a string or a list of strings
-        captionStr = getMetaDataString(cell, table_index, 'tableCaption', 'caption','')
-        fontsizeStr = getMetaDataString(cell, table_index, 'tableCaption', 'fontsize','normalsize')
-        locator = getMetaDataString(cell, table_index, 'tableCaption', 'locator', 'tb')
-        labelStr = getMetaDataString(cell, table_index, 'tableCaption', 'label','')
+        captionStr = getMetaData(cell, table_index, 'tableCaption', 'caption','')
+        fontsizeStr = getMetaData(cell, table_index, 'tableCaption', 'fontsize','normalsize')
+        locator = getMetaData(cell, table_index, 'tableCaption', 'locator', 'tb')
+        labelStr = getMetaData(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
             labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
 
@@ -437,14 +437,14 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
         booktabstr += '\\abovetopsep=0pt\n'
 
     # get cell fontsize 
-    fontsizeStr = getMetaDataString(cell, output_index, 'latex', 'fontsize','normalsize')
+    fontsizeStr = getMetaData(cell, output_index, 'latex', 'fontsize','normalsize')
    
     # process table with caption,  either a string or a list of strings
-    if getMetaDataString(cell, table_index, 'tableCaption', 'caption',''):
-        captionStr = getMetaDataString(cell, table_index, 'tableCaption', 'caption','')
-        fontsizeStr = getMetaDataString(cell, table_index, 'tableCaption', 'fontsize',fontsizeStr)
-        locator = getMetaDataString(cell, table_index, 'tableCaption', 'locator', 'tb')
-        labelStr = getMetaDataString(cell, table_index, 'tableCaption', 'label','')
+    if getMetaData(cell, table_index, 'tableCaption', 'caption',''):
+        captionStr = getMetaData(cell, table_index, 'tableCaption', 'caption','')
+        fontsizeStr = getMetaData(cell, table_index, 'tableCaption', 'fontsize',fontsizeStr)
+        locator = getMetaData(cell, table_index, 'tableCaption', 'locator', 'tb')
+        labelStr = getMetaData(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
             labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
         outstr += '{\n'
@@ -464,15 +464,14 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
         table_index += 1
 
     # process figure with caption,  either a string or a list of strings
-    elif getMetaDataString(cell, figure_index, 'figureCaption', 'caption',''):
-        captionStr = getMetaDataString(cell, figure_index, 'figureCaption', 'caption','')
-        labelStr = getMetaDataString(cell, figure_index, 'figureCaption', 'label','')
+    elif getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
+        captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
+        labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
         if labelStr:
             labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-        #process the scale values, either a value or a list of value
         #build the complete bitmap size latex string
-        width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 1.0)
-        locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
+        width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
+        locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
             
         outstr += '{\n'
         if captionStr:
@@ -511,8 +510,8 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
 ################################################################################
 def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
 
-    captionStr = getMetaDataString(cell, 0, 'listingCaption', 'outputCaption','')
-    labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
+    captionStr = getMetaData(cell, 0, 'listingCaption', 'outputCaption','')
+    labelStr = getMetaData(cell, 0, 'listingCaption', 'label','')
     if captionStr:
         captionStr = '{'+r'{} \label{{{}-out}}'.format(captionStr, labelStr)+'}'
 
@@ -577,8 +576,8 @@ def prepInput(cell, cell_index, inlinelistings):
             lsting = cell.source
 
 
-        captionStr = getMetaDataString(cell, 0, 'listingCaption', 'caption','')
-        labelStr = getMetaDataString(cell, 0, 'listingCaption', 'label','')
+        captionStr = getMetaData(cell, 0, 'listingCaption', 'caption','')
+        labelStr = getMetaData(cell, 0, 'listingCaption', 'label','')
 
         if not inlinelistings and not len(labelStr):
             labelStr = 'lst:autolistingcell{}'.format(cell_index)
@@ -706,69 +705,31 @@ def extractBibtexXref(cell):
         for key in cell['metadata']['bibtexentry'].keys():
             bibtexlist.append(cell['metadata']['bibtexentry'][key] + '\n\n')
 
-
 ################################################################################
-def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
-    """process the metadata string, either a single string or a list of strings,
-    and extract the string associated with output_index, if in a list
-    """
-    print('----------getMetaDataString-----------')
-    print(output_index)
-    print(captionID)
-    print(metaID)
-    print(defaultValue)
-    
-    outStr = defaultValue
-    if captionID in cell['metadata'].keys():
-        if metaID in cell['metadata'][captionID].keys():
-
-            strIn = cell['metadata'][captionID][metaID]
-
-            print(strIn)
-            print(type(strIn))
-
-            if not isinstance(strIn, list): 
-                outStr = strIn
-            else:
-                if output_index < len(strIn):
-                    outStr = strIn[output_index]
-                else:
-                    outStr = defaultValue
-    print(outStr)
-    print(type(outStr))
-    return outStr
-
-################################################################################
-def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
-    """process the metadata string, either an int/float or a list of ints/floats,
+def getMetaData(cell, output_index, captionID, metaID, defaultValue=''):
+    """process the metadata string, either a single value or a list of values,
     and extract the value associated with output_index, if in a list
     """
-    print('-------getMetaDataVal--------------')
-    print(output_index)
-    print(captionID)
-    print(metaID)
-    print(defaultValue)
     
     outVal = defaultValue
     if captionID in cell['metadata'].keys():
         if metaID in cell['metadata'][captionID].keys():
-            strIn = cell['metadata'][captionID][metaID]
+            inVal = cell['metadata'][captionID][metaID]
 
-            print('strIn',strIn)
-            print('type(strIn)',type(strIn))
+            # sometimes lists are correctly imported and sometimes not
+            if isinstance(inVal, str) and '[' in inVal: 
+                inVal = eval(inVal)
 
-            if not isinstance(strIn, list): 
-                outVal = strIn
+            if  isinstance(inVal, str):
+                outVal = inVal
             else:
-                # lst = eval(strIn)
-                # lst = eval(strIn)
-                if output_index < len(strIn):
-                    outVal = strIn[output_index]
+                if output_index < len(inVal):
+                    outVal = inVal[output_index]
                 else:
                     outVal = defaultValue
-    print(outVal)
-    print(type(outVal))
+
     return outVal
+
 
 ################################################################################
 def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
@@ -830,16 +791,14 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             fpng.write(base64.decodebytes(bytes(picCell, 'utf-8')))
 
             #process the caption string, either a string or a list of strings
-            captionStr = getMetaDataString(cell, output_index, 'figureCaption', 'caption','')
-            labelStr = getMetaDataString(cell, output_index, 'figureCaption', 'label','')
+            captionStr = getMetaData(cell, output_index, 'figureCaption', 'caption','')
+            labelStr = getMetaData(cell, output_index, 'figureCaption', 'label','')
             if labelStr:
                 labelStr = '\\label{{{}-{}}}'.format(labelStr, output_index)
 
-            #process the scale values, either a value or a list of value
-
             #build the complete bitmap size latex string
-            width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 1.0)
-            locator = getMetaDataString(cell, output_index, 'figureCaption', 'locator', 'tb')
+            width = getMetaData(cell, output_index, 'figureCaption', 'width', 1.0)
+            locator = getMetaData(cell, output_index, 'figureCaption', 'locator', 'tb')
 
             sizeStr = None
             if width: # first priority
@@ -1092,15 +1051,14 @@ def processHTMLTree(html,cell,addurlcommand):
             # tmp += '\\end{center}'
             # print('**********************')
             # print(cell['metadata'])
-            if getMetaDataString(cell, figure_index, 'figureCaption', 'caption',''):
-                captionStr = getMetaDataString(cell, figure_index, 'figureCaption', 'caption','')
-                labelStr = getMetaDataString(cell, figure_index, 'figureCaption', 'label','')
+            if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
+                captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
+                labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
                 if labelStr:
                     labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-                #process the scale values, either a value or a list of value
                 #build the complete bitmap size latex string
-                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 1.0)
-                locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
+                width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
+                locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
                     
                 tmp += '{\n'
                 tmp = tmp + '\n\\begin{figure}['+locator+']\n'
@@ -1327,23 +1285,19 @@ def processParagraph(pnode, tmp, addurlcommand,cell):
             # print('**********************')
             # print(pnode.keys())
             # print(cell['metadata'])
-            if getMetaDataString(cell, figure_index, 'figureCaption', 'caption',''):
-                captionStr = getMetaDataString(cell, figure_index, 'figureCaption', 'caption','')
-                labelStr = getMetaDataString(cell, figure_index, 'figureCaption', 'label','')
+            if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
+                captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
+                labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
                 if labelStr:
                     labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-                #process the scale values, either a value or a list of value
                 #build the complete bitmap size latex string
-                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 1.0)
-                locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
+                width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
+                locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
                     
                 tmp += '{\n'
                 tmp = tmp + '\n\\begin{figure}['+locator+']\n'
                 tmp += '\\centering\n'
                 tmp += protectEvnStringStart
-                print('--------errorlocation----------------')
-                print(width)
-                print(filename)
                 tmp += '\\includegraphics[width='+width+'\\textwidth]{'+filename+'}\n'
                 tmp += protectEvnStringEnd
                 if captionStr:
@@ -1477,6 +1431,8 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         f.write(output)
 
     filenames = listFiles('.','*.bib',recurse=1)
+    if os.path.exists(bibfile):
+        os.remove(bibfile)
     with io.open(bibfile, 'w', encoding='utf-8') as f:
         # write any other bib files found in the root folder
         if len(filenames)>0:
@@ -1491,6 +1447,7 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         if len(bibtexlist):
             for bib in bibtexlist:
                 f.write(bib)
+
 
 
 ################################################################################
