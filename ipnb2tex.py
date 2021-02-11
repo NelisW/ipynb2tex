@@ -25,20 +25,11 @@ import lxml.html
 import markdown
 from lxml import etree as ET
 import numpy as np
-
-
-
-# need the following four lines to print unicode to sysout
 import sys
 
-if int(sys.version[0]) < 3:
-    import codecs
-    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-    sys.stderr = codecs.getwriter('utf8')(sys.stderr)
-else:
-    from builtins import bytes,chr
-    from builtins import str
-    # print('\nPorted from Python 2: limited support for unicode characters\n')
+
+from builtins import bytes,chr
+from builtins import str
 
 nbformat
 
@@ -49,6 +40,8 @@ bibxref = {}
 bibtexindex = 0
 listindentcurrent = 0
 listindentprevious = 0
+figure_index = 0
+table_index = 0
 
 protectEvnStringStart = 'beginincludegraphics\n'
 protectEvnStringEnd = 'endincludegraphics\n'
@@ -244,7 +237,9 @@ def pptree(e):
     print()
 
 ################################################################################
-def convertHtmlTable(html, cell, table_index=0):
+def convertHtmlTable(html, cell):
+
+    global table_index
 
     # print()
     if not (isinstance(html, str)):
@@ -448,8 +443,11 @@ def cleanFilename(sourcestring,  removestring=r" %:/,.\[]"):
 
 
                 
-def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_index,figure_index):
+def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
     # see if this is a booktabs table
+    global figure_index
+    global table_index
+
     outstr = ''
     payload = cellOutput.data['text/latex']
     booktabstr = ''
@@ -475,7 +473,7 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
         labelStr = getMetaDataString(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
             labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
-        outstr += '{{\n'
+        outstr += '{\n'
         if captionStr:
             outstr =  outstr + '\n\\begin{table}['+locator+']\n'
             outstr += '\\centering\n'
@@ -500,10 +498,9 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
         #process the scale values, either a value or a list of value
         #build the complete bitmap size latex string
         width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
-        scale = getMetaDataVal(cell, figure_index, 'figureCaption', 'scale', 0.0)
         locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
             
-        outstr += '{{\n'
+        outstr += '{\n'
         if captionStr:
             outstr = outstr + '\n\\begin{figure}['+locator+']\n'
             outstr += '\\centering\n'
@@ -519,7 +516,7 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
     elif booktabstr or '\\begin{tabular}' in payload:
         # no captioned latex, just output inline
         # check for tabular
-        outstr += '{{\n'
+        outstr += '{\n'
         outstr += '\\renewcommand{\\arraystretch}{1.1}\n'
         outstr += '\\centering\n'
         if booktabstr:
@@ -529,10 +526,11 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand,table_in
         outstr += '\\end{{{}}}\n'.format(fontsizeStr)
         outstr += '\\renewcommand{\\arraystretch}{1}\n'
         outstr += '}\n\n'
+        table_index += 1
     else:
         outstr +=  payload + '\n'
             
-    return outstr,table_index,figure_index
+    return outstr
 
 
     
@@ -544,6 +542,8 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
     if captionStr:
         captionStr = '{'+r'{} \label{{{}-out}}'.format(captionStr, labelStr)+'}'
 
+    global figure_index
+    global table_index
     table_index = 0 
     figure_index = 0 
     
@@ -555,8 +555,8 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
             outs = cellOutput.data['text/html']
             outstr +=    processHTMLTree(outs,cell,addurlcommand)
         elif 'text/latex' in cellOutput.data.keys():
-            lstr,table_index,figure_index = processLaTeXOutCell(
-                  cellOutput,output_index,outstr,cell,addurlcommand,table_index,figure_index)
+            lstr = processLaTeXOutCell(
+                  cellOutput,output_index,outstr,cell,addurlcommand)
             outstr += lstr
         elif 'text/plain' in    cellOutput.data.keys():
             outstr += encapsulateListing(cellOutput.data['text/plain'], captionStr)
@@ -676,9 +676,6 @@ def prepInput(cell, cell_index, inlinelistings):
 ################################################################################
 def prepExecuteResult(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand):
 
-    # if u'html' in cellOutput.keys() and 'table' in cellOutput[u'html']:
-    #     return convertHtmlTable(cellOutput['html'],cell)
-
     if 'html' in cellOutput.keys():
         return processHTMLTree(cellOutput['html'],cell,addurlcommand)
 
@@ -754,15 +751,21 @@ def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
                 strIn = cell['metadata'][captionID][metaID].encode('ascii','ignore') #remove unicode
             else:
                 strIn = cell['metadata'][captionID][metaID]
-            if len(strIn):
-                if '[' not in strIn[0]:
+
+            # print('---------------------')
+            # print(strIn)
+            # print(type(strIn))
+            # print(eval(strIn))
+            # print(type(eval(strIn)))
+            
+            if '[' not in strIn:
                     outStr = strIn
+            else:
+                stringlst = eval(strIn)
+                if output_index < len(stringlst):
+                    outStr = stringlst[output_index]
                 else:
-                    stringlst = (eval(strIn))
-                    if output_index < len(stringlst):
-                        outStr = stringlst[output_index]
-                    else:
-                        outStr = defaultValue
+                    outStr = defaultValue
     return outStr
 
 ################################################################################
@@ -774,10 +777,14 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
     if captionID in cell['metadata'].keys():
         if metaID in cell['metadata'][captionID].keys():
             strIn = cell['metadata'][captionID][metaID]
-            if type(eval(strIn)) is not list:
-                outVal = eval(strIn)
+
+            # if type(eval(strIn)) is not list:
+            if type(strIn) is not list:
+                # outVal = eval(strIn)
+                outVal = strIn
             else:
-                lst = eval(strIn)
+                # lst = eval(strIn)
+                lst = strIn
                 if output_index < len(lst):
                     outVal = lst[output_index]
                 else:
@@ -789,6 +796,8 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
     # print('********',cellOutput.keys())
 
     texStr = ''
+
+
 
     if 'name' in cellOutput.keys() :
         if cellOutput.name == 'stdout':
@@ -854,14 +863,11 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
             #build the complete bitmap size latex string
             width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
-            scale = getMetaDataVal(cell, output_index, 'figureCaption', 'scale', 0.0)
             locator = getMetaDataString(cell, output_index, 'figureCaption', 'locator', 'tb')
 
             sizeStr = None
             if width: # first priority
                 sizeStr = '[width={}\\textwidth]'.format(width)
-            elif scale: # second priority
-                sizeStr = '[scale={}]'.format(scale) if scale else ''
             # else: # none given, use assumed textwidth
             #     sizeStr = '[width=0.9\\textwidth]'
 
@@ -1043,14 +1049,23 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
 ################################################################################
 #process an html tree
 def processHTMLTree(html,cell,addurlcommand):
+
+    global figure_index
+    global table_index
+    figure_index = 0
     table_index = 0
+
     tree = lxml.html.fromstring("<div>"+html+"</div>")
     # pptree(tree)
     tmp = ""
+
     for child in tree:
-        # print('child.tag={}'.format(child.tag))
+        # print('------------------------------------')
+
+        # print('child.tag={}'.format(child.tag),type(child.tag))
         # print('child.text={}'.format(child.text))
         # print('child.tail={}'.format(child.tail))
+        # print(cell)
 
         if child.tag == 'h1' or (cell['cell_type']=="heading" and cell['level']==1):
             tmp += processHeading(r'\chapter',    child.text_content())
@@ -1071,18 +1086,18 @@ def processHTMLTree(html,cell,addurlcommand):
             tmp += processHeading(r'\subparagraph',    child.text_content())
 
         elif child.tag == 'p' or child.tag == 'pre':
-            tmp += processParagraph(child,'',addurlcommand) + '\n'
+            tmp += processParagraph(child,'',addurlcommand,cell) + '\n'
 
         #this call may be recursive for nested lists
         #lists are not allowed inside paragraphs, handle them here
         elif child.tag == 'ul' or child.tag == 'ol':
-            tmp += processList(child,addurlcommand) + '\n'
+            tmp += processList(child,addurlcommand,cell) + '\n'
 
         elif child.tag == 'blockquote':
-            tmp += "\n\\begin{quote}\n" + processParagraph(child,'',addurlcommand).strip() + "\\end{quote}\n\n"
+            tmp += "\n\\begin{quote}\n" + processParagraph(child,'',addurlcommand,cell).strip() + "\\end{quote}\n\n"
 
         elif child.tag == 'table':
-            tmp += convertHtmlTable(child, cell, table_index)
+            tmp += convertHtmlTable(child, cell)
             table_index += 1
 
         elif child.tag == 'div':
@@ -1096,12 +1111,41 @@ def processHTMLTree(html,cell,addurlcommand):
 
         elif child.tag == 'img':
             filename = child.attrib['src']
-            # print(filename)
-            tmp += '\\begin{center}\n'
-            tmp += protectEvnStringStart
-            tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-            tmp += protectEvnStringEnd
-            tmp += '\\end{center}'
+            # # print(filename)
+            # tmp += '\\begin{center}\n'
+            # tmp += protectEvnStringStart
+            # tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+            # tmp += protectEvnStringEnd
+            # tmp += '\\end{center}'
+            # print('**********************')
+            # print(cell['metadata'])
+            if getMetaDataString(cell, figure_index, 'figureCaption', 'caption',''):
+                captionStr = getMetaDataString(cell, figure_index, 'figureCaption', 'caption','')
+                labelStr = getMetaDataString(cell, figure_index, 'figureCaption', 'label','')
+                if labelStr:
+                    labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
+                #process the scale values, either a value or a list of value
+                #build the complete bitmap size latex string
+                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
+                locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
+                    
+                tmp += '{\n'
+                tmp = tmp + '\n\\begin{figure}['+locator+']\n'
+                tmp += '\\centering\n'
+                tmp += protectEvnStringStart
+                tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+                tmp += protectEvnStringEnd
+                if captionStr:
+                    tmp += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+                tmp += '\\end{figure}\n\n'
+                tmp += '}\n\n'
+                figure_index += 1
+            else:
+                tmp += '\\begin{center}\n'
+                tmp += protectEvnStringStart
+                tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+                tmp += protectEvnStringEnd
+                tmp += '\\end{center}'
 
         elif child.tag == 'style':
             pass
@@ -1156,7 +1200,7 @@ def processHeading(hstring, cstring):
 
 ################################################################################
 #this call may be recursive for nested lists
-def processList(lnode,addurlcommand):
+def processList(lnode,addurlcommand,cell):
     # global listindentcurrent
     # global listindentprevious
 
@@ -1168,7 +1212,7 @@ def processList(lnode,addurlcommand):
     for li in lnode:
 
         if li.tag == 'ul' or li.tag == 'ol':
-            tmp += processList(li,addurlcommand).strip() + '\n'
+            tmp += processList(li,addurlcommand,cell).strip() + '\n'
 
         elif li.tag == 'li':
             # if listindentcurrent==listindentprevious:
@@ -1184,7 +1228,7 @@ def processList(lnode,addurlcommand):
             # print(f'  text={li.text}')
             # print(f'  tail={li.tail}')
 
-            tstr = r"\item " + processParagraph(li,'',addurlcommand).strip() + '\n'
+            tstr = r"\item " + processParagraph(li,'',addurlcommand,cell).strip() + '\n'
             # print(tstr)
             tmp += tstr
 
@@ -1199,10 +1243,11 @@ def processList(lnode,addurlcommand):
 
 
 ################################################################################
-def processParagraph(pnode, tmp, addurlcommand):
+def processParagraph(pnode, tmp, addurlcommand,cell):
     
     global bibtexindex
-    
+    global figure_index
+   
     # print('------------------------------------')
     # tmp = ""
     if pnode.text:
@@ -1210,8 +1255,8 @@ def processParagraph(pnode, tmp, addurlcommand):
         tmp += pnode.text
 
 
-
     for child in pnode:
+
         # print('child.tag={}'.format(child.tag))
         # print('child.text={}'.format(child.text))
         # print('child.tail={}'.format(child.tail))
@@ -1233,7 +1278,7 @@ def processParagraph(pnode, tmp, addurlcommand):
             tmp += r"\textbf{" + child.text + "}" + childtail
 
         elif child.tag == 'p':
-            tmp += processParagraph(child, tmp, addurlcommand).strip() + '\n\n' + childtail
+            tmp += processParagraph(child, tmp, addurlcommand,cell).strip() + '\n\n' + childtail
 
         elif child.tag == 'br':
             tmp += "\n\n" + childtail
@@ -1279,25 +1324,66 @@ def processParagraph(pnode, tmp, addurlcommand):
 
         # handle  embedded lists
         elif child.tag == 'ul' or child.tag == 'ol':
-            tmp += processList(child,addurlcommand) + childtail
+            tmp += processList(child,addurlcommand,cell) + childtail
 
         elif child.tag == 'pre':
-            tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'',addurlcommand).strip() + "\\end{verbatim}\n\n"
+            tmp += "\n\\begin{verbatim}\n" + processParagraph(child,'',addurlcommand,cell).strip() + "\\end{verbatim}\n\n"
 
         elif child.tag == 'br':
             tmp += "\\newline"
 
+        # elif child.tag == 'img':
+        #     filename = child.attrib['src']
+            # print(filename)
+            # if '_' in filename:
+            #     print(filename)
+            # tmp += '\\begin{center}\n'
+            # tmp += protectEvnStringStart
+            # tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+            # tmp += protectEvnStringEnd
+            # tmp += '\\end{center}'
+# ----------------------------------------------------------
         elif child.tag == 'img':
             filename = child.attrib['src']
-            # print(filename)
-            if '_' in filename:
-                print(filename)
-            tmp += '\\begin{center}\n'
-            tmp += protectEvnStringStart
-            tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-            tmp += protectEvnStringEnd
-            tmp += '\\end{center}'
+            # # print(filename)
+            # tmp += '\\begin{center}\n'
+            # tmp += protectEvnStringStart
+            # tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+            # tmp += protectEvnStringEnd
+            # tmp += '\\end{center}'
+            # print('**********************')
+            # print(pnode.keys())
+            # print(cell['metadata'])
+            if getMetaDataString(cell, figure_index, 'figureCaption', 'caption',''):
+                captionStr = getMetaDataString(cell, figure_index, 'figureCaption', 'caption','')
+                labelStr = getMetaDataString(cell, figure_index, 'figureCaption', 'label','')
+                if labelStr:
+                    labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
+                #process the scale values, either a value or a list of value
+                #build the complete bitmap size latex string
+                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
+                locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
+                    
+                tmp += '{\n'
+                tmp = tmp + '\n\\begin{figure}['+locator+']\n'
+                tmp += '\\centering\n'
+                tmp += protectEvnStringStart
+                tmp += '\\includegraphics[width='+width+'\\textwidth]{'+filename+'}\n'
+                tmp += protectEvnStringEnd
+                if captionStr:
+                    tmp += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+                tmp += '\\end{figure}\n\n'
+                tmp += '}\n\n'
+                figure_index += 1
 
+            else:
+                tmp += '\\begin{center}\n'
+                tmp += protectEvnStringStart
+                tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+                tmp += protectEvnStringEnd
+                tmp += '\\end{center}'
+
+# -------------------------------------------------------------
         else:
             raise ValueError('so far={}, need to learn to process this:'.format(tmp), child.tag)
     if pnode.tail:
