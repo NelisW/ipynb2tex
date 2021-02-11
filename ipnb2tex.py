@@ -170,42 +170,19 @@ def listFiles(root, patterns='*', recurse=1, return_folders=0):
     filenames = []
     filertn = []
 
-    if int(sys.version[0]) < 3:
-
-        # Collect input and output arguments into one bunch
-        class Bunch(object):
-            def __init__(self, **kwds): self.__dict__.update(kwds)
-        arg = Bunch(recurse=recurse, pattern_list=pattern_list,
-            return_folders=return_folders, results=[])
-
-        def visit(arg, dirname, files):
-            # Append to arg.results all relevant files (and perhaps folders)
-            for name in files:
-                fullname = os.path.normpath(os.path.join(dirname, name))
-                if arg.return_folders or os.path.isfile(fullname):
-                    for pattern in arg.pattern_list:
-                        if fnmatch.fnmatch(name, pattern):
-                            arg.results.append(fullname)
-                            break
-            # Block recursion if recursion was disallowed
-            if not arg.recurse: files[:]=[]
-        os.path.walk(root, visit, arg)
-        return arg.results
-
-    else:
-        for dirpath,dirnames,files in os.walk(root):
-            if dirpath==root or recurse:
-                for filen in files:
-                    filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,filen)))
-                if return_folders:
-                    for dirn in dirnames:
-                        filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,dirn)))
-        for name in filenames:
-            if return_folders or os.path.isfile(name):
-                for pattern in pattern_list:
-                    if fnmatch.fnmatch(name, pattern):
-                        filertn.append(name)
-                        break
+    for dirpath,dirnames,files in os.walk(root):
+        if dirpath==root or recurse:
+            for filen in files:
+                filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,filen)))
+            if return_folders:
+                for dirn in dirnames:
+                    filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,dirn)))
+    for name in filenames:
+        if return_folders or os.path.isfile(name):
+            for pattern in pattern_list:
+                if fnmatch.fnmatch(name, pattern):
+                    filertn.append(name)
+                    break
 
     return filertn
 
@@ -332,10 +309,7 @@ def convertHtmlTable(html, cell):
                     latexTabular += '&'
                     icol += 1
 
-                if int(sys.version[0]) < 3:
-                    txt = latexEscapeForHtmlTableOutput(unicode(col.text_content()).strip())
-                else:
-                    txt = latexEscapeForHtmlTableOutput(col.text_content().strip())
+                txt = latexEscapeForHtmlTableOutput(col.text_content().strip())
                 if 'colspan' in col.attrib:
                     icolspan = int(col.attrib['colspan'])
                     txt = '\multicolumn{{{}}}{{|c|}}{{{}}}'.format(icolspan,txt)
@@ -497,7 +471,7 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
             labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
         #process the scale values, either a value or a list of value
         #build the complete bitmap size latex string
-        width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
+        width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 1.0)
         locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
             
         outstr += '{\n'
@@ -573,10 +547,8 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
 def encapsulateListing(outstr, captionStr):
     outstr = unicodedata.normalize('NFKD',outstr).encode('ascii','ignore')
     rtnStr = u'\n\\begin{lstlisting}'
-    if int(sys.version[0]) < 3:
-        pass
-    else:
-        outstr = outstr.decode("utf-8")
+
+    outstr = outstr.decode("utf-8")
 
     if captionStr:
         rtnStr += '[style=outcellstyle,caption={:s}]\n{}\n'.format(captionStr,outstr)
@@ -663,9 +635,6 @@ def prepInput(cell, cell_index, inlinelistings):
 # def convertBytes2Str(instring):
 #   """Convert a byte string to regular string (if in Python 3)
 #   """
-#   if int(sys.version[0]) < 3:
-#     pass
-#   else:
 #     # print('1',type(instring))
 #     if isinstance(instring, bytes):
 #       instring = instring.decode("utf-8")
@@ -743,29 +712,30 @@ def getMetaDataString(cell, output_index, captionID, metaID, defaultValue=''):
     """process the metadata string, either a single string or a list of strings,
     and extract the string associated with output_index, if in a list
     """
+    print('----------getMetaDataString-----------')
+    print(output_index)
+    print(captionID)
+    print(metaID)
+    print(defaultValue)
+    
     outStr = defaultValue
     if captionID in cell['metadata'].keys():
         if metaID in cell['metadata'][captionID].keys():
 
-            if int(sys.version[0]) < 3:
-                strIn = cell['metadata'][captionID][metaID].encode('ascii','ignore') #remove unicode
-            else:
-                strIn = cell['metadata'][captionID][metaID]
+            strIn = cell['metadata'][captionID][metaID]
 
-            # print('---------------------')
-            # print(strIn)
-            # print(type(strIn))
-            # print(eval(strIn))
-            # print(type(eval(strIn)))
-            
-            if '[' not in strIn:
-                    outStr = strIn
+            print(strIn)
+            print(type(strIn))
+
+            if not isinstance(strIn, list): 
+                outStr = strIn
             else:
-                stringlst = eval(strIn)
-                if output_index < len(stringlst):
-                    outStr = stringlst[output_index]
+                if output_index < len(strIn):
+                    outStr = strIn[output_index]
                 else:
                     outStr = defaultValue
+    print(outStr)
+    print(type(outStr))
     return outStr
 
 ################################################################################
@@ -773,22 +743,31 @@ def getMetaDataVal(cell, output_index, captionID, metaID, defaultValue=0):
     """process the metadata string, either an int/float or a list of ints/floats,
     and extract the value associated with output_index, if in a list
     """
+    print('-------getMetaDataVal--------------')
+    print(output_index)
+    print(captionID)
+    print(metaID)
+    print(defaultValue)
+    
     outVal = defaultValue
     if captionID in cell['metadata'].keys():
         if metaID in cell['metadata'][captionID].keys():
             strIn = cell['metadata'][captionID][metaID]
 
-            # if type(eval(strIn)) is not list:
-            if type(strIn) is not list:
-                # outVal = eval(strIn)
+            print('strIn',strIn)
+            print('type(strIn)',type(strIn))
+
+            if not isinstance(strIn, list): 
                 outVal = strIn
             else:
                 # lst = eval(strIn)
-                lst = strIn
-                if output_index < len(lst):
-                    outVal = lst[output_index]
+                # lst = eval(strIn)
+                if output_index < len(strIn):
+                    outVal = strIn[output_index]
                 else:
                     outVal = defaultValue
+    print(outVal)
+    print(type(outVal))
     return outVal
 
 ################################################################################
@@ -848,10 +827,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
         with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
 
-            if int(sys.version[0]) < 3:
-                fpng.write(base64.decodestring(picCell))
-            else:
-                fpng.write(base64.decodebytes(bytes(picCell, 'utf-8')))
+            fpng.write(base64.decodebytes(bytes(picCell, 'utf-8')))
 
             #process the caption string, either a string or a list of strings
             captionStr = getMetaDataString(cell, output_index, 'figureCaption', 'caption','')
@@ -862,7 +838,7 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
             #process the scale values, either a value or a list of value
 
             #build the complete bitmap size latex string
-            width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 0.0)
+            width = getMetaDataVal(cell, output_index, 'figureCaption', 'width', 1.0)
             locator = getMetaDataString(cell, output_index, 'figureCaption', 'locator', 'tb')
 
             sizeStr = None
@@ -1038,10 +1014,7 @@ def convertMarkdownCell(cell, cell_index, imagedir, infile, inlinelistings,addur
     #     if 'http' in line and r'\cite' in line:
     #         print(line)
 
-    if int(sys.version[0]) < 3:
-        return unicode(tmp),''
-    else:
-        return tmp,''
+    return tmp,''
 
 
 
@@ -1126,7 +1099,7 @@ def processHTMLTree(html,cell,addurlcommand):
                     labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
                 #process the scale values, either a value or a list of value
                 #build the complete bitmap size latex string
-                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
+                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 1.0)
                 locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
                     
                 tmp += '{\n'
@@ -1361,13 +1334,16 @@ def processParagraph(pnode, tmp, addurlcommand,cell):
                     labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
                 #process the scale values, either a value or a list of value
                 #build the complete bitmap size latex string
-                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 0.0)
+                width = getMetaDataVal(cell, figure_index, 'figureCaption', 'width', 1.0)
                 locator = getMetaDataString(cell, figure_index, 'figureCaption', 'locator', 'tb')
                     
                 tmp += '{\n'
                 tmp = tmp + '\n\\begin{figure}['+locator+']\n'
                 tmp += '\\centering\n'
                 tmp += protectEvnStringStart
+                print('--------errorlocation----------------')
+                print(width)
+                print(filename)
                 tmp += '\\includegraphics[width='+width+'\\textwidth]{'+filename+'}\n'
                 tmp += protectEvnStringEnd
                 if captionStr:
@@ -1498,9 +1474,6 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
 
 
     with io.open(outfile, 'w', encoding='utf-8') as f:
-      if int(sys.version[0]) < 3:
-        f.write(unicode(output))
-      else:
         f.write(output)
 
     filenames = listFiles('.','*.bib',recurse=1)
@@ -1512,18 +1485,12 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
                     print(f'Appending {filename}')
                     with open(filename,'r') as fin:
                         lines = fin.read()
-                        if int(sys.version[0]) < 3:
-                            f.write(unicode(lines))
-                        else:
-                            f.write(lines)
+                        f.write(lines)
 
         #write the entries gathered from the notebook
         if len(bibtexlist):
             for bib in bibtexlist:
-                if int(sys.version[0]) < 3:
-                    f.write(unicode(bib))
-                else:
-                     f.write(bib)
+                f.write(bib)
 
 
 ################################################################################
@@ -1588,60 +1555,30 @@ def listFiles(root, patterns='*', recurse=1, return_folders=0, useRegex=False):
     filenames = []
     filertn = []
 
-    if sys.version_info[0] < 3:
+    for dirpath,dirnames,files in os.walk(root):
+        if dirpath==root or recurse:
+            for filen in files:
+                # filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,filen)))
+                filenames.append(os.path.relpath(os.path.join(dirpath,filen)))
+            if return_folders:
+                for dirn in dirnames:
+                    # filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,dirn)))
+                    filenames.append(os.path.relpath(os.path.join(dirpath,dirn)))
 
-        # Collect input and output arguments into one bunch
-        class Bunch(object):
-            def __init__(self, **kwds): self.__dict__.update(kwds)
-        arg = Bunch(recurse=recurse, pattern_list=pattern_list,
-                                return_folders=return_folders, results=[])
-
-        def visit(arg, dirname, files):
-            # Append to arg.results all relevant files (and perhaps folders)
-            for name in files:
-                fullname = os.path.normpath(os.path.join(dirname, name))
-                if arg.return_folders or os.path.isfile(fullname):
-                    for pattern in arg.pattern_list:
-                        if useRegex:
-                            #search returns None is pattern not found
-                            regex = re.compile(pattern)
-                            if regex.search(name):
-                                arg.results.append(fullname)
-                                break
-                        else:
-                            if fnmatch.fnmatch(name, pattern):
-                                arg.results.append(fullname)
-                                break
-            # Block recursion if recursion was disallowed
-            if not arg.recurse: files[:]=[]
-        os.path.walk(root, visit, arg)
-        return arg.results
-
-    else: #python 3
-        for dirpath,dirnames,files in os.walk(root):
-            if dirpath==root or recurse:
-                for filen in files:
-                    # filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,filen)))
-                    filenames.append(os.path.relpath(os.path.join(dirpath,filen)))
-                if return_folders:
-                    for dirn in dirnames:
-                        # filenames.append(os.path.abspath(os.path.join(os.getcwd(),dirpath,dirn)))
-                        filenames.append(os.path.relpath(os.path.join(dirpath,dirn)))
-
-        for name in filenames:
-            if return_folders or os.path.isfile(name):
-                for pattern in pattern_list:
-                    if useRegex:
-                        #search returns None is pattern not found
-                        regex = re.compile(pattern)
-                        if regex.search(name):
-                            filertn.append(name)
-                            break
-                    else:
-                        # split only the filename to compare, discard folder path
-                        if fnmatch.fnmatch(os.path.basename(name), pattern):
-                            filertn.append(name)
-                            break
+    for name in filenames:
+        if return_folders or os.path.isfile(name):
+            for pattern in pattern_list:
+                if useRegex:
+                    #search returns None is pattern not found
+                    regex = re.compile(pattern)
+                    if regex.search(name):
+                        filertn.append(name)
+                        break
+                else:
+                    # split only the filename to compare, discard folder path
+                    if fnmatch.fnmatch(os.path.basename(name), pattern):
+                        filertn.append(name)
+                        break
     return filertn
 
 ################################################################################
