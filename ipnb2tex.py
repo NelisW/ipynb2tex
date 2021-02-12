@@ -993,7 +993,6 @@ def processHTMLTree(html,cell,addurlcommand):
 
     for child in tree:
         # print('------------------------------------')
-
         # print('child.tag={}'.format(child.tag),type(child.tag))
         # print('child.text={}'.format(child.text))
         # print('child.tail={}'.format(child.tail))
@@ -1036,47 +1035,21 @@ def processHTMLTree(html,cell,addurlcommand):
             pass
 
         elif child.tag == 'iframe':
-            pass
+            # we only check for embedded pdf in iframe for now
+            lines = cell["source"].splitlines() 
+            for line in lines:
+                if '.pdf' in line:
+                    filename = re.search(r'"(.*?)"',line).group(1)
+                    ftmp,figure_index = writeImage(cell,figure_index,filename)
+                    tmp += ftmp
 
         elif child.tag == 'br':
             tmp += "\\newline"
 
         elif child.tag == 'img':
             filename = child.attrib['src']
-            # # print(filename)
-            # tmp += '\\begin{center}\n'
-            # tmp += protectEvnStringStart
-            # tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-            # tmp += protectEvnStringEnd
-            # tmp += '\\end{center}'
-            # print('**********************')
-            # print(cell['metadata'])
-            if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
-                captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
-                labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
-                if labelStr:
-                    labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-                #build the complete bitmap size latex string
-                width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
-                locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
-                    
-                tmp += '{\n'
-                tmp = tmp + '\n\\begin{figure}['+locator+']\n'
-                tmp += '\\centering\n'
-                tmp += protectEvnStringStart
-                tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-                tmp += protectEvnStringEnd
-                if captionStr:
-                    tmp += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
-                tmp += '\\end{figure}\n\n'
-                tmp += '}\n\n'
-                figure_index += 1
-            else:
-                tmp += '\\begin{center}\n'
-                tmp += protectEvnStringStart
-                tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-                tmp += protectEvnStringEnd
-                tmp += '\\end{center}'
+            ftmp,figure_index = writeImage(cell,figure_index,filename)
+            tmp += ftmp
 
         elif child.tag == 'style':
             pass
@@ -1120,6 +1093,39 @@ def processHTMLTree(html,cell,addurlcommand):
             tmp = tmp[:loc] + '\\' + tmp[loc:]
             offset_count += 1
     return tmp
+
+
+################################################################################
+def writeImage(cell,figure_index,filename):
+    ftmp = ''
+    if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
+        captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
+        labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
+        if labelStr:
+            labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
+        #build the complete bitmap size latex string
+        width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
+        locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
+            
+        ftmp += '{\n'
+        ftmp = ftmp + '\n\\begin{figure}['+locator+']\n'
+        ftmp += '\\centering\n'
+        ftmp += protectEvnStringStart
+        ftmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+        ftmp += protectEvnStringEnd
+        if captionStr:
+            ftmp += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+        ftmp += '\\end{figure}\n\n'
+        ftmp += '}\n\n'
+        figure_index += 1
+    else:
+        ftmp += '\\begin{center}\n'
+        ftmp += protectEvnStringStart
+        ftmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+        ftmp += protectEvnStringEnd
+        ftmp += '\\end{center}\n'
+    return ftmp,figure_index
+
 
 ################################################################################
 def processHeading(hstring, cstring):
@@ -1430,6 +1436,7 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
     with io.open(outfile, 'w', encoding='utf-8') as f:
         f.write(output)
 
+    print('\nWriting bibtex files:')
     filenames = listFiles('.','*.bib',recurse=1)
     if os.path.exists(bibfile):
         os.remove(bibfile)
@@ -1438,7 +1445,7 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         if len(filenames)>0:
             for filename in filenames:
                 if filename not in bibfile:
-                    print(f'Appending {filename}')
+                    print(f' - appending {filename} to {bibfile}')
                     with open(filename,'r') as fin:
                         lines = fin.read()
                         f.write(lines)
