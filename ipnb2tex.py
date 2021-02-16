@@ -47,7 +47,7 @@ protectEvnStringStart = 'beginincludegraphics\n'
 protectEvnStringEnd = 'endincludegraphics\n'
 
 
-docoptstring = """Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-i] [-u] [--bibstyle=<style>]
+docoptstring = """Usage: ipnb2tex.py [<ipnbfilename>] [<outfilename>]  [<imagedir>] [-i] [-u] 
        ipnb2tex.py  (-h | --help)
 
 The ipnb2tex.py reads the IPython notebook and converts
@@ -73,8 +73,6 @@ Options:
   -i  [optional], the lower case letter i, if this option is given the code
       listings are printed inline with the body text where they occur,
       otherwise listings are floated to the end of the document.
-  --bibstyle=<style>  [optional] selects bibliography style to be used.
-     Use the form --bibstyle=natbib or --bibstyle="natbib" [default: IEEEtran].
 
 """
 
@@ -540,6 +538,7 @@ def prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addu
         raise NotImplementedError("Unable to process cell {}, \nlooking for keys: {}".\
             format(cellOutput, cellOutput.keys()))
 
+    outstr += '\n'
     return outstr
 
 ################################################################################
@@ -1092,6 +1091,7 @@ def processHTMLTree(html,cell,addurlcommand):
         if (not inline_count % 2) and (not env_count % 2) and (not envs_count % 2) and (not enva_count % 2)  and (not envg_count % 2) :
             tmp = tmp[:loc] + '\\' + tmp[loc:]
             offset_count += 1
+    tmp += '\n'
     return tmp
 
 
@@ -1372,7 +1372,7 @@ def createImageDir(imagedir):
 
 ################################################################################
 # here we do one at at time
-def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand, bibstyle):
+def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand):
 
     #if required by option create a chapter for floated listings
     listingsstring = '\n\n\chapter{Listings}\n\n' if not inlinelistings else ''
@@ -1382,11 +1382,9 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
     print('imageDir={}'.format(imagedir))
     print('inline listings={}'.format(inlinelistings))
     print('add url to bibtex url={}'.format(addurlcommand))
-    print('biblography style={}'.format(bibstyle))
 
     pdffile = outfile.replace('.tex', '.pdf')
     bibfile = outfile.replace('.tex', '.bib')
-
 
     # nb = ipnbcurrent.read(io.open(infile, encoding='utf-8'), 'json')
     # if len(nb.worksheets) > 1:
@@ -1422,16 +1420,12 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         output += rtnString
         listingsstring += rtnListing
 
-    if len(listingsstring):
+    if len(rtnListing):
         output += listingsstring
 
-    if len(bibtexlist):
-        output += '\n\n\\bibliographystyle{{{0}}}\n'.format(bibstyle)
-        output += '\\bibliography{{{0}}}\n\n'.format(bibfile.replace('.bib', ''))
+    output += r'\atendofdoc'+'\n\n'
 
     output += r'\end{document}'+'\n\n'
-
-
 
     with io.open(outfile, 'w', encoding='utf-8') as f:
         f.write(output)
@@ -1445,13 +1439,14 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         if len(filenames)>0:
             for filename in filenames:
                 if filename not in bibfile:
-                    print(f' - appending {filename} to {bibfile}')
+                    print(f' - appending contents from {filename} to {bibfile}')
                     with open(filename,'r') as fin:
                         lines = fin.read()
                         f.write(lines)
 
         #write the entries gathered from the notebook
         if len(bibtexlist):
+            print(f' - writing contents from {bibfile}')
             for bib in bibtexlist:
                 f.write(bib)
 
@@ -1557,7 +1552,6 @@ outfile = args['<outfilename>']
 imagedir =  args['<imagedir>']
 inlinelistings = args['-i']
 addurlcommand = args['-u']
-bibstyle = args['--bibstyle']
 
 # find the image directory
 imagedir = createImageDir(imagedir)
@@ -1567,6 +1561,6 @@ infiles, outfiles = getInfileNames(infile, outfile)
 
 #process the list of files found in spec
 for infile, outfile in zip(infiles, outfiles):
-    processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand, bibstyle)
+    processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand)
 
 print('\nfini!')

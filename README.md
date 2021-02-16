@@ -3,7 +3,7 @@ ipynb2tex
 
 Yet another IPython notebook to LaTeX converter - this one exports clean code in the user-required style, or can easily be absorbed in other reports.
 
-The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python code, as well as several other features which do not fit my requirement. 
+The LaTeX converters supplied with IPython 2 used Pygments to colour the Python code, as well as several other features which do not fit my requirement. 
 
 ## Features
   
@@ -18,16 +18,15 @@ The LaTeX converters supplied with IPython 2.x use Pygments to colour the Python
 -  Supports Pandas `to_latex()` dataframe exports as inline or floating tables
 -  Supports `IPython.core.display.Latex object` in the output cell.
 
-## Deficiencies
+## Known deficiencies
 
-   
 1. Some complex cell-merged HTML tables may not render correctly in LaTeX (let me know if you have such a table).     
-1. Unicode not yet handled.  
-1. The following HTML elements are not currently processed, these elements are simply ignored: `div`, `iframe`, `img`.  
-2. Many reserved LaTeX symbols such as hash, caret, underscore and dollar are 'legal' in normal markdown.  When rendering to LaTeX these symbols cause errors unless escaped with backslash.  In many cases these symbols are escaped, but not always because of context.  If the symbols are escaped, they render incorrectly in normal Markdown. Therefore, choose your target renderer and enter the symbols accordingly, accepting problems in the alternative renderer.
+1. The following HTML elements are not currently processed, these elements are simply ignored: `div`,  `img`. 
+1. The `iframe` HTML element is tested for embedded PDF files which are then included as an image.
+1. <font color="red">Coloured text in HTML</font> is not exported as coloured text in LaTeX.
+1. Many reserved LaTeX symbols such as hash, caret, underscore and dollar are 'legal' in normal markdown.  When rendering to LaTeX these symbols cause errors unless escaped with backslash.  In many cases these symbols are escaped, but not always because of context.  If the symbols are escaped, they render incorrectly in normal Markdown. Therefore, choose your target renderer and enter the symbols accordingly, accepting problems in the alternative renderer.
 3. IPython notebook names must not have spaces in the filename.
-
-
+4. This notebook is not kept current with the latest Jupyter developments.
 
 ## Instructions
 
