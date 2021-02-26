@@ -1,3 +1,4 @@
+
 %This notebook demonstrates the use of the workpackage template, replace with your own.
 
 \documentclass[english]{workpackage}[1996/06/02]
@@ -55,6 +56,8 @@
 %and finally the document begin.
 \begin{document}
 \WPlayout
+
+
 % some Latex code to be used verbatim
 \ 
 \vspace{50mm}
@@ -72,6 +75,8 @@
 \listoffigures
 \listoftables
 \lstlistoflistings
+
+
 
 \chapter{The ipnb2tex.py Script}
 \label{sec:Theipnb2texpyScript}
@@ -95,11 +100,6 @@ where
 
 
 \verb+url = {http://ipython.org/}+
-\item \verb+--bibstyle=<style>+  [optional] selects bibliography style to be used.
-     Use the form 
-
-
-\verb+--bibstyle=natbib+ or \verb+--bibstyle="natbib"+ [default: \verb+IEEEtran+].
 \end{itemize}
 
 
@@ -246,157 +246,8 @@ The script saves the png files in the \verb+./pic+ directory, and the \LaTeX{} c
 
 
 
-\section{Raw NBConvert cells}
-\label{sec:RawNBConvertcells}
-
-
-The \verb+Raw NBConvert+ cell type can be used to propagate text without any modification to the output stream.  The IPython notebook will not touch this text; it is passed on as-is to the converter code. This this case we can add \LaTeX{} code that will progress straight through to the \LaTeX{} compiler.
-
-
-This raw capability is very useful if the notebook is intended to be exported to \LaTeX{} as primary output.  I find myself writing most of such documentation in raw latex in a 'Raw NBConvert' cell.  In this mode most of the notebook cells are never rendered to HTML, since you are reading and editing the \LaTeX{} and it stays in \LaTeX{} for display purposes as well. So you get the full benefit of all \LaTeX{} functionality (except that it is not rendered inside the notebook) and all the other benefits of the notebook.
-
-
-
-Raw NBConvert cell.  This could be raw \LaTeX{} as in 
-
-\begin{equation}
-f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^\infty_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
-\end{equation}
-
-
-
-\section{Captions}
-\label{sec:Captions}
-
-
-There are three objects that can have captions: listings, figures and tables.
-
-
-Figures and tables without captions are non-floating and appear in the text at the position it is found in the input file.  Figures and tables with captions are floating.
-
-
-Listings are always non-floating.
-
-
-A single cell can contain any combination of captions, and these are indicated in the metadata field of the cell. Select the \verb+Edit Metadata+ drop-down option in the \verb+Cell Toolbar+ drop-down box (towards the right of the toolbar). This should expose metadata buttons on all the cells. Click on the button and type in the  metadata.
-
-
-The metadata has the following structure:
-
-
-\begin{verbatim}
-{
-  "listingCaption": {
-    "caption": "Comparison of effective drag parameters",
-    "label": "lst:comparedrag",
-    "outputCaption": ""
-  },
-  "figureCaption": {
-    "caption": "Caption text for first figure",
-    "label": "fig:lab1",
-    "width": "0.2",
-    "locator": "t"
-  },
-  "tableCaption": {
-    "caption": "Caption text for first table",
-    "label": "tab:lab1",
-    "format": "{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}",
-    "fontsize": "normalsize",
-    "locator": "t"
-  }
-}
-\end{verbatim}
-
-
-Note the placement of commas. No newlines are allowed in a single string in the metadata.
-
-
-
-
-\section{Python code}
-\label{sec:Pythoncode}
-
-
-Python code blocks are printed using the \LaTeX{} \verb+listings+ package.  The format details can be defined in the header template file.  These code listings can be supplied with a caption and a label (but these code blocks are not floating entities).
-
-
-\begin{verbatim}
-  {
-  "listingCaption": {
-    "caption": "Caption text for first listing",
-    "label": "lst:listing1",
-    "outputCaption": "Caption for first listing output"
-  }
-}
-\end{verbatim}
-
-
-where the different fields have the following meanings:
-
-
-\begin{enumerate}
-\item \verb+caption+ specifies the text to be used in the listings caption.  If this metadata field is not supplied, the listing will not be given a caption.
-\item \verb+label+ specifies the label to be used for the listing, which can be used in \LaTeX{} to reference the listing.  The code block uses the label exactly as given in the metadata field.  If the output listing is given an \verb+outputCaption+, the output caption is labelled by the a label starting with the \verb+label+ string given, but appended with the string \verb+-out+ (i.e., \verb+lst:listing1-out+ in this case).
-\item \verb+outputCaption+ specifies the label that is used for the output listing of the cell. If this metadata field is not supplied, the output listing will not be given a caption.
-\end{enumerate}
-
-We can refer to Listings~\ref{lst:listing1}, \ref{lst:listing1-out}, \ref{lst:listing2}, and \ref{lst:listing3}.  These listings may not be defined in the IPython output but they are defined in the \LaTeX{} output.
-
-
-You can also refer to Figures~\ref{fig:lab1-0} and \ref{fig:lab4-2}.
-
-
-The default is to provide colour syntax highlighting. If you don't want colour in the listings, simply remove these lines from \verb+header.tex+
-
-
-\begin{verbatim}
-commentstyle=\color{mygreen},    \% comment style
-keywordstyle=\color{blue},       \% keyword style
-stringstyle=\color{mymauve},     \% string literal style
-\end{verbatim}
-
-
-
-
-\section{Floated code listings}
-\label{sec:Floatedcodelistings}
-
-
-In order to improve readability in the document, the code listings can be floated to the end of the document by using the \verb+-l+ switch on the command line.  If this switch is used, the listing is saved to a string that is only appended to the \LaTeX{} document and the end of the conversion.  At the location in the document where the code listing would have been, a reference sentence to the code is included.  The  sentence is constructed as follows:
-
-
-\verb+See Listing~\ref{lst:autolistingcellX} for the code {purpose}.+
-
-
-where the symbolic link is constructed using the cell number and the text used in the \verb+{purpose}+ part is taken from the first line of the code, if the first line is a comment with a single \verb+#+ followed by a space.  Hence if the code in cell 3 starts with the lines
-
-
-\begin{verbatim}
-# to prepare the environment
-import numpy as np
-\end{verbatim}
-
-
-a text line of the following form will be created:
-
-
-\verb+See Listing~\ref{lst:autolistingcell3} for the code to prepare the environment.+
-
-
-Just maintain the discipline to write good comments in the first line, keeping in mind that  the comment will end up in the body of the document with the reference.
-
-
-If a code cell does not start with a comment, no text will be inserted and the form will be
-
-
-\verb+See Listing~\ref{lst:autolistingcell24} for the code.+
-
-
-If the code cell starts with a comment of the form \verb+##+, the listing will output to the tex file, but there is no text entry in the location where the code cell was. i.e., no line starting with \verb+See Listing+...
-
-
-If the code cell starts with a comment of the form \verb+###+, neither the listing nor the  text entry referring to it is written to the latex file.  So if you don't want the code to be shown or a reference to it made, start the first code line with \verb+###+.
-
+\section{Using Python code}
+\label{sec:UsingPythoncode}
 
 
 
@@ -486,7 +337,7 @@ The following code block has no metadata, and hence no captions on either the co
 
 
 
-See Listing~\ref{lst:autolistingcell38} for the code.
+See Listing~\ref{lst:autolistingcell30} for the code.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -501,11 +352,11 @@ Output emanating from different cells \textit{may} result in different output li
 
 
 
-See Listing~\ref{lst:autolistingcell40} for the code.
+See Listing~\ref{lst:autolistingcell32} for the code.
 
 
 
-See Listing~\ref{lst:autolistingcell41} for the code.
+See Listing~\ref{lst:autolistingcell33} for the code.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -519,8 +370,167 @@ function output 3
 
 
 
-\section{Bitmaps}
-\label{sec:Bitmaps}
+\section{Raw NBConvert cells}
+\label{sec:RawNBConvertcells}
+
+The \verb+Raw NBConvert+ cell type can be used to propagate text without any modification to the output stream.  The IPython notebook will not touch this text; it is passed on as-is to the converter code. This this case we can add \LaTeX{} code that will progress straight through to the \LaTeX{} compiler.
+
+
+This raw capability is very useful if the notebook is intended to be exported to \LaTeX{} as primary output.  I find myself writing most of such documentation in raw latex in a 'Raw NBConvert' cell.  In this mode most of the notebook cells are never rendered to HTML, since you are reading and editing the \LaTeX{} and it stays in \LaTeX{} for display purposes as well. So you get the full benefit of all \LaTeX{} functionality (except that it is not rendered inside the notebook) and all the other benefits of the notebook.
+
+
+
+Raw NBConvert cell.  This could be raw \LaTeX{} as in 
+
+\begin{equation}
+f_{WN}(\theta;\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}}\sum^\infty_{k=-\infty} \exp\left[\frac{-(\theta-\mu+2\pi k)^2}{2\sigma^2}\right]
+\end{equation}
+
+
+\section{Captions}
+\label{sec:Captions}
+
+There are three objects that can have captions: listings, figures and tables.
+
+
+Figures and tables without captions are non-floating and appear in the text at the position it is found in the input file.  Figures and tables with captions are floating.
+
+
+Listings are normally  non-floating but can be floated (see below).
+
+
+A single cell can contain any combination of captions, and these are indicated in the metadata field of the cell. 
+It seems that the means to access the metadata changes with every new release. Try one of the following:
+
+
+\begin{enumerate}
+\item Select the \verb+Edit Metadata+ drop-down option in the \verb+Cell Toolbar+ drop-down box (towards the right of the toolbar). This should expose metadata buttons on all the cells. Click on the button and type in the  metadata.
+\item On the left panel click on the Property Inspector (gear icon) and open the \verb+Advanced Tools+ drop-down to expose the \verb+Cell Metadata+ text box.
+\end{enumerate}
+
+Enter the meta data into the text box. Ensure that the tabs and commas are all in the right places: if so, a small tick mark will appear for you to approve the new metadata, by clicking on the tick mark.  If the tabs and commas are not exactly right, the text box boundary will be red (error) and the tick mark will not be shown.
+If the json structure has no errors, a tick mark will appear: click on the tick mark to save the changes (as long as there are errors you cannot save).
+
+
+The metadata has the following structure:
+
+
+\begin{verbatim}
+{
+  "listingCaption": {
+    "caption": "Comparison of effective drag parameters",
+    "label": "lst:comparedrag",
+    "outputCaption": ""
+  },
+  "figureCaption": {
+    "caption": "Caption text for first figure",
+    "label": "fig:lab1",
+    "width": "0.2",
+    "locator": "t"
+  },
+  "tableCaption": {
+    "caption": "Caption text for first table",
+    "label": "tab:lab1",
+    "format": "{|p{10mm}|l|r|c|c|p{50mm}|p{20mm}|}",
+    "fontsize": "normalsize",
+    "locator": "t"
+  }
+}
+\end{verbatim}
+
+
+Note the placement of commas. No newlines are allowed in a single string in the metadata.
+
+
+
+
+\section{Python code}
+\label{sec:Pythoncode}
+
+Python code blocks are printed using the \LaTeX{} \verb+listings+ package.  The format details can be defined in the header template file.  These code listings can be supplied with a caption and a label (but these code blocks are not floating entities).
+
+
+\begin{verbatim}
+  {
+  "listingCaption": {
+    "caption": "Caption text for first listing",
+    "label": "lst:listing1",
+    "outputCaption": "Caption for first listing output"
+  }
+}
+\end{verbatim}
+
+
+where the different fields have the following meanings:
+
+
+\begin{enumerate}
+\item \verb+caption+ specifies the text to be used in the listings caption.  If this metadata field is not supplied, the listing will not be given a caption.
+\item \verb+label+ specifies the label to be used for the listing, which can be used in \LaTeX{} to reference the listing.  The code block uses the label exactly as given in the metadata field.  If the output listing is given an \verb+outputCaption+, the output caption is labelled by the a label starting with the \verb+label+ string given, but appended with the string \verb+-out+ (i.e., \verb+lst:listing1-out+ in this case).
+\item \verb+outputCaption+ specifies the label that is used for the output listing of the cell. If this metadata field is not supplied, the output listing will not be given a caption.
+\end{enumerate}
+
+We can refer to Listings~\ref{lst:listing1}, \ref{lst:listing1-out}, \ref{lst:listing2}, and \ref{lst:listing3}.  These listings may not be defined in the IPython output but they are defined in the \LaTeX{} output.
+
+
+You can also refer to Figures~\ref{fig:lab1-0} and \ref{fig:lab4-2}.
+
+
+The default is to provide colour syntax highlighting. If you don't want colour in the listings, simply remove these lines from \verb+header.tex+
+
+
+\begin{verbatim}
+commentstyle=\color{mygreen},    \% comment style
+keywordstyle=\color{blue},       \% keyword style
+stringstyle=\color{mymauve},     \% string literal style
+\end{verbatim}
+
+
+
+
+\section{Floated code listings}
+\label{sec:Floatedcodelistings}
+
+In order to improve readability in the document, the code listings can be floated to the end of the document by using the \verb+-l+ switch on the command line.  If this switch is used, the listing is saved to a string that is only appended to the \LaTeX{} document and the end of the conversion.  At the location in the document where the code listing would have been, a reference sentence to the code is included.  The  sentence is constructed as follows:
+
+
+\verb+See Listing~\ref{lst:autolistingcellX} for the code {purpose}.+
+
+
+where the symbolic link is constructed using the cell number and the text used in the \verb+{purpose}+ part is taken from the first line of the code, if the first line is a comment with a single \verb+#+ followed by a space.  Hence if the code in cell 3 starts with the lines
+
+
+\begin{verbatim}
+# to prepare the environment
+import numpy as np
+\end{verbatim}
+
+
+a text line of the following form will be created:
+
+
+\verb+See Listing~\ref{lst:autolistingcell3} for the code to prepare the environment.+
+
+
+Just maintain the discipline to write good comments in the first line, keeping in mind that  the comment will end up in the body of the document with the reference.
+
+
+If a code cell does not start with a comment, no text will be inserted and the form will be
+
+
+\verb+See Listing~\ref{lst:autolistingcell24} for the code.+
+
+
+If the code cell starts with a comment of the form \verb+##+, the listing will output to the tex file, but there is no text entry in the location where the code cell was. i.e., no line starting with \verb+See Listing+...
+
+
+If the code cell starts with a comment of the form \verb+###+, neither the listing nor the  text entry referring to it is written to the latex file.  So if you don't want the code to be shown or a reference to it made, start the first code line with \verb+###+.
+
+
+
+
+\section{Figure captions and bitmaps}
+\label{sec:Figurecaptionsandbitmaps}
 
 
 PNG images, read in from externally or created by Matplotlib, are imported into the \LaTeX{} code with lines of the following form:
@@ -565,8 +575,7 @@ If the \verb+caption+ field is given (or has non-zero length), the image will be
 
 
 
-To edit the meta data: on the left panel click on the Property Inspector (gear icon) and open the \verb+Advanced Tools+ drop-down to expose the \verb+Cell Metadata+ text box.
-Enter the meta data into the text box. Ensure that the tabs and commas are all in the right places: if so, a small tick mark will appear for you to approve the new metadata, by clicking on the tick mark.  If the tabs and commas are not exactly right, the text box boundary will be red (error) and the tick mark will not be shown.
+IF the caption string contains a substring \verb+(###)+ the substring will be replaced with the figure index (plus one) for the current cell. Hence, if there are multiple figures in the same cell, they can all use the same caption with with a running number, such as (1), (2), etc.
 
 
 
@@ -574,12 +583,18 @@ Enter the meta data into the text box. Ensure that the tabs and commas are all i
 
 See Listing~\ref{lst:figurelisting} for the code this figure is given meta data caption parameters, it will be floated in the latex export.
 
+{
 
 \begin{figure}[tb]
 \centering
-\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_45_0.png}
+
+\begin{normalsize}
+\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_42_0.png}
+\end{normalsize}
 \caption{Caption text for first figure\label{fig:lab1-0}}
 \end{figure}
+
+}
 
 
 \begin{lstlisting}[style=outcellstyle,caption={Output for a cell with a figure \label{lst:figurelisting-out}}]
@@ -592,7 +607,7 @@ Experimenting with embedded markdown images:
 
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{images/keep-calm-and-code-python_BW.png}
+\includegraphics[width=0.9\textwidth]{./images/keep-calm-and-code-python_BW.png}
 \end{center}
 
 
@@ -612,12 +627,11 @@ The following figure is not floating, but with narrower width.
 
 
 
-See Listing~\ref{lst:autolistingcell48} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
+See Listing~\ref{lst:autolistingcell45} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
 
 \begin{center}
-\includegraphics[width=0.3\textwidth]{./pic/test2LaTeX_48_0.png}
+\includegraphics[width=0.9\textwidth]{./pic/test2LaTeX_45_0.png}
 \end{center}
-
 The following Matplotlib plot is scaled to 40\% of text width and floating, but with the 'h' locator to force the location to here.
 
 
@@ -636,14 +650,20 @@ The following Matplotlib plot is scaled to 40\% of text width and floating, but 
 
 
 
-See Listing~\ref{lst:autolistingcell50} for the code.
+See Listing~\ref{lst:autolistingcell47} for the code.
 
+{
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.4\textwidth]{./pic/test2LaTeX_50_0.png}
+
+\begin{normalsize}
+\includegraphics[width=0.4\textwidth]{./pic/test2LaTeX_47_0.png}
+\end{normalsize}
 \caption{Caption text for third figure\label{fig:lab3-0}}
 \end{figure}
+
+}
 
 It is possible to have more than one plot in a single cell output.  In this case each output can be made floating separately or be non-floated (you can even mix floating and non-floating).  The captions are given in the metadata in the following format:
 
@@ -659,7 +679,47 @@ It is possible to have more than one plot in a single cell output.  In this case
 \end{verbatim}
 
 
-In this case the caption strings and scaling values are allocated to the sequence of images in the order given.  If a caption string is zero length, that specific image will be non-floating.  The float labels are determined from the root value given in the metadata, but with the output sub-index appended, as in \verb+fig:lab4-0+, \verb+fig:lab4-1+, \verb+fig:lab4-2+.
+In this case the caption strings and scaling values are allocated to the sequence of images in the order given.  If a caption string is zero length, that specific image will be non-floating (as in the example of instance \verb+b+ here).  The float labels are determined from the root value given in the metadata, but with the output sub-index appended, as in \verb+fig:lab4-0+, \verb+fig:lab4-1+, \verb+fig:lab4-2+.
+
+
+
+
+
+See Listing~\ref{lst:autolistingcell49} for the code.
+
+{
+
+\begin{figure}[tb]
+\centering
+
+\begin{normalsize}
+\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_49_0.png}
+\end{normalsize}
+\caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
+\end{figure}
+
+}
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{./pic/test2LaTeX_49_1.png}
+\end{center}
+{
+
+\begin{figure}[tb]
+\centering
+
+\begin{normalsize}
+\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_49_2.png}
+\end{normalsize}
+\caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
+\end{figure}
+
+}
+
+\clearpage 
+
+Multiple pictures in the same cell can share the same caption, appended with (1), (2), etc.
+Use the substring \verb+(###)+ as a placeholder to be replaced with the running count number.
 
 
 
@@ -667,25 +727,48 @@ In this case the caption strings and scaling values are allocated to the sequenc
 
 See Listing~\ref{lst:autolistingcell52} for the code.
 
+{
 
-\begin{figure}[tb]
+\begin{figure}[tbp]
 \centering
-\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_52_0.png}
-\caption{Caption text for (first) fourth figure\label{fig:lab4-0}}
+
+\begin{normalsize}
+\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_52_0.png}
+\end{normalsize}
+\caption{Shared caption (1)\label{fig:sharedcap-0}}
 \end{figure}
 
-\begin{center}
-\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_52_1.png}
-\end{center}
+}
 
+{
 
-\begin{figure}[tb]
+\begin{figure}[tbp]
 \centering
-\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_52_2.png}
-\caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
+
+\begin{normalsize}
+\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_52_1.png}
+\end{normalsize}
+\caption{Shared caption (2)\label{fig:sharedcap-1}}
 \end{figure}
+
+}
+
+{
+
+\begin{figure}[tbp]
+\centering
+
+\begin{normalsize}
+\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_52_2.png}
+\end{normalsize}
+\caption{Shared caption (3)\label{fig:sharedcap-2}}
+\end{figure}
+
+}
 
 \FloatBarrier % message to latex, no floats past this barrier
+
+
 You can write HTML to the cell's output and have it displayed in the browser and also in the LaTeX file.
 
 
@@ -695,7 +778,7 @@ You can write HTML to the cell's output and have it displayed in the browser and
 See Listing~\ref{lst:autolistingcell55} for the code.
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{images/flow2-zzz.png}
+\includegraphics[width=0.9\textwidth]{./images/flow2-zzz.png}
 \end{center}
 
 
@@ -714,7 +797,10 @@ Figure~\ref{fig:keepcalm-1}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.1\textwidth]{images/keep-calm-and-code-python_BW.png}
+
+\begin{normalsize}
+\includegraphics[width=0.1\textwidth]{./images/keep-calm-and-code-python_BW.png}
+\end{normalsize}
 \caption{Keep calm 1\label{fig:keepcalm-0}}
 \end{figure}
 
@@ -725,7 +811,10 @@ Figure~\ref{fig:keepcalm-1}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.2\textwidth]{images/random-squares-2.png}
+
+\begin{normalsize}
+\includegraphics[width=0.2\textwidth]{./images/random-squares-2.png}
+\end{normalsize}
 \caption{Keep calm 2\label{fig:keepcalm-1}}
 \end{figure}
 
@@ -780,7 +869,10 @@ The converter will export both of the above PDF filenames for display in the lat
 
 \begin{figure}[tbp]
 \centering
-\includegraphics[width=0.9\textwidth]{./images/discretestrata01.pdf}
+
+\begin{normalsize}
+\includegraphics[width=0.5\textwidth]{./images/discretestrata01.pdf}
+\end{normalsize}
 \caption{Stratified atmosphere\label{fig:templabel-0}}
 \end{figure}
 
@@ -790,7 +882,10 @@ The converter will export both of the above PDF filenames for display in the lat
 
 \begin{figure}[tbp]
 \centering
-\includegraphics[width=0.9\textwidth]{./images/Bankedturn.pdf}
+
+\begin{normalsize}
+\includegraphics[width=0.5\textwidth]{./images/Bankedturn.pdf}
+\end{normalsize}
 \caption{Banked turn\label{fig:templabel-1}}
 \end{figure}
 
@@ -993,8 +1088,11 @@ item4 new parra 2 [ this does not work correctly ]
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.1\textwidth]{images/random-squares-2.png}
-\caption{Proposed flight paths\label{fig:propflightpaths-0}}
+
+\begin{normalsize}
+\includegraphics[width=0.1\textwidth]{./images/random-squares-2.png}
+\end{normalsize}
+\caption{Boxy picture\label{fig:propflightpaths-0}}
 \end{figure}
 
 }
@@ -1148,6 +1246,8 @@ Both of these markup extensions require Python Markdown 2.4.1 to render HTML.
 
 
 Table~\ref{tab:hiertab12-0} has an hierarchical structure on both columns and rows.  The percentage and underline characters are also preserved.
+
+
 
 \begin{table}[tb]
 \centering
@@ -1365,9 +1465,9 @@ See Listing~\ref{lst:autolistingcell84} for the code  to create the dataframe an
 \toprule
 {} &         A &         B &         C &         D &         E \\
 \midrule
-2013-01-01 & -0.789898 & -1.000352 & -0.398985 & -1.426902 &  0.320999 \\
-2013-01-02 & -0.377075 &  0.012322 & -1.956663 &  0.276904 & -0.701067 \\
-2013-01-03 &  0.651859 &  0.439298 & -0.996117 &  0.347582 &  1.115204 \\
+2013-01-01 &  0.493087 &  1.083599 & -0.131775 & -1.003276 & -0.563037 \\
+2013-01-02 & -0.758589 & -0.730037 &  0.345345 & -1.705803 &  0.778746 \\
+2013-01-03 & -1.829700 & -1.451491 &  0.154937 &  1.194419 &  0.515092 \\
 \bottomrule
 \end{tabular}
 
@@ -1396,14 +1496,11 @@ See Listing~\ref{lst:autolistingcell85} for the code.
 \begin{normalsize}
 \begin{tabular}{|l|l|p{50mm}|c|r|}
 \toprule
-        A &         B &         C &         D \\
+        A &         B &         C &         D &         E \\
 \midrule
--1.518235 & -0.581556 & -0.295397 &  0.515083 \\
--0.347649 &  0.009918 & -1.103953 & -0.299832 \\
- 0.119800 & -1.020987 &  0.793399 &  1.437376 \\
--0.445420 & -0.568034 &  0.347559 & -0.146691 \\
--2.456761 & -1.431058 &  0.969182 & -0.489740 \\
--0.227732 & -0.155102 & -0.731262 & -0.235719 \\
+ 0.493087 &  1.083599 & -0.131775 & -1.003276 & -0.563037 \\
+-0.758589 & -0.730037 &  0.345345 & -1.705803 &  0.778746 \\
+-1.829700 & -1.451491 &  0.154937 &  1.194419 &  0.515092 \\
 \bottomrule
 \end{tabular}
 
@@ -1447,16 +1544,13 @@ See Listing~\ref{lst:autolistingcell87} for the code  to write the table in LARG
 \abovetopsep=0pt
 
 \begin{LARGE}
-\begin{tabular}{|l|l|p{50mm}|c|r|}
+\begin{tabular}{|l|l|l|p{50mm}|c|r|}
 \toprule
-{} &         A &         B &         C &         D \\
+{} &         A &         B &         C &         D &         E \\
 \midrule
-2013-01-01 & -1.518235 & -0.581556 & -0.295397 &  0.515083 \\
-2013-01-02 & -0.347649 &  0.009918 & -1.103953 & -0.299832 \\
-2013-01-03 &  0.119800 & -1.020987 &  0.793399 &  1.437376 \\
-2013-01-04 & -0.445420 & -0.568034 &  0.347559 & -0.146691 \\
-2013-01-05 & -2.456761 & -1.431058 &  0.969182 & -0.489740 \\
-2013-01-06 & -0.227732 & -0.155102 & -0.731262 & -0.235719 \\
+2013-01-01 &  0.493087 &  1.083599 & -0.131775 & -1.003276 & -0.563037 \\
+2013-01-02 & -0.758589 & -0.730037 &  0.345345 & -1.705803 &  0.778746 \\
+2013-01-03 & -1.829700 & -1.451491 &  0.154937 &  1.194419 &  0.515092 \\
 \bottomrule
 \end{tabular}
 
@@ -1511,16 +1605,13 @@ See Listing~\ref{lst:autolistingcell89} for the code  to write a floating table 
 
 \begin{tiny}
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{|l|l|p{50mm}|c|r|}
+\begin{tabular}{|l|l|l|p{50mm}|c|r|}
 \toprule
-{} &         A &         B &         C &         D \\
+{} &         A &         B &         C &         D &         E \\
 \midrule
-2013-01-01 & -1.518235 & -0.581556 & -0.295397 &  0.515083 \\
-2013-01-02 & -0.347649 &  0.009918 & -1.103953 & -0.299832 \\
-2013-01-03 &  0.119800 & -1.020987 &  0.793399 &  1.437376 \\
-2013-01-04 & -0.445420 & -0.568034 &  0.347559 & -0.146691 \\
-2013-01-05 & -2.456761 & -1.431058 &  0.969182 & -0.489740 \\
-2013-01-06 & -0.227732 & -0.155102 & -0.731262 & -0.235719 \\
+2013-01-01 &  0.493087 &  1.083599 & -0.131775 & -1.003276 & -0.563037 \\
+2013-01-02 & -0.758589 & -0.730037 &  0.345345 & -1.705803 &  0.778746 \\
+2013-01-03 & -1.829700 & -1.451491 &  0.154937 &  1.194419 &  0.515092 \\
 \bottomrule
 \end{tabular}
 
@@ -1536,18 +1627,18 @@ See Listing~\ref{lst:autolistingcell89} for the code  to write a floating table 
 \label{sec:OtherLaTeXexports}
 
 
+Write latex strings
 
 
-See Listing~\ref{lst:autolistingcell91} for the code.
 
 Samples per cluster ID: \\
-6 9 6 9 8 \\[4ex]
+6 5 8 7 5 \\[4ex]
 Samples per visual material: \\
-3 4 4 1 3 3 5 3 3 5
+1 1 5 2 4 3 5 2 4 2
 
 
 
-See Listing~\ref{lst:autolistingcell94} for the code  display a tikz graphic.
+See Listing~\ref{lst:autolistingcell93} for the code  display a tikz graphic.
 
 
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1592,7 +1683,7 @@ See Listing~\ref{lst:autolistingcell94} for the code  display a tikz graphic.
 
 
 
-See Listing~\ref{lst:autolistingcell95} for the code  display another tikz graphic, as a floating figure.
+See Listing~\ref{lst:autolistingcell94} for the code  display another tikz graphic, as a floating figure.
 
 {
 
@@ -1685,16 +1776,16 @@ I only spent limited time on pylatex and got the following example to work (it r
 
 
 
-See Listing~\ref{lst:autolistingcell99} for the code  to format a numy array in \LaTeX{}.
+See Listing~\ref{lst:autolistingcell98} for the code  to format a numy array in \LaTeX{}.
 
 \[%
 arr= \begin{bmatrix}%
-1.6179953957754178&2.081889115159848&-0.5278491523637319&-0.02155558525240102\\%
--1.4497485642598003&0.45153079956006825&2.586586154755752&0.24852028248527852\\%
--0.9584605445469133&-0.555962219396206&1.5591667503817996&-0.6779681424223976\\%
--0.4162885452470342&-0.3640804837825296&0.4800662789632555&-0.21996444461249653\\%
-0.23487812329728636&-0.49027239839919906&0.1892835389272865&0.14874273351588235\\%
-0.2673876010126985&0.7593920410323847&-0.3826094754048399&0.2297647325306263%
+-0.21839540189585577&0.7622143702846214&-0.6915824454292743&-0.10655770483494051\\%
+0.6944072166925073&-1.7418824518754217&-1.0199605163860352&1.638305282457053\\%
+-2.1905207645806395&-0.5686578850294269&0.11550446154163356&-2.517735373273388\\%
+-0.062239373000761086&1.2088947793768594&-1.5323650502126436&-1.4525666692881856\\%
+0.751965034638641&0.6137218949953491&1.20014507245999&2.1580605314511576\\%
+-1.0932954682337&0.30298694287748146&-1.2738576790408298&-1.2672629384702843%
 \end{bmatrix}%
 \]
 
@@ -1800,6 +1891,8 @@ Load \verb+siunitx+  package for  some really nice features. Load it with \
 \tabentry{\si[inter-unit-product = \ensuremath{{}\cdot{}}]{\farad\squared\lumen\candela}}
 %\tabentry{}\\
 \end{tabular}
+
+
 \section{Math functions}
 \label{sec:Mathfunctions}
 
@@ -2015,7 +2108,7 @@ If you don't want your figure to float, don't use a floating environment; you ca
 
 
 
-See Listing~\ref{lst:autolistingcell119} for the code  to get software versions.
+See Listing~\ref{lst:autolistingcell118} for the code  to get software versions.
 
 
 \begin{lstlisting}[style=outcellstyle]
@@ -2035,7 +2128,7 @@ Processor   : Intel64 Family 6 Model 165 Stepping 2, GenuineIntel
 CPU cores   : 16
 Architecture: 64bit
 
-Git hash: 8a29bfac45612abdff381e2a9c2e7cbd98812892
+Git hash: e3ca0ff4229c30ddc12dc70dd8d1918379b21469
 
 
 \end{lstlisting}
@@ -2046,7 +2139,7 @@ Git hash: 8a29bfac45612abdff381e2a9c2e7cbd98812892
 \chapter{Listings}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 32}, label=lst:listing1]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 24}, label=lst:listing1]
 # to prepare the environment
 from IPython.display import display
 from IPython.display import Image
@@ -2060,7 +2153,7 @@ import this
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 34}, label=lst:listing2]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 26}, label=lst:listing2]
 #
 print(' ')
 print('Radius = {}'.format(6))
@@ -2069,7 +2162,7 @@ print('This is a very long line of python code, that is supposed to flow over to
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 35}, label=lst:listing3]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 27}, label=lst:listing3]
 # to print the value
 a = ['a','b']
 for v in a:
@@ -2077,7 +2170,7 @@ for v in a:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 36}, label=lst:autolistingcell36]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 28}, label=lst:autolistingcell28]
 ## this should not appear in the body of the doc if float listings
 a = [0, 1]
 for v in a:
@@ -2085,19 +2178,19 @@ for v in a:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 38}, label=lst:autolistingcell38]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 30}, label=lst:autolistingcell30]
 print('code with no listing caption')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 40}, label=lst:autolistingcell40]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 32}, label=lst:autolistingcell32]
 def doprint(i):
     print('function output {}'.format(i))
     return int(i)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 41}, label=lst:autolistingcell41]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 33}, label=lst:autolistingcell33]
 for i in [1,2,3]:
     si = str(i)
     v = doprint(si)
@@ -2108,7 +2201,7 @@ print(v)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 45}, label=lst:figurelisting]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 42}, label=lst:figurelisting]
 #this figure is given meta data caption parameters, it will be floated in the latex export
 display(Image(filename='images/keep-calm-and-code-python_BW.png', width=250, height=250))
 print('also force print output')
@@ -2116,13 +2209,13 @@ print('also force print output')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 48}, label=lst:autolistingcell48]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 45}, label=lst:autolistingcell45]
 #this figure is not given meta data caption parameters, it will be inlined in the latex export
 display(Image(filename='images/random-squares-2.png', width=200, height=200))
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 50}, label=lst:autolistingcell50]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 47}, label=lst:autolistingcell47]
 %matplotlib inline
 
 import pylab as pl
@@ -2139,7 +2232,7 @@ pl.grid(True)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 52}, label=lst:autolistingcell52]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 49}, label=lst:autolistingcell49]
 import pyradi.ryplot as ryplot
 
 x = np.linspace(0,10,10)
@@ -2148,8 +2241,18 @@ b = ryplot.Plotter(2,figsize=(3,2))
 c = ryplot.Plotter(3,figsize=(3,2))
 for i in [1,2]:
     a.plot(1,x,x ** i,'Plotter instance a',label=[str(i)])
-    b.plot(1,x,(-x) ** i,'Plotter instance b',label=[str(i)])
+    b.plot(1,x,(-x) ** i,'Plotter instance b (non floating)',label=[str(i)])
     c.plot(1,x,(5-x) ** i,'Plotter instance c',label=[str(i)])
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 52}, label=lst:autolistingcell52]
+plots = []
+for i,name in enumerate(['a','b','c']):
+    plots.append(ryplot.Plotter(i,1,1,figsize=(5,5)))
+    p = plots[-1]
+    p.plot(1, x,x ** (i+3))
+
 \end{lstlisting}
 
 
@@ -2214,17 +2317,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 91}, label=lst:autolistingcell91]
-Write latex strings
-\end{lstlisting}
-
-
 \begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 93}, label=lst:autolistingcell93]
-
-\end{lstlisting}
-
-
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 94}, label=lst:autolistingcell94]
 # display a tikz graphic
 lstr = r"""
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -2271,7 +2364,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 95}, label=lst:autolistingcell95]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 94}, label=lst:autolistingcell94]
 # display another tikz graphic, as a floating figure
 
 lstr = r"""
@@ -2328,7 +2421,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 97}, label=lst:autolistingcell97]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 96}, label=lst:autolistingcell96]
 ##
 lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
             + 'One day this could be a complex computed \LaTeX{} string.  '\
@@ -2339,7 +2432,7 @@ Latex(lstr + '\n')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 99}, label=lst:autolistingcell99]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 98}, label=lst:autolistingcell98]
 # to format a numy array in \LaTeX{}
 import numpy as np
 # install with pip install pylatex
@@ -2353,7 +2446,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 119}, label=lst:autolistingcell119]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 118}, label=lst:autolistingcell118]
 # to get software versions
 # https://github.com/rasbt/watermark
 # you only need to do this once
@@ -2361,6 +2454,11 @@ Latex(math.dumps_as_content())
 
 %load_ext watermark
 %watermark -v -m -p numpy,scipy,pyradi -g 
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 119}, label=lst:autolistingcell119]
+
 \end{lstlisting}
 
 \atendofdoc

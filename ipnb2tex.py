@@ -463,27 +463,33 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
 
     # process figure with caption,  either a string or a list of strings
     elif getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
-        captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
-        labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
-        if labelStr:
-            labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-        #build the complete bitmap size latex string
-        width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
-        locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
+        fstring, figure_index = prepareFigureFloat(cell,figure_index,filename=None,payload=payload,fontsizeStr=fontsizeStr)
+        outstr += fstring
+        # ###cjwfixcaption
+        # captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
+        # if '(###)' in captionStr:
+        #     captionStr = captionStr.replace('(###)',f'{figure_index+1}')
+        # labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
+        # if labelStr:
+        #     labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
+        # #build the complete bitmap size latex string
+        # width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
+        # locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
             
-        outstr += '{\n'
-        if captionStr:
-            outstr = outstr + '\n\\begin{figure}['+locator+']\n'
-            outstr += '\\centering\n'
-        outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
-        # any figure here will not be a png, jpg or eps, so just dump
-        outstr += payload
-        outstr += '\\end{{{}}}\n'.format(fontsizeStr)
-        if captionStr:
-            outstr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
-            outstr += '\\end{figure}\n\n'
-        outstr += '}\n\n'
-        figure_index += 1
+        # outstr += '{\n'
+        # if captionStr:
+        #     outstr = outstr + '\n\\begin{figure}['+locator+']\n'
+        #     outstr += '\\centering\n'
+        # outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
+        # # any figure here will not be a png, jpg or eps, so just dump
+        # outstr += payload
+        # outstr += '\\end{{{}}}\n'.format(fontsizeStr)
+        # if captionStr:
+        #     outstr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+        #     outstr += '\\end{figure}\n\n'
+        # outstr += '}\n\n'
+        # figure_index += 1
+
     elif booktabstr or '\\begin{tabular}' in payload:
         # no captioned latex, just output inline
         # check for tabular
@@ -736,8 +742,6 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
     texStr = ''
 
-
-
     if 'name' in cellOutput.keys() :
         if cellOutput.name == 'stdout':
             if 'text' in cellOutput.keys() :
@@ -785,46 +789,12 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
 
     if picCell:
 
-        with open(imagedir + '{}'.format(imageName), 'wb') as fpng:
+        filename = os.path.join(imagedir,imageName)
+        with open(filename, 'wb') as fpng:
 
             fpng.write(base64.decodebytes(bytes(picCell, 'utf-8')))
-
-            #process the caption string, either a string or a list of strings
-            captionStr = getMetaData(cell, output_index, 'figureCaption', 'caption','')
-            labelStr = getMetaData(cell, output_index, 'figureCaption', 'label','')
-            if labelStr:
-                labelStr = '\\label{{{}-{}}}'.format(labelStr, output_index)
-
-            #build the complete bitmap size latex string
-            width = getMetaData(cell, output_index, 'figureCaption', 'width', 1.0)
-            locator = getMetaData(cell, output_index, 'figureCaption', 'locator', 'tb')
-
-            sizeStr = None
-            if width: # first priority
-                sizeStr = '[width={}\\textwidth]'.format(width)
-            # else: # none given, use assumed textwidth
-            #     sizeStr = '[width=0.9\\textwidth]'
-
-            if captionStr:
-                texStr = texStr + '\n\\begin{figure}['+locator+']\n'
-                texStr += '\\centering\n'
-            else:
-                 texStr += '\\begin{center}\n'
-
-            # if the adjustbox package is used, this code is redundant
-            tempstr = os.path.join(imagedir,imageName)
-            tempstr = tempstr.replace('\\','/')
-            # print(tempstr)
-            if sizeStr is not None:
-                texStr += '\\includegraphics{}{{{}}}\n'.format(sizeStr,tempstr)
-            else:
-                texStr += '\\includegraphics[width=0.7\\textwidth]{{{}}}\n'.format(tempstr)
-
-            if captionStr:
-                texStr += '\\caption{'+'{}{}'.format(captionStr, labelStr) + '}\n'
-                texStr += '\\end{figure}\n\n'
-            else:
-                texStr += '\\end{center}\n\n'
+            fstring, _ = prepareFigureFloat(cell,output_index,filename)
+            texStr += fstring
 
         return texStr
 
@@ -870,7 +840,9 @@ def convertRawCell(cell, cell_index, imagedir, infile, inlinelistings,addurlcomm
 
     extractBibtexXref(cell)
 
-    return cell['source'] , ''
+    strraw = cell['source']+'\n\n'
+
+    return strraw  , ''
 
 ################################################################################
 def convertCodeCell(cell, cell_index, imagedir, infile, inlinelistings,addurlcommand):
@@ -1039,7 +1011,7 @@ def processHTMLTree(html,cell,addurlcommand):
             for line in lines:
                 if '.pdf' in line:
                     filename = re.search(r'"(.*?)"',line).group(1)
-                    ftmp,figure_index = writeImage(cell,figure_index,filename)
+                    ftmp,figure_index = prepareFigureFloat(cell,figure_index,filename)
                     tmp += ftmp
 
         elif child.tag == 'br':
@@ -1047,7 +1019,7 @@ def processHTMLTree(html,cell,addurlcommand):
 
         elif child.tag == 'img':
             filename = child.attrib['src']
-            ftmp,figure_index = writeImage(cell,figure_index,filename)
+            ftmp,figure_index = prepareFigureFloat(cell,figure_index,filename)
             tmp += ftmp
 
         elif child.tag == 'style':
@@ -1094,37 +1066,6 @@ def processHTMLTree(html,cell,addurlcommand):
     tmp += '\n'
     return tmp
 
-
-################################################################################
-def writeImage(cell,figure_index,filename):
-    ftmp = ''
-    if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
-        captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
-        labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
-        if labelStr:
-            labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-        #build the complete bitmap size latex string
-        width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
-        locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
-            
-        ftmp += '{\n'
-        ftmp = ftmp + '\n\\begin{figure}['+locator+']\n'
-        ftmp += '\\centering\n'
-        ftmp += protectEvnStringStart
-        ftmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-        ftmp += protectEvnStringEnd
-        if captionStr:
-            ftmp += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
-        ftmp += '\\end{figure}\n\n'
-        ftmp += '}\n\n'
-        figure_index += 1
-    else:
-        ftmp += '\\begin{center}\n'
-        ftmp += protectEvnStringStart
-        ftmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-        ftmp += protectEvnStringEnd
-        ftmp += '\\end{center}\n'
-    return ftmp,figure_index
 
 
 ################################################################################
@@ -1269,62 +1210,74 @@ def processParagraph(pnode, tmp, addurlcommand,cell):
         elif child.tag == 'br':
             tmp += "\\newline"
 
-        # elif child.tag == 'img':
-        #     filename = child.attrib['src']
-            # print(filename)
-            # if '_' in filename:
-            #     print(filename)
-            # tmp += '\\begin{center}\n'
-            # tmp += protectEvnStringStart
-            # tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-            # tmp += protectEvnStringEnd
-            # tmp += '\\end{center}'
-# ----------------------------------------------------------
         elif child.tag == 'img':
             filename = child.attrib['src']
-            # # print(filename)
-            # tmp += '\\begin{center}\n'
-            # tmp += protectEvnStringStart
-            # tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-            # tmp += protectEvnStringEnd
-            # tmp += '\\end{center}'
-            # print('**********************')
-            # print(pnode.keys())
-            # print(cell['metadata'])
-            if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
-                captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
-                labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
-                if labelStr:
-                    labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-                #build the complete bitmap size latex string
-                width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
-                locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
-                    
-                tmp += '{\n'
-                tmp = tmp + '\n\\begin{figure}['+locator+']\n'
-                tmp += '\\centering\n'
-                tmp += protectEvnStringStart
-                tmp += '\\includegraphics[width='+width+'\\textwidth]{'+filename+'}\n'
-                tmp += protectEvnStringEnd
-                if captionStr:
-                    tmp += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
-                tmp += '\\end{figure}\n\n'
-                tmp += '}\n\n'
-                figure_index += 1
+            filename = os.path.join('.',filename)
+            ftmp, figure_index = prepareFigureFloat(cell,figure_index,filename)
+            tmp += ftmp
 
-            else:
-                tmp += '\\begin{center}\n'
-                tmp += protectEvnStringStart
-                tmp += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
-                tmp += protectEvnStringEnd
-                tmp += '\\end{center}'
-
-# -------------------------------------------------------------
         else:
             raise ValueError('so far={}, need to learn to process this:'.format(tmp), child.tag)
+
     if pnode.tail:
         tmp += pnode.tail
     return tmp.strip() + '\n\n'
+
+################################################################################
+# create the float code for a figure
+def prepareFigureFloat(cell,figure_index,filename=None,payload=None,fontsizeStr='normalsize'):
+    """write the latex code to make a (non)float figure
+    """
+    if filename is  None and payload is None:
+        print('In prepareFigureFloat: filename and payload cannot both be None')
+        exit(-1)
+   # print(filename)
+    # print(cell['metadata'])
+    fstring = ''
+    # print(payload,filename)
+    # print('------------------------------')
+    if filename is not None:
+        if '\\' in filename:
+            filename = filename.replace('\\','/')
+    if getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
+        captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
+        if '(###)' in captionStr:
+            captionStr = captionStr.replace('(###)',f'({figure_index+1})')
+        labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
+        if labelStr:
+            labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
+        #build the complete bitmap size latex string
+        width = getMetaData(cell, figure_index, 'figureCaption', 'width', 0.9)
+        locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
+    
+        fstring += '{\n'
+        fstring = fstring + '\n\\begin{figure}['+locator+']\n'
+        fstring += '\\centering\n'
+        fstring += '\n\\begin{{{}}}\n'.format(fontsizeStr)
+        if payload is None: # not a latex cell
+            fstring += protectEvnStringStart
+            fstring += '\\includegraphics[width='+f'{width}'+'\\textwidth]{'+filename+'}\n'
+            fstring += protectEvnStringEnd
+        else:
+            # any figure here will not be a png, jpg or eps, so just dump
+            fstring += payload
+        fstring += '\\end{{{}}}\n'.format(fontsizeStr)
+        if captionStr:
+            fstring += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+        fstring += '\\end{figure}\n\n'
+        fstring += '}\n\n'
+    else:
+        fstring += '\\begin{center}\n'
+        fstring += protectEvnStringStart
+        fstring += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+        fstring += protectEvnStringEnd
+        fstring += '\\end{center}\n'
+    
+    figure_index += 1
+
+    return fstring, figure_index
+
+
 
 
 ################################################################################
