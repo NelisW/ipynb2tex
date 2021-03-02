@@ -333,14 +333,16 @@ def convertHtmlTable(html, cell):
         latexTabular += "\n"
         latexTabular += "\\end{tabular}\n"
 
-
         #process the caption string, either a string or a list of strings
         captionStr = getMetaData(cell, table_index, 'tableCaption', 'caption','')
         fontsizeStr = getMetaData(cell, table_index, 'tableCaption', 'fontsize','normalsize')
         locator = getMetaData(cell, table_index, 'tableCaption', 'locator', 'tb')
         labelStr = getMetaData(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
-            labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
+            tlabstr = labelStr
+            labelStr = '\\label{{{}-{}}}'.format(tlabstr, table_index)
+            if table_index == 0:
+                labelStr += '\\label{{{}}}'.format(tlabstr)
 
         texStr = ''
         if captionStr:
@@ -444,7 +446,11 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
         locator = getMetaData(cell, table_index, 'tableCaption', 'locator', 'tb')
         labelStr = getMetaData(cell, table_index, 'tableCaption', 'label','')
         if labelStr:
-            labelStr = '\\label{{{}-{}}}'.format(labelStr, table_index)
+            tlabstr = labelStr
+            labelStr = '\\label{{{}-{}}}'.format(tlabstr, table_index)
+            if table_index == 0:
+                labelStr += '\\label{{{}}}'.format(tlabstr)
+
         outstr += '{\n'
         if captionStr:
             outstr =  outstr + '\n\\begin{table}['+locator+']\n'
@@ -465,30 +471,6 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
     elif getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
         fstring, figure_index = prepareFigureFloat(cell,figure_index,filename=None,payload=payload,fontsizeStr=fontsizeStr)
         outstr += fstring
-        # ###cjwfixcaption
-        # captionStr = getMetaData(cell, figure_index, 'figureCaption', 'caption','')
-        # if '(###)' in captionStr:
-        #     captionStr = captionStr.replace('(###)',f'{figure_index+1}')
-        # labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
-        # if labelStr:
-        #     labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
-        # #build the complete bitmap size latex string
-        # width = getMetaData(cell, figure_index, 'figureCaption', 'width', 1.0)
-        # locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
-            
-        # outstr += '{\n'
-        # if captionStr:
-        #     outstr = outstr + '\n\\begin{figure}['+locator+']\n'
-        #     outstr += '\\centering\n'
-        # outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
-        # # any figure here will not be a png, jpg or eps, so just dump
-        # outstr += payload
-        # outstr += '\\end{{{}}}\n'.format(fontsizeStr)
-        # if captionStr:
-        #     outstr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
-        #     outstr += '\\end{figure}\n\n'
-        # outstr += '}\n\n'
-        # figure_index += 1
 
     elif booktabstr or '\\begin{tabular}' in payload:
         # no captioned latex, just output inline
@@ -564,22 +546,12 @@ def encapsulateListing(outstr, captionStr):
 
 ################################################################################
 def prepInput(cell, cell_index, inlinelistings):
-    rtnStr =''
+    rtnStr = ''
     rtnSource = ''
     captiopurp = None
-    # v3 if 'input' in cell.keys():
 
     if 'source' in cell.keys():
-        lines = cell.source.split('\n')
-        if lines[0].startswith("#-- suppress"):
-            if len(lines) > 1:
-                if lines[1].startswith("#"):
-                    lsting = lines[1]
-                else:
-                    return "\n\n"
-        else:
-            lsting = cell.source
-
+        lsting = cell.source
 
         captionStr = getMetaData(cell, 0, 'listingCaption', 'caption','')
         labelStr = getMetaData(cell, 0, 'listingCaption', 'label','')
@@ -587,51 +559,40 @@ def prepInput(cell, cell_index, inlinelistings):
         if not inlinelistings and not len(labelStr):
             labelStr = 'lst:autolistingcell{}'.format(cell_index)
 
-        showFloatListing = True
+        showListing = True
         if not inlinelistings: # and not captionStr:
             if len(lsting):
                 lstistrp = lsting.split('\n')
-                if len(lstistrp[0]) > 0: # take care of blank first lines
+                if len(lstistrp[0]) > 0: # long enough string?
                     if lstistrp[0][0]=='#':
-                        if len(lstistrp[0]) > 1: # take care of blank first lines
+                        if len(lstistrp[0]) > 1: #  long enough string?
                             if not lstistrp[0][1]=='#':
                                 captiopurp = ' ' + lstistrp[0][1:]
-                        if len(lstistrp[0]) > 2: # take care of blank first lines
+                        if len(lstistrp[0]) > 2: # long enough string?
                                 if lstistrp[0][2]=='#':
-                                    showFloatListing = False
+                                    showListing = False
                     else:
                         captiopurp = ''
-
-            captionStr = 'Code Listing in cell {}'.format(cell_index)
+            if not captionStr:
+                captionStr = 'Code Listing in cell {}'.format(cell_index)
 
         if captionStr:
             captionStr = '{'+r'{}}}, label={}'.format(captionStr, labelStr)
 
-        tmpStr = ''
-        if showFloatListing:
-            tmpStr += '\n\\begin{lstlisting}'
-            if captionStr:
-                tmpStr += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
+        if showListing and len(lsting)>0:
+            if inlinelistings:
+                rtnStr += '\n\\begin{lstlisting}'
+                rtnStr += '[style=incellstyle]\n{}\n'.format(lsting)
+                rtnStr += '\\end{lstlisting}\n\n'
             else:
-                # tmpStr += '[style=incellstyle]\n{}\n'.format(lsting.encode('ascii','ignore'))
-                tmpStr += '[style=incellstyle]\n{}\n'.format(lsting)
-            tmpStr += '\\end{lstlisting}\n\n'
-
-        if inlinelistings:
-            if len(lines[0]) > 2:
-                if not lines[0][2] == '#':
-                    rtnStr = tmpStr
+                rtnSource += '\n\\begin{lstlisting}'
+                if captionStr:
+                    rtnSource += '[style=incellstyle,caption={}]\n{}\n'.format(captionStr,lsting)
                 else:
-                    rtnStr = ''
-            else:
-                rtnStr = ''
-        else:
-                rtnSource = tmpStr
+                    rtnSource += '[style=incellstyle]\n{}\n'.format(lsting)
+                rtnSource += '\\end{lstlisting}\n\n'
                 if captiopurp is not None:
-                        rtnStr = '\n\nSee Listing~\\ref{{{}}} for the code{}.\n\n'.format(labelStr,captiopurp)
-                else:
-                        rtnStr = ''
-
+                    rtnStr += '\n\nSee Listing~\\ref{{{}}} for the code{}.\n\n'.format(labelStr,captiopurp)
 
     return rtnStr,rtnSource
 
@@ -1245,7 +1206,11 @@ def prepareFigureFloat(cell,figure_index,filename=None,payload=None,fontsizeStr=
             captionStr = captionStr.replace('(###)',f'({figure_index+1})')
         labelStr = getMetaData(cell, figure_index, 'figureCaption', 'label','')
         if labelStr:
-            labelStr = '\\label{{{}-{}}}'.format(labelStr, figure_index)
+            tlabstr = labelStr
+            labelStr = '\\label{{{}-{}}}'.format(tlabstr, figure_index)
+            if figure_index == 0:
+                labelStr += '\\label{{{}}}'.format(tlabstr)
+
         #build the complete bitmap size latex string
         width = getMetaData(cell, figure_index, 'figureCaption', 'width', 0.9)
         locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
@@ -1373,7 +1338,7 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         output += rtnString
         listingsstring += rtnListing
 
-    if len(rtnListing):
+    if len(listingsstring):
         output += listingsstring
 
     output += r'\atendofdoc'+'\n\n'
@@ -1495,25 +1460,31 @@ def listFiles(root, patterns='*', recurse=1, return_folders=0, useRegex=False):
 
 ################################################################################
 ################################################################################
-# args = docopt.docopt(__doc__)
-args = docopt.docopt(docoptstring)
+def main():
+    # args = docopt.docopt(__doc__)
+    args = docopt.docopt(docoptstring)
 
-# print(args)
+    # print(args)
 
-infile = args['<ipnbfilename>']
-outfile = args['<outfilename>']
-imagedir =  args['<imagedir>']
-inlinelistings = args['-i']
-addurlcommand = args['-u']
+    infile = args['<ipnbfilename>']
+    outfile = args['<outfilename>']
+    imagedir =  args['<imagedir>']
+    inlinelistings = args['-i']
+    addurlcommand = args['-u']
 
-# find the image directory
-imagedir = createImageDir(imagedir)
+    # find the image directory
+    imagedir = createImageDir(imagedir)
 
-# see if only one input file, or perhaps many
-infiles, outfiles = getInfileNames(infile, outfile)
+    # see if only one input file, or perhaps many
+    infiles, outfiles = getInfileNames(infile, outfile)
 
-#process the list of files found in spec
-for infile, outfile in zip(infiles, outfiles):
-    processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand)
+    #process the list of files found in spec
+    for infile, outfile in zip(infiles, outfiles):
+        processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand)
 
-print('\nfini!')
+    print('\nfini!')
+
+###############################################################################
+################################################################################
+if __name__ == "__main__":
+    main()
