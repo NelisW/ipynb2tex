@@ -1293,7 +1293,7 @@ def createImageDir(imagedir):
 def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand):
 
     #if required by option create a chapter for floated listings
-    listingsstring = '\n\n\chapter{Listings}\n\n' if not inlinelistings else ''
+    listingsstring = ''
 
     print('\nnotebook={}'.format(infile))
     print('latex={}'.format(outfile))
@@ -1339,7 +1339,9 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
         listingsstring += rtnListing
 
     if len(listingsstring):
-        output += listingsstring
+        lstheader = '\n\n\chapter{Listings}\n\n' if not inlinelistings else ''
+        output += lstheader
+        output +=  listingsstring
 
     output += r'\atendofdoc'+'\n\n'
 
