@@ -684,7 +684,13 @@ def getMetaData(cell, output_index, captionID, metaID, defaultValue=''):
 
             # sometimes lists are correctly imported and sometimes not
             if isinstance(inVal, str) and '[' in inVal: 
-                inVal = eval(inVal)
+                import ast
+                inVal = ast.literal_eval(inVal)
+                # for it,item in enumerate(inVal):
+                #     if isinstance(item,str):
+                #         inVal[it] = item.replace('\\\\','\\')
+                #     else:
+                #         inVal[it] = item
 
             if  isinstance(inVal, str):
                 outVal = inVal
@@ -1214,6 +1220,7 @@ def prepareFigureFloat(cell,figure_index,filename=None,payload=None,fontsizeStr=
         #build the complete bitmap size latex string
         width = getMetaData(cell, figure_index, 'figureCaption', 'width', 0.9)
         locator = getMetaData(cell, figure_index, 'figureCaption', 'locator', 'tb')
+        angle = getMetaData(cell, figure_index, 'figureCaption', 'angle', 0)
     
         fstring += '{\n'
         fstring = fstring + '\n\\begin{figure}['+locator+']\n'
@@ -1221,7 +1228,7 @@ def prepareFigureFloat(cell,figure_index,filename=None,payload=None,fontsizeStr=
         fstring += '\n\\begin{{{}}}\n'.format(fontsizeStr)
         if payload is None: # not a latex cell
             fstring += protectEvnStringStart
-            fstring += '\\includegraphics[width='+f'{width}'+'\\textwidth]{'+filename+'}\n'
+            fstring += '\\includegraphics[width='+f'{width}'+'\\textwidth, angle='+f'{angle}'+']{'+filename+'}\n'
             fstring += protectEvnStringEnd
         else:
             # any figure here will not be a png, jpg or eps, so just dump
@@ -1234,7 +1241,7 @@ def prepareFigureFloat(cell,figure_index,filename=None,payload=None,fontsizeStr=
     else:
         fstring += '\\begin{center}\n'
         fstring += protectEvnStringStart
-        fstring += '\\includegraphics[width=0.9\\textwidth]{'+filename+'}\n'
+        fstring += '\\includegraphics[width=0.9\\textwidth, angle=0]{'+filename+'}\n'
         fstring += protectEvnStringEnd
         fstring += '\\end{center}\n'
     

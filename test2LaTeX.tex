@@ -257,6 +257,33 @@ The script saves the png files in the \verb+./pic+ directory, and the \LaTeX{} c
 
 See Listing~\ref{lst:listing1} for the code  to prepare the environment.
 
+
+\begin{lstlisting}[style=outcellstyle,caption={Caption for first listing output \label{lst:listing1-out}}]
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+
+\end{lstlisting}
+
+
 The following code block has the metadata
 
 
@@ -580,7 +607,7 @@ See Listing~\ref{lst:figurelisting} for the code this figure is given meta data 
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_42_0.png}
+\includegraphics[width=0.2\textwidth, angle=0]{./pic/test2LaTeX_42_0.png}
 \end{normalsize}
 \caption{Caption text for first figure\label{fig:lab1-0}\label{fig:lab1}}
 \end{figure}
@@ -598,7 +625,7 @@ Experimenting with embedded markdown images:
 
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{./images/keep-calm-and-code-python_BW.png}
+\includegraphics[width=0.9\textwidth, angle=0]{./images/keep-calm-and-code-python_BW.png}
 \end{center}
 
 
@@ -621,7 +648,7 @@ The following figure is not floating, but with narrower width.
 See Listing~\ref{lst:autolistingcell45} for the code this figure is not given meta data caption parameters, it will be inlined in the latex export.
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{./pic/test2LaTeX_45_0.png}
+\includegraphics[width=0.9\textwidth, angle=0]{./pic/test2LaTeX_45_0.png}
 \end{center}
 The following Matplotlib plot is scaled to 40\% of text width and floating, but with the 'h' locator to force the location to here.
 
@@ -639,19 +666,46 @@ The following Matplotlib plot is scaled to 40\% of text width and floating, but 
 
 
 
-
-
-See Listing~\ref{lst:autolistingcell47} for the code.
-
 {
 
-\begin{figure}[h]
+\begin{figure}[tpbh]
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.4\textwidth]{./pic/test2LaTeX_47_0.png}
+\includegraphics[width=0.4\textwidth, angle=0]{./pic/test2LaTeX_47_0.png}
 \end{normalsize}
 \caption{Caption text for third figure\label{fig:lab3-0}\label{fig:lab3}}
+\end{figure}
+
+}
+
+\FloatBarrier
+
+JSON does not seem to like backslashes, so math embedded in the figure caption must be escaped with two backslashes, as shown in Figure~\ref{fig:lab3math}.
+
+
+
+\begin{lstlisting}
+{
+    "figureCaption": {
+        "caption": "Caption with math $\\pi$  $\\beta$, $\\rho$",
+        "label": "fig:lab3math",
+        "locator": "h",
+        "width": "0.4"
+    }
+}
+\end{lstlisting}
+
+
+{
+
+\begin{figure}[tbph]
+\centering
+
+\begin{normalsize}
+\includegraphics[width=0.4\textwidth, angle=0]{./pic/test2LaTeX_51_0.png}
+\end{normalsize}
+\caption{Caption with math $\pi$  $\beta$, $\rho$\label{fig:lab3math-0}\label{fig:lab3math}}
 \end{figure}
 
 }
@@ -685,7 +739,7 @@ If you only have one figure in a cell there is no need to add the \verb+-0+.  Th
 
 
 
-See Listing~\ref{lst:autolistingcell49} for the code.
+See Listing~\ref{lst:autolistingcell53} for the code.
 
 {
 
@@ -693,7 +747,7 @@ See Listing~\ref{lst:autolistingcell49} for the code.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_49_0.png}
+\includegraphics[width=0.4\textwidth, angle=0]{./pic/test2LaTeX_53_0.png}
 \end{normalsize}
 \caption{Caption text for (first) fourth figure\label{fig:lab4-0}\label{fig:lab4}}
 \end{figure}
@@ -701,7 +755,7 @@ See Listing~\ref{lst:autolistingcell49} for the code.
 }
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{./pic/test2LaTeX_49_1.png}
+\includegraphics[width=0.9\textwidth, angle=0]{./pic/test2LaTeX_53_1.png}
 \end{center}
 {
 
@@ -709,9 +763,54 @@ See Listing~\ref{lst:autolistingcell49} for the code.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.5\textwidth]{./pic/test2LaTeX_49_2.png}
+\includegraphics[width=0.5\textwidth, angle=0]{./pic/test2LaTeX_53_2.png}
 \end{normalsize}
 \caption{Caption text for (third) fourth figure\label{fig:lab4-2}}
+\end{figure}
+
+}
+
+To use mathematics in cells with two outputs as in the following code, the backslashes must be escaped as for a single caption, but the strings in the list must also be marked as raw strings as in \verb+r'string'+
+
+
+
+\begin{lstlisting}
+{
+    "figureCaption": {
+        "caption": "[r'Caption text for $\\alpha$ figure',r'Caption text for $\\beta$ figure']",
+        "label": "fig:lab4alpha",
+        "width": "[0.3, 0.5]"
+    }
+}
+\end{lstlisting}
+
+
+
+
+See Listing~\ref{lst:autolistingcell56} for the code.
+
+{
+
+\begin{figure}[tb]
+\centering
+
+\begin{normalsize}
+\includegraphics[width=0.3\textwidth, angle=0]{./pic/test2LaTeX_56_0.png}
+\end{normalsize}
+\caption{Caption text for $\alpha$ figure\label{fig:lab4alpha-0}\label{fig:lab4alpha}}
+\end{figure}
+
+}
+
+{
+
+\begin{figure}[tb]
+\centering
+
+\begin{normalsize}
+\includegraphics[width=0.5\textwidth, angle=0]{./pic/test2LaTeX_56_1.png}
+\end{normalsize}
+\caption{Caption text for $\beta$ figure\label{fig:lab4alpha-1}}
 \end{figure}
 
 }
@@ -725,7 +824,7 @@ Use the substring \verb+(###)+ as a placeholder to be replaced with the running 
 
 
 
-See Listing~\ref{lst:autolistingcell52} for the code.
+See Listing~\ref{lst:autolistingcell59} for the code.
 
 {
 
@@ -733,7 +832,7 @@ See Listing~\ref{lst:autolistingcell52} for the code.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_52_0.png}
+\includegraphics[width=0.2\textwidth, angle=0]{./pic/test2LaTeX_59_0.png}
 \end{normalsize}
 \caption{Shared caption (1)\label{fig:sharedcap-0}\label{fig:sharedcap}}
 \end{figure}
@@ -746,7 +845,7 @@ See Listing~\ref{lst:autolistingcell52} for the code.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_52_1.png}
+\includegraphics[width=0.2\textwidth, angle=0]{./pic/test2LaTeX_59_1.png}
 \end{normalsize}
 \caption{Shared caption (2)\label{fig:sharedcap-1}}
 \end{figure}
@@ -759,7 +858,7 @@ See Listing~\ref{lst:autolistingcell52} for the code.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.2\textwidth]{./pic/test2LaTeX_52_2.png}
+\includegraphics[width=0.2\textwidth, angle=0]{./pic/test2LaTeX_59_2.png}
 \end{normalsize}
 \caption{Shared caption (3)\label{fig:sharedcap-2}}
 \end{figure}
@@ -775,10 +874,10 @@ You can write HTML to the cell's output and have it displayed in the browser and
 
 
 
-See Listing~\ref{lst:autolistingcell55} for the code.
+See Listing~\ref{lst:autolistingcell62} for the code.
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{./images/flow2-zzz.png}
+\includegraphics[width=0.9\textwidth, angle=0]{./images/flow2-zzz.png}
 \end{center}
 
 
@@ -799,7 +898,7 @@ Figure~\ref{fig:keepcalm-1}.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.1\textwidth]{./images/keep-calm-and-code-python_BW.png}
+\includegraphics[width=0.1\textwidth, angle=0]{./images/keep-calm-and-code-python_BW.png}
 \end{normalsize}
 \caption{Keep calm 1\label{fig:keepcalm-0}\label{fig:keepcalm}}
 \end{figure}
@@ -813,7 +912,7 @@ Figure~\ref{fig:keepcalm-1}.
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.2\textwidth]{./images/random-squares-2.png}
+\includegraphics[width=0.2\textwidth, angle=0]{./images/random-squares-2.png}
 \end{normalsize}
 \caption{Keep calm 2\label{fig:keepcalm-1}}
 \end{figure}
@@ -871,7 +970,7 @@ The converter will export both of the above PDF filenames for display in the lat
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.5\textwidth]{./images/discretestrata01.pdf}
+\includegraphics[width=0.5\textwidth, angle=0]{./images/discretestrata01.pdf}
 \end{normalsize}
 \caption{Stratified atmosphere\label{fig:templabel-0}\label{fig:templabel}}
 \end{figure}
@@ -884,7 +983,7 @@ The converter will export both of the above PDF filenames for display in the lat
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.5\textwidth]{./images/Bankedturn.pdf}
+\includegraphics[width=0.5\textwidth, angle=0]{./images/Bankedturn.pdf}
 \end{normalsize}
 \caption{Banked turn\label{fig:templabel-1}}
 \end{figure}
@@ -904,7 +1003,7 @@ The following line must be uncommented to have effect.
 
 
 
-See Listing~\ref{lst:autolistingcell64} for the code  type(eval("this is a test string")) is not list.
+See Listing~\ref{lst:autolistingcell71} for the code  type(eval("this is a test string")) is not list.
 
 
 \section{Embedded code (verbatim text)}
@@ -1090,7 +1189,7 @@ item4 new parra 2 [ this does not work correctly ]
 \centering
 
 \begin{normalsize}
-\includegraphics[width=0.1\textwidth]{./images/random-squares-2.png}
+\includegraphics[width=0.1\textwidth, angle=0]{./images/random-squares-2.png}
 \end{normalsize}
 \caption{Boxy picture\label{fig:propflightpaths-0}\label{fig:propflightpaths}}
 \end{figure}
@@ -1384,7 +1483,7 @@ Pandas dataframe HTML tables are also rendered.
 
 
 
-See Listing~\ref{lst:autolistingcell80} for the code.
+See Listing~\ref{lst:autolistingcell87} for the code.
 
 \begin{center}
 
@@ -1468,7 +1567,7 @@ The table format specification is provided by the Pandas  to\_latex(column\_form
 
 
 
-See Listing~\ref{lst:autolistingcell85} for the code  to create the dataframe and write the output to LaTeX object at default font size.
+See Listing~\ref{lst:autolistingcell92} for the code  to create the dataframe and write the output to LaTeX object at default font size.
 
 {
 \renewcommand{\arraystretch}{1.1}
@@ -1501,7 +1600,7 @@ See Listing~\ref{lst:autolistingcell85} for the code  to create the dataframe an
 
 
 
-See Listing~\ref{lst:autolistingcell86} for the code.
+See Listing~\ref{lst:autolistingcell93} for the code.
 
 {
 \renewcommand{\arraystretch}{1.1}
@@ -1551,7 +1650,7 @@ Of course you may have to use this setting in conjunction with any other json se
 
 
 
-See Listing~\ref{lst:autolistingcell88} for the code  to write the table in LARGE.
+See Listing~\ref{lst:autolistingcell95} for the code  to write the table in LARGE.
 
 {
 \renewcommand{\arraystretch}{1.1}
@@ -1600,7 +1699,7 @@ A Pandas dataframe exported with \verb+IPython.core.display.Latex object+  can a
 
 
 
-See Listing~\ref{lst:autolistingcell90} for the code  to write a floating table in tiny font size.
+See Listing~\ref{lst:autolistingcell97} for the code  to write a floating table in tiny font size.
 
 {
 
@@ -1652,7 +1751,7 @@ Samples per visual material: \\
 
 
 
-See Listing~\ref{lst:autolistingcell94} for the code  display a tikz graphic.
+See Listing~\ref{lst:autolistingcell101} for the code  display a tikz graphic.
 
 
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -1697,7 +1796,7 @@ See Listing~\ref{lst:autolistingcell94} for the code  display a tikz graphic.
 
 
 
-See Listing~\ref{lst:autolistingcell95} for the code  display another tikz graphic, as a floating figure.
+See Listing~\ref{lst:autolistingcell102} for the code  display another tikz graphic, as a floating figure.
 
 {
 
@@ -1790,7 +1889,7 @@ I only spent limited time on pylatex and got the following example to work (it r
 
 
 
-See Listing~\ref{lst:autolistingcell99} for the code  to format a numy array in \LaTeX{}.
+See Listing~\ref{lst:autolistingcell106} for the code  to format a numy array in \LaTeX{}.
 
 \[%
 arr= \begin{bmatrix}%
@@ -2212,6 +2311,7 @@ display(Image(filename='images/random-squares-2.png', width=200, height=200))
 
 
 \begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 47}, label=lst:autolistingcell47]
+##
 %matplotlib inline
 
 import pylab as pl
@@ -2228,7 +2328,24 @@ pl.grid(True)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 49}, label=lst:autolistingcell49]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 51}, label=lst:autolistingcell51]
+##
+%matplotlib inline
+
+import pylab as pl
+import numpy as np
+
+t = np.arange(0.0, 2.0, 0.01)
+s = np.sin(2*np.pi*t)
+pl.plot(t, s)
+pl.xlabel('time (s)')
+pl.ylabel('voltage (mV)')
+pl.title('About as simple as it gets, folks')
+pl.grid(True)
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 53}, label=lst:autolistingcell53]
 import pyradi.ryplot as ryplot
 
 x = np.linspace(0,10,10)
@@ -2242,7 +2359,20 @@ for i in [1,2]:
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 52}, label=lst:autolistingcell52]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 56}, label=lst:autolistingcell56]
+import pyradi.ryplot as ryplot
+
+x = np.linspace(0,10,10)
+a = ryplot.Plotter(1,figsize=(3,2))
+b = ryplot.Plotter(2,figsize=(3,2))
+for i in [1,2]:
+    a.plot(1,x,x ** i,r'Plotter instance with $\alpha$',label=[str(i)])
+    b.plot(1,x,(-x) ** i,r'Plotter instance with $\beta$',label=[str(i)])
+
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 59}, label=lst:autolistingcell59]
 plots = []
 for i,name in enumerate(['a','b','c']):
     plots.append(ryplot.Plotter(i,1,1,figsize=(5,5)))
@@ -2252,18 +2382,18 @@ for i,name in enumerate(['a','b','c']):
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 55}, label=lst:autolistingcell55]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 62}, label=lst:autolistingcell62]
 htmlstr = '<p><img src="images/flow2-zzz.png" width=200 />'
 HTML(htmlstr)                 
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 64}, label=lst:autolistingcell64]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 71}, label=lst:autolistingcell71]
 # type(eval("this is a test string")) is not list
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 80}, label=lst:autolistingcell80]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 87}, label=lst:autolistingcell87]
 import pandas as pd
 d = {'one' : pd.Series([1., 2., 3.], index=['a', 'b', 'c']),
      'two' : pd.Series([1., 2., 3., 4.], index=['a', 'b', 'c', 'd'])}
@@ -2274,7 +2404,7 @@ HTML(df.to_html())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 85}, label=lst:autolistingcell85]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 92}, label=lst:autolistingcell92]
 # to create the dataframe and write the output to LaTeX object at default font size
 import pandas as pd
 import numpy as np
@@ -2293,27 +2423,27 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 86}, label=lst:autolistingcell86]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 93}, label=lst:autolistingcell93]
 lstrno = df.to_latex(index=False,column_format='|l|l|p{50mm}|c|r|')
 Latex(lstrno)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 88}, label=lst:autolistingcell88]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 95}, label=lst:autolistingcell95]
 # to write the table in LARGE
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 90}, label=lst:autolistingcell90]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 97}, label=lst:autolistingcell97]
 # to write a floating table in tiny font size
 
 Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 94}, label=lst:autolistingcell94]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 101}, label=lst:autolistingcell101]
 # display a tikz graphic
 lstr = r"""
     \begin{tikzpicture}[scale=4.5, line join=bevel]
@@ -2360,7 +2490,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 95}, label=lst:autolistingcell95]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 102}, label=lst:autolistingcell102]
 # display another tikz graphic, as a floating figure
 
 lstr = r"""
@@ -2417,7 +2547,7 @@ Latex(lstr)
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 97}, label=lst:autolistingcell97]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 104}, label=lst:autolistingcell104]
 ##
 lstr = '\n\nThis paragraph is embedded as \LaTeX{} in a Jupyter output cell. '\
             + 'One day this could be a complex computed \LaTeX{} string.  '\
@@ -2428,7 +2558,7 @@ Latex(lstr + '\n')
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 99}, label=lst:autolistingcell99]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 106}, label=lst:autolistingcell106]
 # to format a numy array in \LaTeX{}
 import numpy as np
 # install with pip install pylatex
@@ -2442,7 +2572,7 @@ Latex(math.dumps_as_content())
 \end{lstlisting}
 
 
-\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 119}, label=lst:autolistingcell119]
+\begin{lstlisting}[style=incellstyle,caption={Code Listing in cell 126}, label=lst:autolistingcell126]
 ##
 # to get software versions
 # https://github.com/rasbt/watermark
