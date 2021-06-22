@@ -185,6 +185,16 @@ def listFiles(root, patterns='*', recurse=1, return_folders=0):
     return filertn
 
 
+
+################################################################################
+def latexEscapeCaption(string):
+
+    # https://stackoverflow.com/questions/18360976/match-latex-reserved-characters-with-regex
+    # string = re.sub(r'((?<!\)[#\$%\^&_\{\}~\\])','\1', string)
+    # string = re.sub(r'([#%&_])',r'\\\1', string)
+
+    return string
+
 ################################################################################
 def latexEscapeForHtmlTableOutput(string):
 
@@ -343,12 +353,13 @@ def convertHtmlTable(html, cell):
             labelStr = '\\label{{{}-{}}}'.format(tlabstr, table_index)
             if table_index == 0:
                 labelStr += '\\label{{{}}}'.format(tlabstr)
+        table_index += 1
 
         texStr = ''
         if captionStr:
             texStr = texStr + '\n\\begin{table}['+locator+']\n'
             texStr += '\\centering\n'
-            texStr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+            texStr += '\\caption{'+'{}{}'.format(latexEscapeCaption(captionStr),labelStr)+'}\n'
         else:
              texStr += '\\begin{center}\n'
 
@@ -361,7 +372,6 @@ def convertHtmlTable(html, cell):
         else:
             texStr += '\\end{center}\n\n'
 
-        table_index += 1
         rtnString += texStr
 
     return rtnString
@@ -450,12 +460,13 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
             labelStr = '\\label{{{}-{}}}'.format(tlabstr, table_index)
             if table_index == 0:
                 labelStr += '\\label{{{}}}'.format(tlabstr)
+        table_index += 1
 
         outstr += '{\n'
         if captionStr:
             outstr =  outstr + '\n\\begin{table}['+locator+']\n'
             outstr += '\\centering\n'
-            outstr += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+            outstr += '\\caption{'+'{}{}'.format(latexEscapeCaption(captionStr),labelStr)+'}\n'
         outstr += booktabstr
         outstr += '\n\\begin{{{}}}\n'.format(fontsizeStr)
         outstr += '\\renewcommand{\\arraystretch}{1.1}\n'
@@ -465,7 +476,6 @@ def processLaTeXOutCell(cellOutput,output_index,outs,cell,addurlcommand):
         if captionStr:
             outstr += '\\end{table}\n\n'
         outstr += '}\n\n'
-        table_index += 1
 
     # process figure with caption,  either a string or a list of strings
     elif getMetaData(cell, figure_index, 'figureCaption', 'caption',''):
@@ -577,7 +587,7 @@ def prepInput(cell, cell_index, inlinelistings):
                 captionStr = 'Code Listing in cell {}'.format(cell_index)
 
         if captionStr:
-            captionStr = '{'+r'{}}}, label={}'.format(captionStr, labelStr)
+            captionStr = '{'+r'{}}}, label={}'.format(latexEscapeCaption(captionStr), labelStr)
 
         if showListing and len(lsting)>0:
             if inlinelistings:
@@ -1235,7 +1245,7 @@ def prepareFigureFloat(cell,figure_index,filename=None,payload=None,fontsizeStr=
             fstring += payload
         fstring += '\\end{{{}}}\n'.format(fontsizeStr)
         if captionStr:
-            fstring += '\\caption{'+'{}{}'.format(captionStr,labelStr)+'}\n'
+            fstring += '\\caption{'+'{}{}'.format(latexEscapeCaption(captionStr),labelStr)+'}\n'
         fstring += '\\end{figure}\n\n'
         fstring += '}\n\n'
     else:
