@@ -981,6 +981,9 @@ def processHTMLTree(html,cell,addurlcommand):
 
         elif child.tag == 'div':
             pass
+            if cell is not None:
+                tmp += convertHtmlTable(child, cell)
+                table_index += 1
 
         elif child.tag == 'iframe':
             # we only check for embedded pdf in iframe for now
