@@ -1307,8 +1307,18 @@ a&table\\\hline
 \end{normalsize}
 \end{table}
 
-second table  (non-floating in \LaTeX{}):
+\begin{center}
 
+\begin{tiny}
+
+\begin{tabular}{|c|c|}
+\hline
+This&is\\\hline
+a&small table\\\hline
+
+\end{tabular}
+\end{tiny}
+\end{center}
 
 
 \begin{table}[tb]
@@ -1319,12 +1329,43 @@ second table  (non-floating in \LaTeX{}):
 
 \begin{tabular}{{|c|l|}}
 \hline
-This&is\\\hline
-a&small table\\\hline
+First Header&Second Header\\\hline
+Content Cell&Content Cell\\\hline
+Content Cell&Content Cell\\\hline
 
 \end{tabular}
 \end{Large}
 \end{table}
+
+second table  (non-floating in \LaTeX{}):
+
+
+\begin{center}
+
+\begin{normalsize}
+
+\begin{tabular}{|c|c|}
+\hline
+This&is\\\hline
+a&small table\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{center}
+
+\begin{center}
+
+\begin{normalsize}
+
+\begin{tabular}{|c|c|}
+\hline
+First Header&Second Header\\\hline
+Content Cell&Content Cell\\\hline
+Content Cell&Content Cell\\\hline
+
+\end{tabular}
+\end{normalsize}
+\end{center}
 
 PHP Markdown Extra is also supported  (floating in \LaTeX{} as Table~\ref{tab:lab2-2}):
 

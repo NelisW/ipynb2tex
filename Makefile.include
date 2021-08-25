@@ -22,6 +22,7 @@
 ###   mypostprocessingstep:
 ###           # do something...
 ###
+### this version also buils the main latex file from a Jupyter notebook is present.
 
 PDFLATEX	?= pdflatex -halt-on-error -file-line-error -shell-escape
 BIBTEX		?= bibtex
@@ -29,6 +30,7 @@ BIBER		?= biber
 MAKEGLOSSARIES ?= makeglossaries
 MAKENOMENCL ?= makeindex
 MAKEINDEX ?= makeindex
+IPNB2TEX	?= python ipnb2tex.py
 
 ## String to find in log to check whether rerun is necessary
 RERUN_PATTERN = Rerun to|rerun LaTeX|run LaTeX again
@@ -71,9 +73,6 @@ else
 endif
 
 LISTALLTEXFILES=$(shell find . -type f -name '*.tex')
-## LISTFABBREVTEXFILE=$(shell find . -type f -name 'abbrev.tex' | tr '\n' ' '| sed 's/ .*//' | xargs dirname )
-
-## $(info    LISTALLTEXFILES is $(LISTALLTEXFILES))
 
 ## If $(TARGET).tex refers to .bib files like \bibliography{foo,bar}, then
 ## $(BIBTEXFILES) will contain foo.bib and bar.bib, and both files will be added as
@@ -84,8 +83,6 @@ BIBTEXFILES += $(patsubst %,%.bib,\
 			grep -o '\\bibliography{[^}]\+}' | \
 			sed -e 's/^[^%]*\\bibliography{\([^}]*\)}.*/\1/' \
 			    -e 's/, */ /g'))
-
-## LISTFIRSTBIBFILE=$(shell find . -type f -name '*.bib' | tr '\n' ' '| sed 's/ .*//' | xargs dirname )
 
 ## If $(TARGET).tex refers to .bib files like \addbibresource{foo.bib}, then
 ## $(BIBLATEXFILES) will contain foo.bib and  will be added as dependencies to $(PDFTARGETS).
@@ -104,10 +101,6 @@ INCLUDEDTEX = $(patsubst %,%.tex,\
 			grep -o '\\\(input\|include\){[^}]\+}' | \
 			sed -e 's/^.*{\([^}]*\)}.*/\1/' \
 			    -e 's/\.tex$$//'))
-
-
-## $(info    INCLUDEDTEX is $(INCLUDEDTEX))
-
 
 AUXFILES += $(INCLUDEDTEX:.tex=.aux)
 
@@ -231,6 +224,10 @@ IDXDEPS = %.ind
 	$(MAKEINDEX) $(TARGETS)
 endif
 
+## build the main tex file from notebook
+%.tex: %.ipynb
+	$(IPNB2TEX) $(%.ipynb)
+
 $(PDFTARGETS): %.pdf: %.tex %.aux $(IDXDEPS) $(GLSDEPS) $(BIBDEPS) $(INCLUDEDTEX) $(REVDEPS) $(NLSDEPS) 
 	$(PDFLATEX) $* $(ERRFILTER)
 ifneq ($(strip $(BIBTEXFILES)),)
@@ -272,7 +269,7 @@ clean:
 		$(T).svn $(T).tdo $(T).tns $(T).toc \
 		$(T).vtc $(T).url $(T).mw $(T).mw.mw $(T).synctex  $(T).synctex.gz \
 		$(T).tbb $(T).tbc x.pdf $(T).prj.bak  \
-		$(T).oldaux ) \
+		$(T).oldaux \
 		$(REVDEPS) $(AUXFILES) $(LOGFILES) \
-		$(EXTRACLEAN) $(FIG_PDF)
-
+		$(EXTRACLEAN) $(FIG_PDF) \
+		)
