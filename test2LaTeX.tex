@@ -85,7 +85,7 @@
 The \verb+ipnb2tex.py+ reads the IPython notebook and converts it to a \LaTeX{} set of files (a \verb+*.tex+ file and a number of images).  The script is invoked as follows:
 
 
-\verb+python ipnb2tex.py file.ipynb file.tex imagedir -i -u+
+\verb+python ipnb2tex.py file.ipynb file.tex imagedir -i -u -b+
 
 
 where
@@ -100,6 +100,7 @@ where
 
 
 \verb+url = {http://ipython.org/}+
+\item \verb+-b+ [optional] if given merge all the *.bib files in the folder root together. By default, don't merge all bibtex files, only use the \verb+file.bib+ file with the same name as the notebook file.
 \end{itemize}
 
 The options must follow after the filenames and dirname and the end of the command line string.
@@ -1307,18 +1308,8 @@ a&table\\\hline
 \end{normalsize}
 \end{table}
 
-\begin{center}
+second table  (non-floating in \LaTeX{}):
 
-\begin{tiny}
-
-\begin{tabular}{|c|c|}
-\hline
-This&is\\\hline
-a&small table\\\hline
-
-\end{tabular}
-\end{tiny}
-\end{center}
 
 
 \begin{table}[tb]
@@ -1329,43 +1320,12 @@ a&small table\\\hline
 
 \begin{tabular}{{|c|l|}}
 \hline
-First Header&Second Header\\\hline
-Content Cell&Content Cell\\\hline
-Content Cell&Content Cell\\\hline
-
-\end{tabular}
-\end{Large}
-\end{table}
-
-second table  (non-floating in \LaTeX{}):
-
-
-\begin{center}
-
-\begin{normalsize}
-
-\begin{tabular}{|c|c|}
-\hline
 This&is\\\hline
 a&small table\\\hline
 
 \end{tabular}
-\end{normalsize}
-\end{center}
-
-\begin{center}
-
-\begin{normalsize}
-
-\begin{tabular}{|c|c|}
-\hline
-First Header&Second Header\\\hline
-Content Cell&Content Cell\\\hline
-Content Cell&Content Cell\\\hline
-
-\end{tabular}
-\end{normalsize}
-\end{center}
+\end{Large}
+\end{table}
 
 PHP Markdown Extra is also supported  (floating in \LaTeX{} as Table~\ref{tab:lab2-2}):
 
