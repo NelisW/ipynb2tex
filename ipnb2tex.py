@@ -807,10 +807,31 @@ def processDisplayOutput(cellOutput, cell, cell_index, output_index, imagedir, i
         if 'text/plain' in cellOutput.data.keys():
             return prepOutput(cellOutput, cell, cell_index, output_index, imagedir, infile,addurlcommand)
 
+    if 'display_data' in cellOutput['output_type']:
+        if 'application/vnd.jupyter.widget-view+json' in cellOutput['data'].keys():
+            if 'model_id' in cellOutput['data']['application/vnd.jupyter.widget-view+json'].keys():
+                texStr += f"\n\nCell contains a Jupyter widget with model\_id "
+                texStr += f"{cellOutput['data']['application/vnd.jupyter.widget-view+json']['model_id']} "
+                texStr += f"please open the notebook for display of this widget.\n\n"
+                return texStr
 
-    strErr = f"Unknown cell type(s): {cellOutput.keys()}\ncellOutput['data']\ncellOutput['metadata']\ncellOutput['output_type']"
+    strErr = f"""
+    Unknown cell type(s) in this cell:
+        cell_keys:              {cell.keys()}
+        cell_type:              {cell['cell_type']}
+        cell execution_count:   {cell['execution_count']}
+        cell source:            {cell['source']}
+
+        cell meta:              {cell['metadata']}
+        cellOutput keys:        {cellOutput.keys()}
+        cellOutput output_type: {cellOutput['output_type']}
+        cellOutput data:        {cellOutput['data']}
+        cellOutput metadata:    {cellOutput['metadata']}
+        output_index:           {output_index}
+        """
+        # cell output:            {cell['outputs']}
+
     raise NotImplementedError(strErr)
-
 
 
 ################################################################################
