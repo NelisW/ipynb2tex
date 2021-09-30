@@ -1413,6 +1413,7 @@ def processOneIPynbFile(infile, outfile, imagedir, inlinelistings, addurlcommand
     if os.path.exists(bibfile):
         os.remove(bibfile)
     with io.open(bibfile, 'w', encoding='utf-8') as f:
+        filenames = []
         if appendbibtex:
             filenames = listFiles('.','*.bib',recurse=1)
             # read any other bib files found in the root folder
