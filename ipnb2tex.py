@@ -581,7 +581,7 @@ def prepInput(cell, cell_index, inlinelistings):
         if not inlinelistings: # and not captionStr:
             if len(lsting):
                 lstistrp = lsting.split('\n')
-                if '%%' in lstistrp[0]:
+                if lstistrp[0].startswith(('%%','% ')):
                     commentLine = lstistrp[1]
                 else:
                     commentLine = lstistrp[0]
