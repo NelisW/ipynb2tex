@@ -581,10 +581,10 @@ def prepInput(cell, cell_index, inlinelistings):
         if not inlinelistings: # and not captionStr:
             if len(lsting):
                 lstistrp = lsting.split('\n')
-                if '@@' in lstistrp[0]:
+                if '%%' in lstistrp[0]:
                     commentLine = lstistrp[1]
                 else:
-                    commentLine = lstistrp[1]
+                    commentLine = lstistrp[0]
 
                 if len(commentLine) > 0: # long enough string?
                     if commentLine[0]=='#':
