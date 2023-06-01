@@ -88,7 +88,7 @@ r"""
 \usepackage{textcomp} % additional fonts, required for upquote in listings and \textmu
 \usepackage{placeins} % FloatBarrier
 \usepackage{url} % for websites
-\usepackage[detect-weight]{siunitx} % nice! SI units and print numbers
+\usepackage[detect-weight,detect-all=true]{siunitx} % nice! SI units and print numbers
 \usepackage{afterpage} % afterpage{\clearpage}
 \usepackage{gensymb} % get the degree symbol as in \celcius
 \usepackage{amsmath}
@@ -581,13 +581,18 @@ def prepInput(cell, cell_index, inlinelistings):
         if not inlinelistings: # and not captionStr:
             if len(lsting):
                 lstistrp = lsting.split('\n')
-                if len(lstistrp[0]) > 0: # long enough string?
-                    if lstistrp[0][0]=='#':
-                        if len(lstistrp[0]) > 1: #  long enough string?
-                            if not lstistrp[0][1]=='#':
-                                captiopurp = ' ' + lstistrp[0][1:]
-                        if len(lstistrp[0]) > 2: # long enough string?
-                                if lstistrp[0][2]=='#':
+                if '@@' in lstistrp[0]:
+                    commentLine = lstistrp[1]
+                else:
+                    commentLine = lstistrp[1]
+
+                if len(commentLine) > 0: # long enough string?
+                    if commentLine[0]=='#':
+                        if len(commentLine) > 1: #  long enough string?
+                            if not commentLine[1]=='#':
+                                captiopurp = ' ' + commentLine[1:]
+                        if len(commentLine) > 2: # long enough string?
+                                if commentLine[2]=='#':
                                     showListing = False
                     else:
                         captiopurp = ''
